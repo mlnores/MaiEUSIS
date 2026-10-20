@@ -1,82 +1,12 @@
-"""Strict public-event validation and optional real SHACL validation."""
+"""Shared record and graph validation; task event schemas live in task modules."""
 import json
-import math
-import re
 from pathlib import Path
-from .models import ARMS
-
-STATUSES = {'known','unknown','assumed','inferred','contested','probable','low-confidence','source-dependent','requires-verification'}
-ACTIONS = {'ask','challenge','support','explain','compare','highlight-dependency','request-evidence','advise','silence'}
-CONDITIONS = {'A','B','C','D','E','F'}
-
-class ValidationError(ValueError):
-    pass
+from .records import STATUSES,ACTIONS,CONDITIONS,ValidationError,require,fields,number,identity
 
 
-def require(condition, message):
-    if not condition:raise ValidationError(message)
-
-
-def fields(data, required, optional=()):
-    require(isinstance(data,dict),'Expected an object')
-    require(set(required)<=data.keys(),f'Missing fields: {sorted(set(required)-data.keys())}')
-    require(not data.keys()-set(required)-set(optional),f'Forbidden or unrecognized fields: {sorted(data.keys()-set(required)-set(optional))}')
-
-
-def number(x, low=-1e9, high=1e9):
-    return type(x) in (int,float) and math.isfinite(x) and low<=x<=high
-
-
-def identity(x):
-    return isinstance(x,str) and bool(re.fullmatch(r'[A-Za-z0-9_-]{1,100}',x))
-
-
-def validate_event(task, event):
-    fields(event, ['kind','trial_id','index'], ['options','score','points','target','remaining','block','multiplier',
-                                            'choice','outcome','timed_out','response_ms','score_after','points_after'])
-    require(identity(event['trial_id']), 'Invalid trial identifier')
-    require(type(event['index']) is int and 1<=event['index']<=10000,'Invalid trial index')
-    require(event['kind'] in {'evaluation','feedback'},'Unknown event kind')
-    common=['kind','trial_id','index']
-    if event['kind']=='evaluation':
-        allowed=common+(['options','score'] if task=='MAB' else ['options','points','target','remaining','block','multiplier'])
-        fields(event,allowed)
-        opts=event['options'];require(isinstance(opts,list),'Options must be a list')
-        require(len(opts)==(6 if task=='MAB' else 2),'Wrong number of options')
-        ids=[]
-        for o in opts:
-            if task=='MAB':
-                fields(o,['id','key','outcomes'])
-                require(o['id'] in ARMS,'Unknown arm')
-                require(o['outcomes']==([100,0,-100] if o['id'].startswith('blue') else [200,0,-200]),'Invalid displayed outcomes')
-            else:
-                fields(o,['id','key','amount','probability'])
-                require(o['id'] in {'safe','risky'},'Unknown TBS alternative')
-                require(number(o['amount'],1,10000),'Invalid amount')
-                require(number(o['probability'],0,1),'Invalid displayed probability')
-            require(isinstance(o['key'],str) and o['key'] in {'1','2','3','7','8','9'},'Invalid response key')
-            ids.append(o['id'])
-        require(len(set(ids))==len(opts),'Duplicate option')
-        require(len({o['key'] for o in opts})==len(opts),'Duplicate key')
-        if task=='TBS':
-            require(ids==['safe','risky'],'TBS alternatives must retain their published labels and ordering')
-            require([o['key'] for o in opts]==['1','9'],'Incorrect TBS key mapping')
-        if task=='MAB':require(number(event['score']), 'Invalid score')
-        else:
-            for k in ['points','target','multiplier']:require(number(event[k],0,100000),'Invalid '+k)
-            require(event['target']>0 and event['multiplier']>=1,'Invalid target or multiplier')
-            require(type(event['remaining']) is int and 1<=event['remaining']<=8,'Invalid horizon')
-            require(type(event['block']) is int and event['block']>=1,'Invalid block')
-            require(event['remaining']==8-(event['index']-1)%8,'Horizon inconsistent with trial')
-            require(event['block']==(event['index']-1)//8+1,'Block inconsistent with trial')
-    else:
-        fields(event,common+['choice','outcome','timed_out','response_ms']+(['score_after'] if task=='MAB' else ['points_after']))
-        require(type(event['timed_out']) is bool,'timed_out must be boolean')
-        require(event['choice'] in (set(ARMS) if task=='MAB' else {'safe','risky'})|{'NO_RESPONSE'},'Invalid choice')
-        require((event['choice']=='NO_RESPONSE')==event['timed_out'],'Timeout inconsistent with choice')
-        require(event['response_ms'] is None or number(event['response_ms'],0,60000),'Invalid response time')
-        require(number(event['outcome']), 'Invalid outcome')
-        require(number(event['score_after'] if task=='MAB' else event['points_after']), 'Invalid resulting score')
+def validate_event(task,event):
+    from .tasks import get_task
+    return get_task(task).validate_event(event)
 
 
 def validate_claim(claim, trial_ids):
@@ -121,7 +51,7 @@ def validate_snapshot(snapshot, trial_ids):
 
 PREFIX='https://example.org/socratic/'
 
-def turtle(session):
+def _core_turtle(session):
     """Inspectable RDF representation; evaluator state is never serialized here."""
     lit=lambda x:json.dumps(str(x),ensure_ascii=False)
     ref=lambda x:'<'+PREFIX+x+'>'
@@ -161,13 +91,124 @@ def turtle(session):
     return '\n'.join(lines)+'\n'
 
 
-def shacl_report(session):
+def _projection(session,incremental=False):
+    if incremental and 'task_module' in session:
+        return _candidate_projection(session)
+    core=_core_turtle(session)
+    if 'task_module' not in session:return core,None
+    from .semantics import Writer,DATA,CORE
+    from .tasks import get_task
+    module=get_task(session['task']);writer=Writer();writer.definition(session,module)
+    header='\n'.join(f'@prefix {name}: <{iri}> .' for name,iri in [
+        ('core',CORE),('task',CORE+'task/'),(module.ID.lower(),module.NAMESPACE),('data',DATA)])+'\n'
+    evaluations={};previous=None;focus=set()
+    for event in session['events']:
+        if not event.get('snapshot'):continue
+        inp=event['input']
+        if inp['kind']=='evaluation':evaluations[inp['trial_id']]=inp
+        state=DATA+event['id']+'/state';writer.subjects=set()
+        module.project_rdf(writer,session,event,state,evaluations[inp['trial_id']],previous)
+        previous=state;focus=set(writer.subjects)
+        focus.update(PREFIX+c['id'] for c in event['snapshot']['claims'])
+        focus.update(PREFIX+a['id'] for a in event['snapshot']['arguments'])
+        decision=event['snapshot'].get('decision')
+        if decision:focus.add(PREFIX+decision['id'])
+        focus.update([PREFIX+inp['trial_id'],PREFIX+session['id'],PREFIX+'participant-'+session['participant_id']])
+    return core+header+'\n'.join(writer.lines)+'\n',focus
+
+
+def _candidate_projection(session):
+    """Validate new entities against immutable, previously validated context.
+
+    Avoid serialising/parsing every previous calculation on every trial. Only
+    Context facts are retained for referenced states and observation types;
+    full-session validation
+    remains available for inspection, exports and independent audits.
+    """
+    from .semantics import Writer,DATA,CORE
+    from .tasks import get_task
+    records=[e for e in session['events'] if e.get('snapshot')]
+    if not records:return _projection(session,False)
+    current=records[-1];inp=current['input']
+    evals={e['input']['trial_id']:e['input'] for e in session['events'] if e['input']['kind']=='evaluation'}
+    context={**session,'events':[{'input':e} for e in evals.values()]+[current]}
+    core=_core_turtle(context);writer=Writer();module=get_task(session['task'])
+    writer.definition(session,module)
+    writer.subjects=set()
+    previous=DATA+records[-2]['id']+'/state' if len(records)>1 else None
+    state=DATA+current['id']+'/state'
+    module.project_rdf(writer,session,current,state,evals[inp['trial_id']],previous)
+    focus=set(writer.subjects)
+    # References are resolved only to observations actually present in the store.
+    extras=Writer()
+    if previous:
+        prior=records[-2];prior_writer=Writer()
+        module.project_rdf(prior_writer,session,prior,previous,evals[prior['input']['trial_id']],None)
+        extras.lines.extend(line for line in prior_writer.lines if line.startswith('<'+previous+'> '))
+    for event in session['events']:
+        if event['input']['kind']=='feedback' and event['id']!=current['id']:
+            for kind in ['choice','outcome']:extras.types(DATA+event['input']['trial_id']+'/'+kind,'task:Observation')
+    focus.update(PREFIX+c['id'] for c in current['snapshot']['claims'])
+    focus.update(PREFIX+a['id'] for a in current['snapshot']['arguments'])
+    d=current['snapshot'].get('decision')
+    if d:focus.add(PREFIX+d['id'])
+    focus.update([PREFIX+inp['trial_id'],PREFIX+session['id'],PREFIX+'participant-'+session['participant_id']])
+    header='\n'.join(f'@prefix {name}: <{iri}> .' for name,iri in [
+        ('core',CORE),('task',CORE+'task/'),(module.ID.lower(),module.NAMESPACE),('data',DATA)])+'\n'
+    return core+header+'\n'.join(writer.lines+extras.lines)+'\n',focus
+
+
+def turtle(session):
+    return _projection(session)[0]
+
+
+def graph_documents(session):
+    """Resolve ontology/shape modules from local files, with a legacy export path."""
+    root=Path(__file__).parent/'ontology'
+    if 'task_module' not in session:return (root/'legacy/schema.ttl',),(root/'legacy/shapes.ttl',)
+    from .tasks import get_task
+    return get_task(session['task']).documents()
+
+
+def _target_candidates(shapes,data,ontology,focus):
+    """Retarget entry shapes, preserving validation of nested shapes and literals.
+
+    pySHACL's global focus filter also filters explicit nested focus values.
+    Using SHACL targetNode instead keeps nested constraints fully active while
+    leaving already-validated historical context out of the entry targets.
+    """
+    from rdflib import Namespace,URIRef,RDF,RDFS
+    sh=Namespace('http://www.w3.org/ns/shacl#');allowed={URIRef(x) for x in focus}
+    for shape in set(shapes.subjects(sh.targetClass,None))|set(shapes.subjects(sh.targetNode,None))|set(shapes.subjects(sh.targetSubjectsOf,None))|set(shapes.subjects(sh.targetObjectsOf,None)):
+        targets=set(shapes.objects(shape,sh.targetNode))
+        for cls in shapes.objects(shape,sh.targetClass):
+            classes={cls};pending=[cls]
+            while pending:
+                parent=pending.pop()
+                for child in set(ontology.subjects(RDFS.subClassOf,parent))|set(data.subjects(RDFS.subClassOf,parent)):
+                    if child not in classes:classes.add(child);pending.append(child)
+            for subclass in classes:targets.update(data.subjects(RDF.type,subclass))
+        for prop in shapes.objects(shape,sh.targetSubjectsOf):targets.update(data.subjects(prop,None))
+        for prop in shapes.objects(shape,sh.targetObjectsOf):targets.update(data.objects(None,prop))
+        for predicate in [sh.targetClass,sh.targetNode,sh.targetSubjectsOf,sh.targetObjectsOf]:shapes.remove((shape,predicate,None))
+        for target in targets&allowed:shapes.add((shape,sh.targetNode,target))
+
+
+def shacl_report(session,incremental=False):
     try:
         from rdflib import Graph
         from pyshacl import validate
     except ImportError:
         return {'conforms':None,'engine':'pyshacl-unavailable','report':'SHACL not executed; Python record validation is active. Install requirements-research.txt to enable SHACL.'}
-    g=Graph().parse(data=turtle(session),format='turtle')
-    shapes=Graph().parse(str(Path(__file__).parent/'ontology'/'shapes.ttl'),format='turtle')
-    ok,_,report=validate(g,shacl_graph=shapes,inference='none')
-    return {'conforms':bool(ok),'engine':'pyshacl','report':report}
+    text,focus=_projection(session,incremental)
+    g=Graph().parse(data=text,format='turtle');ont=Graph();shapes=Graph()
+    ont_files,shape_files=graph_documents(session)
+    for path in ont_files:ont.parse(str(path),format='turtle')
+    for path in shape_files:shapes.parse(str(path),format='turtle')
+    if incremental and focus:
+        _target_candidates(shapes,g,ont,focus)
+    ok,_,report=validate(g,shacl_graph=shapes,ont_graph=ont if focus is not None else None,
+                         inference='none',do_owl_imports=False)
+    result={'conforms':bool(ok),'engine':'pyshacl','report':report}
+    if focus is not None:result['scope']='candidate-event-and-context' if incremental and focus else 'full-session'
+    return result

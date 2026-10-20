@@ -1,0 +1,1035 @@
+@prefix s: <https://example.org/socratic/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<https://example.org/socratic/participant-synthetic_ontology> a s:Participant .
+<https://example.org/socratic/ontology_tbs> a s:Session ; s:participant <https://example.org/socratic/participant-synthetic_ontology> ; s:task "TBS" .
+<https://example.org/socratic/ontology_tbs_trial_1> a s:Trial ; s:session <https://example.org/socratic/ontology_tbs> ; s:participant <https://example.org/socratic/participant-synthetic_ontology> ; s:trialIndex 1 .
+<https://example.org/socratic/ontology_tbs_event_1_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.084328+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/ontology_tbs_event_1_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.084328+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/ontology_tbs_event_1_environment> a s:Claim ; s:content "Target gap 930; 8 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.084328+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_1_context> .
+<https://example.org/socratic/ontology_tbs_event_1_decision> a s:Intervention ; s:action "silence" ; s:rationale "No candidate exceeds the evidence, relevance and interruption threshold." ; s:message "" ; s:observedIn <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_1_context> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_1_unknown> .
+<https://example.org/socratic/ontology_tbs_event_3_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.087321+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/ontology_tbs_event_3_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.087321+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/ontology_tbs_event_3_environment> a s:Claim ; s:content "Target gap 930; 8 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.087321+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_3_context> .
+<https://example.org/socratic/ontology_tbs_event_3_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.087321+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_3_environment> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_trial_2> a s:Trial ; s:session <https://example.org/socratic/ontology_tbs> ; s:participant <https://example.org/socratic/participant-synthetic_ontology> ; s:trialIndex 2 .
+<https://example.org/socratic/ontology_tbs_event_4_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.088564+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/ontology_tbs_event_4_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.088564+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/ontology_tbs_event_4_environment> a s:Claim ; s:content "Target gap 830; 7 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.088564+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_4_context> .
+<https://example.org/socratic/ontology_tbs_event_4_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.088564+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_4_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_3_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_event_4_argument_0> a s:Argument ; s:conclusion "gap_after_gain" ; s:scope "TBS" ; s:status "supported" ; s:reason "A recorded gain changed target progress." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_4_environment> .
+<https://example.org/socratic/ontology_tbs_event_4_argument_0_opposition> a s:Argument ; s:conclusion "gap_after_gain" ; s:scope "TBS" ; s:status "opposed" ; s:reason "A smaller gap alone does not imply that less risk is better." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_4_environment> ; s:opposes <https://example.org/socratic/ontology_tbs_event_4_argument_0> .
+<https://example.org/socratic/ontology_tbs_event_4_decision> a s:Intervention ; s:action "ask" ; s:rationale "gap_after_gain: provisional usefulness 0.630 minus interruption cost 0.120; score 0.510 exceeds threshold 0.380. Opposing reasons retained." ; s:message "The last gain reduced the target gap. Does the same level of risk still serve your goal?" ; s:observedIn <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_4_environment> .
+<https://example.org/socratic/ontology_tbs_event_6_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.091400+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/ontology_tbs_event_6_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.091400+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/ontology_tbs_event_6_environment> a s:Claim ; s:content "Target gap 830; 7 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.091400+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_6_context> .
+<https://example.org/socratic/ontology_tbs_event_6_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.091400+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_6_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_4_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_trial_3> a s:Trial ; s:session <https://example.org/socratic/ontology_tbs> ; s:participant <https://example.org/socratic/participant-synthetic_ontology> ; s:trialIndex 3 .
+<https://example.org/socratic/ontology_tbs_event_7_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.093323+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/ontology_tbs_event_7_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.093323+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/ontology_tbs_event_7_environment> a s:Claim ; s:content "Target gap 730; 6 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.093323+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_7_context> .
+<https://example.org/socratic/ontology_tbs_event_7_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.093323+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_7_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_6_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_event_7_argument_0> a s:Argument ; s:conclusion "gap_after_gain" ; s:scope "TBS" ; s:status "supported" ; s:reason "A recorded gain changed target progress." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_7_environment> .
+<https://example.org/socratic/ontology_tbs_event_7_argument_0_opposition> a s:Argument ; s:conclusion "gap_after_gain" ; s:scope "TBS" ; s:status "opposed" ; s:reason "A smaller gap alone does not imply that less risk is better." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_7_environment> ; s:opposes <https://example.org/socratic/ontology_tbs_event_7_argument_0> .
+<https://example.org/socratic/ontology_tbs_event_7_decision> a s:Intervention ; s:action "ask" ; s:rationale "gap_after_gain: provisional usefulness 0.630 minus interruption cost 0.120; score 0.510 exceeds threshold 0.380. Opposing reasons retained." ; s:message "The last gain reduced the target gap. Does the same level of risk still serve your goal?" ; s:observedIn <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_7_environment> .
+<https://example.org/socratic/ontology_tbs_event_9_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.098669+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/ontology_tbs_event_9_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.098669+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/ontology_tbs_event_9_environment> a s:Claim ; s:content "Target gap 730; 6 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.098669+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_9_context> .
+<https://example.org/socratic/ontology_tbs_event_9_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.098669+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_9_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_7_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_trial_4> a s:Trial ; s:session <https://example.org/socratic/ontology_tbs> ; s:participant <https://example.org/socratic/participant-synthetic_ontology> ; s:trialIndex 4 .
+<https://example.org/socratic/ontology_tbs_event_10_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.100769+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/ontology_tbs_event_10_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.100769+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/ontology_tbs_event_10_environment> a s:Claim ; s:content "Target gap 730; 5 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.100769+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_10_context> .
+<https://example.org/socratic/ontology_tbs_event_10_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.100769+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_10_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_9_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_event_10_argument_0> a s:Argument ; s:conclusion "expected_value_limit" ; s:scope "TBS" ; s:status "supported" ; s:reason "Displayed probabilities and gains support an EV comparison." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_10_environment> .
+<https://example.org/socratic/ontology_tbs_event_10_argument_0_opposition> a s:Argument ; s:conclusion "expected_value_limit" ; s:scope "TBS" ; s:status "opposed" ; s:reason "No future outcome or optimal multi-trial policy is known." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_10_environment> ; s:opposes <https://example.org/socratic/ontology_tbs_event_10_argument_0> .
+<https://example.org/socratic/ontology_tbs_event_10_decision> a s:Intervention ; s:action "compare" ; s:rationale "expected_value_limit: provisional usefulness 0.600 minus interruption cost 0.120; score 0.480 exceeds threshold 0.380. Opposing reasons retained." ; s:message "How do the expected gains compare with the chance of reaching your target?" ; s:observedIn <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_10_environment> .
+<https://example.org/socratic/ontology_tbs_event_12_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.105413+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/ontology_tbs_event_12_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.105413+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/ontology_tbs_event_12_environment> a s:Claim ; s:content "Target gap 730; 5 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.105413+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_12_context> .
+<https://example.org/socratic/ontology_tbs_event_12_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.105413+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_12_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_10_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_trial_5> a s:Trial ; s:session <https://example.org/socratic/ontology_tbs> ; s:participant <https://example.org/socratic/participant-synthetic_ontology> ; s:trialIndex 5 .
+<https://example.org/socratic/ontology_tbs_event_13_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.108966+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/ontology_tbs_event_13_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.108966+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/ontology_tbs_event_13_environment> a s:Claim ; s:content "Target gap 730; 4 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.108966+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_13_context> .
+<https://example.org/socratic/ontology_tbs_event_13_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.108966+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_13_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_12_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_event_13_decision> a s:Intervention ; s:action "silence" ; s:rationale "No candidate exceeds the evidence, relevance and interruption threshold." ; s:message "" ; s:observedIn <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_13_context> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_13_unknown> .
+<https://example.org/socratic/ontology_tbs_event_15_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.115280+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/ontology_tbs_event_15_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.115280+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/ontology_tbs_event_15_environment> a s:Claim ; s:content "Target gap 730; 4 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.115280+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_15_context> .
+<https://example.org/socratic/ontology_tbs_event_15_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.115280+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_15_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_13_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_trial_6> a s:Trial ; s:session <https://example.org/socratic/ontology_tbs> ; s:participant <https://example.org/socratic/participant-synthetic_ontology> ; s:trialIndex 6 .
+<https://example.org/socratic/ontology_tbs_event_16_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.119492+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/ontology_tbs_event_16_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.119492+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/ontology_tbs_event_16_environment> a s:Claim ; s:content "Target gap 730; 3 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.119492+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_16_context> .
+<https://example.org/socratic/ontology_tbs_event_16_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.119492+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_16_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_15_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_event_16_decision> a s:Intervention ; s:action "silence" ; s:rationale "No candidate exceeds the evidence, relevance and interruption threshold." ; s:message "" ; s:observedIn <https://example.org/socratic/ontology_tbs_trial_6> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_16_context> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_16_unknown> .
+<https://example.org/socratic/ontology_tbs_event_18_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.129237+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/ontology_tbs_event_18_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.129237+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/ontology_tbs_event_18_environment> a s:Claim ; s:content "Target gap 730; 3 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.129237+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_18_context> .
+<https://example.org/socratic/ontology_tbs_event_18_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.129237+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_18_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_16_constraint_neglect> ; s:confidence "0.08"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_trial_7> a s:Trial ; s:session <https://example.org/socratic/ontology_tbs> ; s:participant <https://example.org/socratic/participant-synthetic_ontology> ; s:trialIndex 7 .
+<https://example.org/socratic/ontology_tbs_event_19_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.135248+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/ontology_tbs_event_19_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.135248+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/ontology_tbs_event_19_environment> a s:Claim ; s:content "Target gap 730; 2 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.135248+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_19_context> .
+<https://example.org/socratic/ontology_tbs_event_19_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.135248+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_19_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_18_constraint_neglect> ; s:confidence "0.3"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_event_19_argument_0> a s:Argument ; s:conclusion "shrinking_horizon" ; s:scope "TBS" ; s:status "supported" ; s:reason "The target gap must be assessed against a short horizon." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_19_environment> .
+<https://example.org/socratic/ontology_tbs_event_19_argument_0_opposition> a s:Argument ; s:conclusion "shrinking_horizon" ; s:scope "TBS" ; s:status "opposed" ; s:reason "Future option pairs and outcomes are unknown; do not declare the target unreachable." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_19_environment> ; s:opposes <https://example.org/socratic/ontology_tbs_event_19_argument_0> .
+<https://example.org/socratic/ontology_tbs_event_19_argument_1> a s:Argument ; s:conclusion "constraint_neglect" ; s:scope "TBS" ; s:status "supported" ; s:reason "A repeated choice pattern may warrant checking the shrinking horizon." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_19_constraint_neglect> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_19_environment> .
+<https://example.org/socratic/ontology_tbs_event_19_argument_1_opposition> a s:Argument ; s:conclusion "constraint_neglect" ; s:scope "TBS" ; s:status "opposed" ; s:reason "The same option can still be appropriate after the context changes. The final-win multiplier can preserve feasibility. A policy estimate cannot establish that the participant ignored a constraint." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_19_constraint_neglect> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_19_environment> ; s:opposes <https://example.org/socratic/ontology_tbs_event_19_argument_1> .
+<https://example.org/socratic/ontology_tbs_event_19_decision> a s:Intervention ; s:action "ask" ; s:rationale "shrinking_horizon: provisional usefulness 0.780 minus interruption cost 0.120; score 0.660 exceeds threshold 0.380. Opposing reasons retained." ; s:message "Can your current approach still close the target gap with the choices remaining?" ; s:observedIn <https://example.org/socratic/ontology_tbs_trial_7> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_19_environment> .
+<https://example.org/socratic/ontology_tbs_event_21_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.145124+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/ontology_tbs_event_21_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.145124+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/ontology_tbs_event_21_environment> a s:Claim ; s:content "Target gap 730; 2 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.145124+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_21_context> .
+<https://example.org/socratic/ontology_tbs_event_21_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.145124+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_21_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_19_constraint_neglect> ; s:confidence "0.3"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_trial_8> a s:Trial ; s:session <https://example.org/socratic/ontology_tbs> ; s:participant <https://example.org/socratic/participant-synthetic_ontology> ; s:trialIndex 8 .
+<https://example.org/socratic/ontology_tbs_event_22_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.149864+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/ontology_tbs_event_22_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.149864+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/ontology_tbs_event_22_environment> a s:Claim ; s:content "Target gap 730; 1 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.149864+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_22_context> .
+<https://example.org/socratic/ontology_tbs_event_22_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.149864+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_22_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_21_constraint_neglect> ; s:confidence "0.3"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+<https://example.org/socratic/ontology_tbs_event_22_argument_0> a s:Argument ; s:conclusion "final_multiplier" ; s:scope "TBS" ; s:status "supported" ; s:reason "The published final-win rule changes target attainment." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_22_environment> .
+<https://example.org/socratic/ontology_tbs_event_22_argument_0_opposition> a s:Argument ; s:conclusion "final_multiplier" ; s:scope "TBS" ; s:status "opposed" ; s:reason "Neither immediate EV nor the nominal gap alone determines attainment." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_22_environment> ; s:opposes <https://example.org/socratic/ontology_tbs_event_22_argument_0> .
+<https://example.org/socratic/ontology_tbs_event_22_argument_1> a s:Argument ; s:conclusion "constraint_neglect" ; s:scope "TBS" ; s:status "supported" ; s:reason "A repeated choice pattern may warrant checking the shrinking horizon." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_22_constraint_neglect> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_22_environment> .
+<https://example.org/socratic/ontology_tbs_event_22_argument_1_opposition> a s:Argument ; s:conclusion "constraint_neglect" ; s:scope "TBS" ; s:status "opposed" ; s:reason "The same option can still be appropriate after the context changes. The final-win multiplier can preserve feasibility. A policy estimate cannot establish that the participant ignored a constraint." ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_22_constraint_neglect> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_22_environment> ; s:opposes <https://example.org/socratic/ontology_tbs_event_22_argument_1> .
+<https://example.org/socratic/ontology_tbs_event_22_decision> a s:Intervention ; s:action "highlight-dependency" ; s:rationale "final_multiplier: provisional usefulness 0.880 minus interruption cost 0.120; score 0.760 exceeds threshold 0.380. Opposing reasons retained." ; s:message "The multiplier applies only if this final choice wins. How does that affect your chance of meeting the target?" ; s:observedIn <https://example.org/socratic/ontology_tbs_trial_8> ; s:supportedBy <https://example.org/socratic/ontology_tbs_event_22_environment> .
+<https://example.org/socratic/ontology_tbs_event_24_context> a s:Claim ; s:content "The participant-visible task state and current options are recorded." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.159043+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/ontology_tbs_event_24_unknown> a s:Claim ; s:content "Future option pairs; Future outcomes; Participant intent; Intent; Subjective confidence; Overconfidence (confidence not elicited); Hesitation (response time alone is insufficient)" ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.159043+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "unknown" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/ontology_tbs_event_24_environment> a s:Claim ; s:content "Target gap 730; 1 choices remain. Immediate EV does not determine final attainment." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.159043+00:00" ; s:provenance "participant-visible task events" ; s:model_version "models-0.1" ; s:status "known" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_8> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_24_context> .
+<https://example.org/socratic/ontology_tbs_event_24_constraint_neglect> a s:Hypothesis ; s:content "A repeated choice pattern may warrant checking the shrinking horizon." ; s:scope "TBS:ontology_tbs:block-1" ; s:timestamp "2026-10-15T15:19:24.159043+00:00" ; s:provenance "bounded-models-and-provisional-assumptions" ; s:model_version "models-0.1" ; s:status "inferred" ; s:status "source-dependent" ; s:status "requires-verification" ; s:status "low-confidence" ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_1> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_2> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_3> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_4> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_5> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_6> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_7> ; s:supportedBy <https://example.org/socratic/ontology_tbs_trial_8> ; s:dependsOn <https://example.org/socratic/ontology_tbs_event_24_environment> ; s:revises <https://example.org/socratic/ontology_tbs_event_22_constraint_neglect> ; s:confidence "0.3"^^xsd:double ; s:confidenceInterpretation "Posterior under provisional hand-written CPTs; not a diagnosis or calibrated intervention effect." ; s:alternative "The same option can still be appropriate after the context changes." ; s:alternative "The final-win multiplier can preserve feasibility." ; s:alternative "A policy estimate cannot establish that the participant ignored a constraint." ; s:revisionCondition "A context-sensitive adjustment or an explicit constraint-aware explanation revises this account." .
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+@prefix data: <https://example.org/socratic/data/> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> a task:TaskDefinition .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:label "TBS" .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:version "tbs-0.1" .
+<https://example.org/socratic/ontology_tbs> task:hasDefinition <https://example.org/socratic/tbs/definition/tbs-0.1> .
+<https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> a task:Rule .
+<https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> task:label "Immediate expected gain" .
+<https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> task:implementation "socratic_prototype.tasks.tbs.tbs_context" .
+<https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> task:version "tbs-0.1" .
+<https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> task:applicability "Displayed probability times displayed gain; not final attainment." .
+<https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> a task:Rule .
+<https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> task:label "Conditional final-trial attainment" .
+<https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> task:implementation "socratic_prototype.tasks.tbs.tbs_context" .
+<https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> task:version "tbs-0.1" .
+<https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> task:applicability "Final trial only; multiplier applies after a win, not after no gain." .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs/block/1> a tbs:Block .
+<https://example.org/socratic/data/ontology_tbs/block/1> tbs:blockIndex "1"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs/block/1> tbs:inSession <https://example.org/socratic/ontology_tbs> .
+<https://example.org/socratic/data/ontology_tbs/block/1/goal> a tbs:TargetGoal .
+<https://example.org/socratic/data/ontology_tbs/block/1/goal> a task:Goal .
+<https://example.org/socratic/data/ontology_tbs/block/1/goal> tbs:target "930"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs/block/1> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> a task:Rule .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> task:label "Block final-win multiplier" .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> task:implementation "socratic_prototype.tasks.tbs.tbs_context" .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> task:applicability "remaining choices = 1 AND final gain > 0" .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> a tbs:FinalWinMultiplierRule .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> tbs:appliesOnFinalWin "true"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> tbs:requiredRemainingChoices "1"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> tbs:requiresPositiveGain "true"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs/block/1/multiplier> task:expression "if remaining == 1 and gain > 0: (points + gain) * multiplier; otherwise points + gain" .
+<https://example.org/socratic/data/ontology_tbs/block/1> task:hasRule <https://example.org/socratic/data/ontology_tbs/block/1/multiplier> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> task:phase "evaluation" .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> tbs:points "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> tbs:targetGap "930"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> tbs:remainingChoices "8"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> task:label "safe" .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> tbs:displayedGain "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> tbs:displayedWinProbability "0.9"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/safe> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_1/state> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/safe> task:value "90.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/safe> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/safe> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_1_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/risky> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/risky> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/risky> task:label "risky" .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/risky> tbs:displayedGain "265"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/risky> tbs:displayedWinProbability "0.35"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_1/option/risky> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_1/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/risky> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_1/state> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_1/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/risky> task:value "92.75"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/risky> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/risky> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_1_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_1/state/expected-gain/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> a task:Rule .
+<https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> task:label "Exploratory grid pressure policy" .
+<https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> task:implementation "socratic_prototype.tasks.tbs.tbs_pressure_model" .
+<https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> task:version "tbs-0.1" .
+<https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> task:applicability "Equal grid priors; option-value and horizon effects are not separately identified." .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_1/state> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> task:value "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> task:samples "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_1/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> task:phase "feedback" .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_1/state> .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> tbs:points "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> tbs:targetGap "830"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> tbs:remainingChoices "7"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_1/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_3/state> tbs:multiplierApplied "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_3/state> .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> task:value "0.34245"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> task:samples "1"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_3/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_1/choice> a task:ChoiceObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_1/choice> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_1/choice> task:forTrial <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/data/ontology_tbs_trial_1/choice> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_trial_1/choice> task:chosenOption <https://example.org/socratic/data/ontology_tbs_trial_1/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_1/choice> task:responseTimeMs "1000"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_1/outcome> a task:OutcomeObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_1/outcome> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_1/outcome> task:forTrial <https://example.org/socratic/ontology_tbs_trial_1> .
+<https://example.org/socratic/data/ontology_tbs_trial_1/outcome> task:outcomeOf <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_1/outcome> task:value "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_1/outcome> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_trial_1/outcome> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> task:phase "evaluation" .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_3/state> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> tbs:points "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> tbs:targetGap "830"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> tbs:remainingChoices "7"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> task:label "safe" .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> tbs:displayedGain "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> tbs:displayedWinProbability "0.9"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/safe> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_4/state> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/safe> task:value "90.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/safe> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/safe> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_4_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/risky> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/risky> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/risky> task:label "risky" .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/risky> tbs:displayedGain "265"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/risky> tbs:displayedWinProbability "0.35"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_2/option/risky> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_2/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/risky> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_4/state> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_2/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/risky> task:value "92.75"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/risky> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/risky> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_4_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_4/state/expected-gain/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_4/state> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> task:value "0.34245"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> task:samples "1"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_4/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> task:phase "feedback" .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_4/state> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> tbs:remainingChoices "6"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_2/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state> tbs:multiplierApplied "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_6/state> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> task:value "0.4985"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> task:samples "2"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_6/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_2/choice> a task:ChoiceObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_2/choice> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_2/choice> task:forTrial <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/data/ontology_tbs_trial_2/choice> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_trial_2/choice> task:chosenOption <https://example.org/socratic/data/ontology_tbs_trial_2/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_2/choice> task:responseTimeMs "1000"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_2/outcome> a task:OutcomeObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_2/outcome> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_2/outcome> task:forTrial <https://example.org/socratic/ontology_tbs_trial_2> .
+<https://example.org/socratic/data/ontology_tbs_trial_2/outcome> task:outcomeOf <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_2/outcome> task:value "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_2/outcome> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_trial_2/outcome> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> task:phase "evaluation" .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_6/state> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> tbs:remainingChoices "6"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> task:label "safe" .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> tbs:displayedGain "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> tbs:displayedWinProbability "0.9"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/safe> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_7/state> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/safe> task:value "90.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/safe> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/safe> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_7_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/risky> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/risky> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/risky> task:label "risky" .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/risky> tbs:displayedGain "265"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/risky> tbs:displayedWinProbability "0.35"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_3/option/risky> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_3/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/risky> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_7/state> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_3/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/risky> task:value "92.75"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/risky> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/risky> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_7_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_7/state/expected-gain/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_7/state> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> task:value "0.4985"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> task:samples "2"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_7/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> task:phase "feedback" .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_7/state> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> tbs:remainingChoices "5"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_3/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state> tbs:multiplierApplied "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_9/state> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:value "0.5948"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:samples "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_9/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_3/choice> a task:ChoiceObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_3/choice> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_3/choice> task:forTrial <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/data/ontology_tbs_trial_3/choice> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_trial_3/choice> task:chosenOption <https://example.org/socratic/data/ontology_tbs_trial_3/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_3/choice> task:responseTimeMs "1000"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_3/outcome> a task:OutcomeObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_3/outcome> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_3/outcome> task:forTrial <https://example.org/socratic/ontology_tbs_trial_3> .
+<https://example.org/socratic/data/ontology_tbs_trial_3/outcome> task:outcomeOf <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_3/outcome> task:value "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_3/outcome> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_trial_3/outcome> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> task:phase "evaluation" .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_9/state> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> tbs:remainingChoices "5"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> task:label "safe" .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> tbs:displayedGain "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> tbs:displayedWinProbability "0.9"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/safe> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_10/state> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/safe> task:value "90.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/safe> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/safe> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_10_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/risky> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/risky> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/risky> task:label "risky" .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/risky> tbs:displayedGain "265"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/risky> tbs:displayedWinProbability "0.35"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_4/option/risky> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_4/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/risky> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_10/state> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_4/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/risky> task:value "92.75"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/risky> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/risky> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_10_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_10/state/expected-gain/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_10/state> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:value "0.5948"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:samples "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_10/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> task:phase "feedback" .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_10/state> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> tbs:remainingChoices "4"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_4/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state> tbs:multiplierApplied "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_12/state> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:value "0.55126"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:samples "4"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_12/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_4/choice> a task:ChoiceObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_4/choice> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_4/choice> task:forTrial <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/data/ontology_tbs_trial_4/choice> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_trial_4/choice> task:chosenOption <https://example.org/socratic/data/ontology_tbs_trial_4/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_4/choice> task:responseTimeMs "1000"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_4/outcome> a task:OutcomeObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_4/outcome> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_4/outcome> task:forTrial <https://example.org/socratic/ontology_tbs_trial_4> .
+<https://example.org/socratic/data/ontology_tbs_trial_4/outcome> task:outcomeOf <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_4/outcome> task:value "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_4/outcome> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_trial_4/outcome> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> task:phase "evaluation" .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_12/state> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> tbs:remainingChoices "4"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> task:label "safe" .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> tbs:displayedGain "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> tbs:displayedWinProbability "0.9"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/safe> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_13/state> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/safe> task:value "90.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/safe> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/safe> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_13_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/risky> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/risky> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/risky> task:label "risky" .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/risky> tbs:displayedGain "265"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/risky> tbs:displayedWinProbability "0.35"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_5/option/risky> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_5/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/risky> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_13/state> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_5/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/risky> task:value "92.75"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/risky> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/risky> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_13_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_13/state/expected-gain/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_13/state> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:value "0.55126"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:samples "4"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_13/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> task:phase "feedback" .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_13/state> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> tbs:remainingChoices "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_5/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state> tbs:multiplierApplied "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_15/state> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:value "0.33294"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:samples "5"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_15/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_5/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_5/choice> a task:ChoiceObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_5/choice> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_5/choice> task:forTrial <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/data/ontology_tbs_trial_5/choice> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_trial_5/choice> task:chosenOption <https://example.org/socratic/data/ontology_tbs_trial_5/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_5/choice> task:responseTimeMs "1000"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_5/outcome> a task:OutcomeObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_5/outcome> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_5/outcome> task:forTrial <https://example.org/socratic/ontology_tbs_trial_5> .
+<https://example.org/socratic/data/ontology_tbs_trial_5/outcome> task:outcomeOf <https://example.org/socratic/data/ontology_tbs_trial_5/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_5/outcome> task:value "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_5/outcome> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_trial_5/outcome> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> task:phase "evaluation" .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_15/state> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> tbs:remainingChoices "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> task:label "safe" .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> tbs:displayedGain "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> tbs:displayedWinProbability "0.9"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/safe> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_16/state> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/safe> task:value "90.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/safe> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/safe> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_16_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/risky> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/risky> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/risky> task:label "risky" .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/risky> tbs:displayedGain "265"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/risky> tbs:displayedWinProbability "0.35"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_6/option/risky> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_6/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/risky> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_16/state> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_6/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/risky> task:value "92.75"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/risky> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/risky> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_16_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_16/state/expected-gain/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_16/state> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:value "0.33294"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:samples "5"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_16/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_5/choice> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> task:phase "feedback" .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_16/state> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> tbs:remainingChoices "2"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_6/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state> tbs:multiplierApplied "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_18/state> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:value "-0.19954"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:samples "6"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_5/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_18/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_6/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_6/choice> a task:ChoiceObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_6/choice> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_6/choice> task:forTrial <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/data/ontology_tbs_trial_6/choice> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_trial_6/choice> task:chosenOption <https://example.org/socratic/data/ontology_tbs_trial_6/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_6/choice> task:responseTimeMs "1000"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_6/outcome> a task:OutcomeObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_6/outcome> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_6/outcome> task:forTrial <https://example.org/socratic/ontology_tbs_trial_6> .
+<https://example.org/socratic/data/ontology_tbs_trial_6/outcome> task:outcomeOf <https://example.org/socratic/data/ontology_tbs_trial_6/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_6/outcome> task:value "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_6/outcome> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_trial_6/outcome> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> task:phase "evaluation" .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_18/state> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> tbs:remainingChoices "2"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> task:label "safe" .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> tbs:displayedGain "100"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> tbs:displayedWinProbability "0.9"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/safe> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_19/state> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/safe> task:value "90.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/safe> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/safe> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_19_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/risky> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/risky> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/risky> task:label "risky" .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/risky> tbs:displayedGain "265"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/risky> tbs:displayedWinProbability "0.35"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_7/option/risky> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_7/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/risky> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_19/state> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_7/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/risky> task:value "92.75"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/risky> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/risky> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_19_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_19/state/expected-gain/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_19/state> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:value "-0.19954"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:samples "6"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_5/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_19/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_6/choice> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> task:phase "feedback" .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_19/state> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> tbs:remainingChoices "1"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_7/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state> tbs:multiplierApplied "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_21/state> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:value "-1.08206"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:samples "7"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:upperBound "1.5"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_5/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_6/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_21/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_7/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_7/choice> a task:ChoiceObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_7/choice> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_7/choice> task:forTrial <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/data/ontology_tbs_trial_7/choice> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_trial_7/choice> task:chosenOption <https://example.org/socratic/data/ontology_tbs_trial_7/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_7/choice> task:responseTimeMs "1000"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_7/outcome> a task:OutcomeObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_7/outcome> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_7/outcome> task:forTrial <https://example.org/socratic/ontology_tbs_trial_7> .
+<https://example.org/socratic/data/ontology_tbs_trial_7/outcome> task:outcomeOf <https://example.org/socratic/data/ontology_tbs_trial_7/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_7/outcome> task:value "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_7/outcome> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_trial_7/outcome> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> task:phase "evaluation" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_21/state> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> tbs:points "200"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> tbs:targetGap "730"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> tbs:remainingChoices "1"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> task:label "safe" .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> tbs:displayedGain "180"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> tbs:displayedWinProbability "0.6"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/safe> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_22/state> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/safe> task:value "108.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/safe> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/safe> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_22_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> a tbs:FinalWinScoreCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_22/state> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> task:value "873.9999999999999"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> s:status "known" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> task:usesRule <https://example.org/socratic/data/ontology_tbs/block/1/multiplier> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> a tbs:AttainmentCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> task:inputState <https://example.org/socratic/data/ontology_tbs_event_22/state> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> task:value "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> task:unit "probability" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> s:status "known" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> task:usesRule <https://example.org/socratic/data/ontology_tbs/block/1/multiplier> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/safe> .
+<https://example.org/socratic/ontology_tbs_event_22_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/safe> .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> a tbs:GambleOption .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> a task:Option .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> task:label "risky" .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> tbs:displayedGain "260"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> tbs:displayedWinProbability "0.35"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> task:displayedIn <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/risky> a tbs:ExpectedGainCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_22/state> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/risky> task:value "91.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/risky> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/risky> s:status "known" .
+<https://example.org/socratic/ontology_tbs_event_22_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_22/state/expected-gain/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> a tbs:FinalWinScoreCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_22/state> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> task:value "1058.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> s:status "known" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> task:usesRule <https://example.org/socratic/data/ontology_tbs/block/1/multiplier> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> a tbs:AttainmentCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> task:inputState <https://example.org/socratic/data/ontology_tbs_event_22/state> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> task:forOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> task:value "0.35"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> task:unit "probability" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> s:status "known" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> task:usesRule <https://example.org/socratic/data/ontology_tbs/block/1/multiplier> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_22/state/win-score/risky> .
+<https://example.org/socratic/ontology_tbs_event_22_environment> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_22/state/attainment/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_22/state> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:value "-1.08206"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:samples "7"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:lowerBound "-3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:upperBound "1.5"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_5/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_6/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_22/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_7/choice> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/expected-gain> .
+<https://example.org/socratic/tbs/definition/tbs-0.1> task:hasRule <https://example.org/socratic/tbs/definition/tbs-0.1/final-attainment> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> a task:TaskState .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> a tbs:TargetState .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> task:forTrial <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> task:phase "feedback" .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> task:version "tbs-0.1" .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> task:previousState <https://example.org/socratic/data/ontology_tbs_event_22/state> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> tbs:inBlock <https://example.org/socratic/data/ontology_tbs/block/1> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> task:hasGoal <https://example.org/socratic/data/ontology_tbs/block/1/goal> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> tbs:points "1058.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> tbs:targetGap "-128.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> tbs:remainingChoices "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> tbs:multiplier "2.3"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/safe> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> task:hasOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> tbs:multiplierApplied "true"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/final-total> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/final-total> a tbs:FinalTotalCalculation .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/final-total> task:inputState <https://example.org/socratic/data/ontology_tbs_event_22/state> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/final-total> task:usesRule <https://example.org/socratic/data/ontology_tbs/block/1/multiplier> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/final-total> task:value "1058.0"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/final-total> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/final-total> s:status "known" .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/final-total> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_8/outcome> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state> task:basedOnCalculation <https://example.org/socratic/data/ontology_tbs_event_24/state/final-total> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> a tbs:PressurePolicyEstimate .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> a task:Estimate .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> a task:Calculation .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:inputState <https://example.org/socratic/data/ontology_tbs_event_24/state> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:usesRule <https://example.org/socratic/tbs/definition/tbs-0.1/pressure-policy> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:value "1.15513"^^xsd:double .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:unit "normalised-pressure-sensitivity" .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:samples "8"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> s:status "inferred" .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:lowerBound "0"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:upperBound "3"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_1/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_2/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_3/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_4/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_5/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_6/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_7/choice> .
+<https://example.org/socratic/data/ontology_tbs_event_24/state/pressure-model> task:basedOnObservation <https://example.org/socratic/data/ontology_tbs_trial_8/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_8/choice> a task:ChoiceObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_8/choice> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_8/choice> task:forTrial <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/data/ontology_tbs_trial_8/choice> task:timedOut "false"^^xsd:boolean .
+<https://example.org/socratic/data/ontology_tbs_trial_8/choice> task:chosenOption <https://example.org/socratic/data/ontology_tbs_trial_8/option/risky> .
+<https://example.org/socratic/data/ontology_tbs_trial_8/choice> task:responseTimeMs "1000"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_8/outcome> a task:OutcomeObservation .
+<https://example.org/socratic/data/ontology_tbs_trial_8/outcome> a task:Observation .
+<https://example.org/socratic/data/ontology_tbs_trial_8/outcome> task:forTrial <https://example.org/socratic/ontology_tbs_trial_8> .
+<https://example.org/socratic/data/ontology_tbs_trial_8/outcome> task:outcomeOf <https://example.org/socratic/data/ontology_tbs_trial_8/choice> .
+<https://example.org/socratic/data/ontology_tbs_trial_8/outcome> task:value "260"^^xsd:integer .
+<https://example.org/socratic/data/ontology_tbs_trial_8/outcome> task:unit "points" .
+<https://example.org/socratic/data/ontology_tbs_trial_8/outcome> task:timedOut "false"^^xsd:boolean .

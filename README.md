@@ -1,9 +1,10 @@
 # Socratic teammate prototype
 
 A local, runnable first prototype for the controlled MAB and TBS tasks in
-`socratic_ai_design_note.tex`, informed by *The Sophist Machine Needs Productive
-Ignorance* and `MeetingNotes_SocraticAIforDecisionMaking.pdf` (13 October 2026).
-The original `mab_tbs_web_demo` is preserved. The prototype extends a copy of its
+[the design note](docs/socratic_ai_design_note.tex), informed by *The Sophist Machine Needs Productive
+Ignorance* and [the meeting notes](docs/MeetingNotes_SocraticAIforDecisionMaking.pdf) (13 October 2026).
+The standalone `mab_tbs_web_demo` includes the updated outcome-history and reward/probability visuals.
+The Socratic prototype extends a separate copy of its
 runner, retaining its reward rules, key mapping, outcome sampling, timeouts,
 fixation intervals, and conditional final-trial multiplier.
 
@@ -61,9 +62,11 @@ E/F supply those calibrated estimates to the intervention policy.
 | E | Task-aware conventional guidance with task-specific calibration |
 | F | Task-aware personalised Socratic support, challenge, or justified silence |
 
-The default language layer uses reviewed templates in every condition. Calling
-these an empirical comparison of LLM systems would require enabling and piloting
-the provider layer, fixing its model/version, and agreeing the study protocol.
+The default language layer uses reviewed templates in every condition. An
+experimental Ollama mode can now compose new questions for D/F from a
+condition-filtered evidence package. B/C/E retain reviewed conventional wording.
+An empirical comparison requires piloting the provider layer, fixing its
+model/version and language mode, and agreeing the study protocol.
 
 A **four-second preparation window** is used in all conditions, then the original
 **five-second choice window**. MAB preparation precedes the next options display
@@ -111,13 +114,23 @@ this implementation has not been validated for laboratory acquisition.
   provenance, epistemic labels, model/policy versions, and configuration hashes
   support deterministic replay. Invalid candidate updates do not partially commit.
 
-The schema uses RDF claim objects with annotations and relations including
-`supportedBy`, `dependsOn`, `contradicts`, `revises`, and `opposes`. The fixed
-ontology is in `socratic_prototype/ontology/schema.ttl`; hand-written SHACL shapes
-cover trials, claims, hypotheses, and interventions. JSON snapshots are the
-canonical persisted records and Turtle is the inspectable graph projection.
-The JSON validator runs before commitment. When pySHACL is installed, the
-candidate RDF graph also must conform before commitment, and the report is stored.
+The epistemic core uses RDF claims with annotations and relations including
+`supportedBy`, `dependsOn`, `contradicts`, `revises`, and `opposes`. Ontology 0.2
+adds a shared `task:` layer and separate `mab:`/`tbs:` namespaces for mechanics,
+states, observations, goals and calculations. Derived values link to input states,
+named versioned rules, units and evidence; estimates remain explicitly inferred.
+Python computes the models and JSON snapshots remain the canonical records.
+Selected local SHACL modules validate new graph entities and their context before
+commitment when pySHACL is installed. Full exported graphs can also be audited.
+
+MAB/TBS models, event boundaries, task-specific checks and RDF projections live
+in registered Python task modules. New sessions freeze module/ontology versions
+and definition-file hashes; original core URIs and legacy exports remain supported.
+See the [task module and extension guide](docs/task_modules.md).
+
+For a concrete audit of what is represented in RDF versus JSON, see the
+[MAB/TBS ontology walkthrough](docs/ontology_examples/README.md), with synthetic
+examples, validated Turtle exports and executable SPARQL queries.
 
 ## Information boundary
 
@@ -155,6 +168,58 @@ and [pySHACL documentation](https://github.com/RDFLib/pySHACL).
 
 ## Optional bounded LLM layer
 
+### Local Ollama (preferred)
+
+Install [Ollama for macOS](https://ollama.com/download/mac), launch the app, then
+download a local model. [Qwen3 4B](https://ollama.com/library/qwen3:4b) is a starting
+point for this bounded wording task; its suitability and latency need testing.
+If Ollama is already installed, skip installation. No additional Python package
+or API key is required for this adapter.
+
+```bash
+ollama pull qwen3:4b
+cd "/Users/martinlopeznores/Desktop/Irena Danilovska"
+source .venv/bin/activate
+export SOCRATIC_LLM=ollama
+export OLLAMA_MODEL=qwen3:4b
+python -m socratic_prototype.language --check
+python -m socratic_prototype.server
+```
+
+Open `http://127.0.0.1:8765`. If the Ollama app is not running, start it or run
+`OLLAMA_NO_CLOUD=1 ollama serve` in a separate Terminal. Do not start a second
+Ollama server if one is already listening. For the macOS app, Ollama documents
+`launchctl setenv OLLAMA_NO_CLOUD 1` followed by restarting the app to
+[disable cloud features](https://docs.ollama.com/faq#how-do-i-disable-ollama-cloud-features).
+
+The adapter uses Ollama's native [`/api/chat`](https://docs.ollama.com/api/chat)
+and [JSON-schema structured outputs](https://docs.ollama.com/capabilities/structured-outputs),
+with streaming and thinking disabled, temperature zero, and a ten-minute
+model keep-alive. It accepts loopback HTTP addresses only (default
+`http://127.0.0.1:11434`, optionally set with `OLLAMA_BASE_URL`), bypasses HTTP
+proxies, rejects redirects and `:cloud` model tags, and never sends OpenAI
+credentials. Disable cloud features in Ollama itself too, especially if using
+custom model aliases. Models must be downloaded before use; the adapter does
+not pull them automatically.
+
+`--check` exercises the actual validation with synthetic setup data and warms
+the model, allowing up to 60 seconds (`--timeout` overrides that setup limit).
+Success reports `ollama-bounded`; fallback reports its reason and exits with
+status 1. This does not change the experiment's timing. Policy 0.2 allows
+3 seconds for generation, increased from 0.8 after a successful user-reported
+warm Qwen3 4B setup check took 2.79 seconds (the first took 7.85 seconds).
+These checks establish connectivity and validation, not latency for actual
+trial prompts. The four-second preparation period remains fixed, leaving only
+about one second for reading a message arriving after three seconds, before
+allowing for other backend work. Warm the model before sessions and inspect
+recorded `generation_ms`, `fallback_reason` and actual reading exposure.
+Late results remain unexposed. Restart the prototype server and start new
+sessions to use this policy. Existing sessions retain their recorded settings;
+replaying them requires the matching policy configuration. Freeze the policy
+and model version before collecting study data.
+
+### OpenAI (alternative)
+
 The OpenAI adapter is opt-in and reads credentials only from the server environment:
 
 ```bash
@@ -165,20 +230,79 @@ python3 -m socratic_prototype.server
 ```
 
 This adapter uses the [Responses API and structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses).
-It may select an approved wording variant for an already-selected action and
+Both adapters may select an approved wording variant for an already-selected action and
 claim list. The backend rejects different actions, fabricated evidence, arbitrary
 prose, and proposed promotion of an inference to a fact. For this first version,
 model updates remain the job of the deterministic model services; LLM updates
 must be empty. Missing credentials, provider failures, and invalid proposals fall
 back to the reviewed template and are recorded. Silence bypasses generation.
-Only the selected action, opaque claim IDs and approved messages go to the
-provider; no raw participant text, hidden schedule, or complete session is sent.
+In bounded mode, only the selected action, opaque claim IDs and approved messages
+go to the provider. Generated mode receives the explicitly projected evidence
+described below. A complete session and hidden evaluator state are never sent.
 Replay uses the recorded validated language result and makes no API calls.
 
-This is deliberately bounded language realisation, not an open-ended conversational
-teammate. Free prose generation with a reliable grounding validator is later work.
-The short generation timeout is provisional and may cause frequent fallback;
-it needs latency testing before an LLM comparison study.
+### Generated questions and shadow evaluation
+
+Start by evaluating alternatives offline. This writes a JSON report and matching
+HTML review page, without changing sessions or displaying generated text to participants:
+
+```bash
+export SOCRATIC_LLM=ollama
+export OLLAMA_MODEL=qwen3:4b
+python -m socratic_prototype.shadow --fixtures --output shadow_report.json
+```
+
+The synthetic scenarios cover MAB/TBS uncertainty, personalisation, conventional
+condition boundaries, ambiguous feedback and quoted instruction attempts. To
+evaluate a new-format exported teammate trace instead:
+
+```bash
+python -m socratic_prototype.shadow --trace exported_teammate.json --output trace_review.json
+```
+
+Reports include the evidence, reviewed baseline, generated question or rejection,
+latency, estimated time left in the preparation window, and unfilled human-review
+fields. These estimates exclude other backend work and browser transport.
+Inspect semantic grounding, uncertainty, condition fidelity and usefulness;
+passing hard checks does **not** establish these qualities. JSON-schema validation
+and literal evidence references do not prove that a question's meaning is supported.
+
+For an explicitly experimental live run after reviewing shadow outputs:
+
+```bash
+export SOCRATIC_LANGUAGE_MODE=generated
+python -m socratic_prototype.language --check
+python -m socratic_prototype.server
+```
+
+Restart the server and start new sessions. D/F may receive a newly composed short
+question after backend-rendered context. Questions must preserve the policy action
+and evidence/uncertainty references; they cannot introduce model updates. Hard
+checks reject numerical prose, several directive/diagnostic cues, invalid
+references and malformed/overlong output. Invalid or slow generations fall back
+to the reviewed message. The four-second preparation window remains fixed, and
+late results remain unexposed. No second LLM call or automatic repair consumes
+the remaining window. Use `SOCRATIC_LANGUAGE_MODE=bounded` to retain the original
+wording-selection mode. Generated mode currently uses local Ollama only.
+
+Optional response interpretation is separately enabled with
+`export SOCRATIC_INTERPRET_RESPONSES=1` before starting new sessions. For E/F,
+Ollama may propose a literal strategy quotation or contestation of the delivered
+hypothesis. Proposals remain pending until accepted/rejected in the inspector.
+Accepted interpretations are attributed self-reports and can affect future
+hypotheses only within their original task/block and expiry window. Fitted
+parameters and observed facts are never overwritten. Response generation can
+add backend delay; it is separately logged. Both switches default to the original
+bounded wording and disabled response interpretation.
+
+Language mode, provider, requested model, local endpoint and contract versions
+are frozen into new sessions without API keys. Replay revalidates the recorded
+question/interpretation and uses recorded researcher reviews without contacting
+Ollama. Older bounded traces remain inspectable; replay still requires their
+original model/policy/backend and implementation versions.
+
+See [the implementation and evaluation guide](docs/llm_generation.md) for the
+output contract, researcher review workflow, and limitations.
 
 ## Descriptive summaries and verification
 
@@ -199,23 +323,46 @@ and calibration-length adequacy need an agreed pilot protocol.
 ```bash
 python3 -m unittest discover -s tests -v
 node tests/test_browser_contract.cjs
+node tests/test_inspector_contract.cjs
 ```
 
-The Python tests exercise all six conditions in complete short MAB/TBS sessions,
+The Python tests exercise both provider request/response contracts with mocked
+transports, local-only Ollama routing, generated-question checks, condition-filtered
+packages, shadow reporting, reviewed self-report updates, safe fallback and replay without generation,
+plus all six conditions in complete short MAB/TBS sessions,
 replay, correction/revision, uncertainty, information boundaries, language-output
 validation, score rules and the actual HTTP handler via an in-memory transport.
-The JavaScript contract test executes the actual extended task scripts against
+The task JavaScript contract test executes the actual extended task scripts against
 the real Python store, using a minimal DOM and accelerated clock. It verifies
 complete task runs, delivery, persistence, replay, and the public event contract;
-it does not establish real-browser appearance or physical timing.
+it does not establish real-browser appearance or physical timing. A separate
+inspector contract test executes the actual review controls and verifies acceptance
+requests, reviewed-state rendering and preservation of past decisions.
 
-Verification in the implementation environment: 28 Python tests, 26 passed and
-2 skipped (local socket binding prohibited; optional pySHACL unavailable).
-The MAB/TBS JavaScript contract runs passed, including fixed preparation timing.
-Scripted full protocols also completed and replayed correctly: MAB 200 choices
-and TBS 192 choices. Package installation and real browser
-launch were blocked, so pgmpy/pySHACL execution, live HTTP transport, visual browser
-QA and live LLM calls remain unverified. No model is empirically validated.
+The current catalog contains 64 Python tests. With pgmpy 1.1.2 and pySHACL 0.40.1,
+the full 57-test regression passed with one socket-related skip, and all seven
+new task-module tests passed: 63 distinct passing tests. The latter check a third
+task through the common pipeline, module/document drift, legacy compatibility,
+numerical MAB/TBS RDF provenance, conditional multiplier behaviour and rejection
+of invalid nested values/rules. Both example graphs pass full SHACL validation
+and all five SPARQL queries. Without optional libraries, the full 57-test
+regression and seven focused module tests also passed their applicable cases
+(six skips: socket binding and five RDF-dependent checks).
+
+MAB/TBS task and inspector JavaScript contract tests passed, including fixed
+preparation timing and interpretation review. Complete short generated-mode
+MAB/TBS sessions and replay passed with a mocked provider, with and without the
+research libraries. Earlier scripted full protocols completed and replayed:
+MAB 200 choices and TBS 192 choices.
+
+Live HTTP transport, visual browser QA and live generated questions for trial
+prompts remain unverified. Ollama's loopback API was unreachable from the
+implementation session; generated-mode setup and shadow CLI checks correctly
+reported fallback and wrote separate reports. The user previously reported
+successful bounded setup checks with Qwen3 4B: 7.85 seconds initially and
+2.79 seconds warm. Those timings do not establish performance of the new question
+or response-generation prompts. Both provider transports passed mocked tests.
+No model or intervention effect is empirically validated.
 
 ## Deliberate modelling limits
 

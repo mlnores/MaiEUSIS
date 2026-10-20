@@ -1,0 +1,33 @@
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+tbs:ontology a owl:Ontology ; owl:versionInfo "tbs-ontology-0.1" ; owl:imports task:ontology .
+tbs:Block a owl:Class .
+tbs:TargetState a owl:Class ; rdfs:subClassOf task:TaskState .
+tbs:TargetGoal a owl:Class ; rdfs:subClassOf task:Goal .
+tbs:GambleOption a owl:Class ; rdfs:subClassOf task:Option .
+tbs:FinalWinMultiplierRule a owl:Class ; rdfs:subClassOf task:Rule .
+tbs:ExpectedGainCalculation a owl:Class ; rdfs:subClassOf task:Calculation .
+tbs:FinalWinScoreCalculation a owl:Class ; rdfs:subClassOf task:Calculation .
+tbs:AttainmentCalculation a owl:Class ; rdfs:subClassOf task:Calculation .
+tbs:FinalTotalCalculation a owl:Class ; rdfs:subClassOf task:Calculation .
+tbs:PressurePolicyEstimate a owl:Class ; rdfs:subClassOf task:Estimate .
+tbs:inBlock a owl:ObjectProperty ; rdfs:label "inBlock" ; rdfs:domain tbs:TargetState ; rdfs:range tbs:Block .
+tbs:inSession a owl:ObjectProperty ; rdfs:label "inSession" ; rdfs:domain tbs:Block ; rdfs:range core:Session .
+tbs:points a owl:DatatypeProperty ; rdfs:label "points" ; rdfs:range rdfs:Literal .
+tbs:target a owl:DatatypeProperty ; rdfs:label "target" ; rdfs:range rdfs:Literal .
+tbs:targetGap a owl:DatatypeProperty ; rdfs:label "targetGap" ; rdfs:range rdfs:Literal .
+tbs:multiplier a owl:DatatypeProperty ; rdfs:label "multiplier" ; rdfs:range rdfs:Literal .
+tbs:displayedGain a owl:DatatypeProperty ; rdfs:label "displayedGain" ; rdfs:range rdfs:Literal .
+tbs:displayedWinProbability a owl:DatatypeProperty ; rdfs:label "displayedWinProbability" ; rdfs:range rdfs:Literal .
+tbs:remainingChoices a owl:DatatypeProperty ; rdfs:label "remainingChoices" ; rdfs:range xsd:integer .
+tbs:blockIndex a owl:DatatypeProperty ; rdfs:label "blockIndex" ; rdfs:range xsd:integer .
+tbs:requiredRemainingChoices a owl:DatatypeProperty ; rdfs:label "requiredRemainingChoices" ; rdfs:range xsd:integer .
+tbs:multiplierApplied a owl:DatatypeProperty ; rdfs:label "multiplierApplied" ; rdfs:range xsd:boolean .
+tbs:appliesOnFinalWin a owl:DatatypeProperty ; rdfs:label "appliesOnFinalWin" ; rdfs:range xsd:boolean .
+tbs:requiresPositiveGain a owl:DatatypeProperty ; rdfs:label "requiresPositiveGain" ; rdfs:range xsd:boolean .

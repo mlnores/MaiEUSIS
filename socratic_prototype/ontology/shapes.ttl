@@ -25,3 +25,13 @@ s:InterventionShape a sh:NodeShape ; sh:targetClass s:Intervention ;
  sh:property [ sh:path s:rationale ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
  sh:property [ sh:path s:supportedBy ; sh:minCount 1 ; sh:or ( [ sh:class s:Claim ] [ sh:class s:Hypothesis ] ) ] ;
  sh:property [ sh:path s:observedIn ; sh:minCount 1 ; sh:class s:Trial ] .
+s:ParticipantShape a sh:NodeShape ; sh:targetClass s:Participant ; sh:nodeKind sh:IRI .
+s:SessionShape a sh:NodeShape ; sh:targetClass s:Session ;
+ sh:property [ sh:path s:participant ; sh:minCount 1 ; sh:maxCount 1 ; sh:class s:Participant ] ;
+ sh:property [ sh:path s:task ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] .
+s:ArgumentShape a sh:NodeShape ; sh:targetClass s:Argument ;
+ sh:property [ sh:path s:conclusion ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path s:reason ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path s:status ; sh:minCount 1 ; sh:in ("supported" "opposed" "unresolved") ] ;
+ sh:property [ sh:path s:supportedBy ; sh:minCount 1 ; sh:or ( [ sh:class s:Claim ] [ sh:class s:Hypothesis ] ) ] ;
+ sh:property [ sh:path s:opposes ; sh:class s:Argument ] .

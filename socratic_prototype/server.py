@@ -8,6 +8,8 @@ from pathlib import Path
 from urllib.parse import urlsplit,parse_qs
 from .store import Store
 from .validation import ValidationError, turtle, shacl_report
+from .language import configuration as language_configuration
+from .tasks import get_task,available_tasks
 
 ROOT=Path(__file__).resolve().parent
 STATIC=ROOT/'static'
@@ -25,7 +27,12 @@ class Handler(BaseHTTPRequestHandler):
         path=urlsplit(self.path).path; query=parse_qs(urlsplit(self.path).query)
         store=self.server.store
         if method=='GET':
-            if path=='/api/health':return self.send(200,{'status':'ok','local_only':True,'language':'openai-bounded' if os.environ.get('SOCRATIC_LLM')=='openai' else 'reviewed-template'})
+            if path=='/api/tasks':return self.send(200,[{**get_task(t).describe(),'protocols':get_task(t).PROTOCOLS} for t in available_tasks()])
+            if path=='/api/health':
+                config=language_configuration()
+                return self.send(200,{'status':'ok','local_only':True,
+                    'language':config['provider']+'-'+config['mode'] if config['provider'] in {'ollama','openai'} else 'reviewed-template',
+                    'response_interpretation':config['interpret_responses'],'language_status':'configuration-only'})
             if path=='/api/sessions':return self.send(200,store.list(query.get('participant',[None])[0]))
             if path.startswith('/api/sessions/'):
                 bits=path.strip('/').split('/');sid=bits[2];action=bits[3] if len(bits)>3 else ''

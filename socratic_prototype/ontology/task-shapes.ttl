@@ -1,0 +1,45 @@
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+task:NumberShape a sh:NodeShape ; sh:or ( [ sh:datatype xsd:integer ] [ sh:datatype xsd:double ] ) .
+task:DefinitionShape a sh:NodeShape ; sh:targetClass task:TaskDefinition ;
+ sh:property [ sh:path task:label ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path task:version ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] .
+task:StateShape a sh:NodeShape ; sh:targetClass task:TaskState ;
+ sh:property [ sh:path task:forTrial ; sh:minCount 1 ; sh:maxCount 1 ; sh:class core:Trial ] ;
+ sh:property [ sh:path task:phase ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("evaluation" "feedback") ] ;
+ sh:property [ sh:path task:version ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path task:previousState ; sh:maxCount 1 ; sh:class task:TaskState ] .
+task:RuleShape a sh:NodeShape ; sh:targetClass task:Rule ;
+ sh:property [ sh:path task:label ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path task:implementation ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path task:version ; sh:minCount 1 ; sh:datatype xsd:string ] .
+task:CalculationShape a sh:NodeShape ; sh:targetClass task:Calculation ;
+ sh:property [ sh:path task:inputState ; sh:minCount 1 ; sh:maxCount 1 ; sh:class task:TaskState ] ;
+ sh:property [ sh:path task:usesRule ; sh:minCount 1 ; sh:class task:Rule ] ;
+ sh:property [ sh:path task:value ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ] ;
+ sh:property [ sh:path task:unit ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path core:status ; sh:minCount 1 ; sh:in ("known" "inferred") ] ;
+ sh:property [ sh:path task:forOption ; sh:maxCount 1 ; sh:class task:Option ] ;
+ sh:property [ sh:path task:basedOnObservation ; sh:class task:Observation ] .
+task:EstimateShape a sh:NodeShape ; sh:targetClass task:Estimate ;
+ sh:property [ sh:path core:status ; sh:hasValue "inferred" ] ;
+ sh:property [ sh:path task:lowerBound ; sh:maxCount 1 ; sh:node task:NumberShape ] ;
+ sh:property [ sh:path task:upperBound ; sh:maxCount 1 ; sh:node task:NumberShape ] ;
+ sh:property [ sh:path task:samples ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] .
+task:ChoiceShape a sh:NodeShape ; sh:targetClass task:ChoiceObservation ;
+ sh:property [ sh:path task:forTrial ; sh:minCount 1 ; sh:maxCount 1 ; sh:class core:Trial ] ;
+ sh:property [ sh:path task:timedOut ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
+ sh:property [ sh:path task:responseTimeMs ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minInclusive 0 ] ;
+ sh:or (
+  [ sh:property [ sh:path task:timedOut ; sh:hasValue true ] ; sh:property [ sh:path task:chosenOption ; sh:maxCount 0 ] ]
+  [ sh:property [ sh:path task:timedOut ; sh:hasValue false ] ; sh:property [ sh:path task:chosenOption ; sh:minCount 1 ; sh:maxCount 1 ; sh:class task:Option ] ]
+ ) .
+task:OutcomeShape a sh:NodeShape ; sh:targetClass task:OutcomeObservation ;
+ sh:property [ sh:path task:forTrial ; sh:minCount 1 ; sh:maxCount 1 ; sh:class core:Trial ] ;
+ sh:property [ sh:path task:outcomeOf ; sh:minCount 1 ; sh:maxCount 1 ; sh:class task:ChoiceObservation ] ;
+ sh:property [ sh:path task:value ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ] ;
+ sh:property [ sh:path task:unit ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path task:timedOut ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:boolean ] .

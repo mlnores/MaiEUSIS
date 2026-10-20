@@ -1,5 +1,5 @@
 {
-  "version": "policy-0.1",
+  "version": "policy-0.2",
   "window_trials": 12,
   "min_evidence": 6,
   "threshold": 0.38,
@@ -9,7 +9,7 @@
     "infrequent": 7
   },
   "preparation_ms": 4000,
-  "generation_timeout_seconds": 0.8,
+  "generation_timeout_seconds": 3.0,
   "correction_expiry_trials": 8,
   "interruption_cost": 0.12,
   "fixed_prompt_interval": 4,

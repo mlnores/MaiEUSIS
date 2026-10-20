@@ -1,0 +1,9 @@
+PREFIX s: <https://example.org/socratic/>
+SELECT ?argument ?reason ?objection
+WHERE {
+  ?argument a s:Argument ;
+            s:conclusion "final_multiplier" ;
+            s:status "supported" ;
+            s:reason ?reason .
+  ?opposition s:opposes ?argument ; s:reason ?objection .
+}

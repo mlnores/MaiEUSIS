@@ -1,0 +1,42 @@
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tbs:BlockShape a sh:NodeShape ; sh:targetClass tbs:Block ;
+ sh:property [ sh:path tbs:blockIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ] ;
+ sh:property [ sh:path tbs:inSession ; sh:minCount 1 ; sh:maxCount 1 ; sh:class core:Session ] ;
+ sh:property [ sh:path task:hasGoal ; sh:minCount 1 ; sh:maxCount 1 ; sh:class tbs:TargetGoal ] .
+tbs:GoalShape a sh:NodeShape ; sh:targetClass tbs:TargetGoal ;
+ sh:property [ sh:path tbs:target ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minExclusive 0 ] .
+tbs:StateShape a sh:NodeShape ; sh:targetClass tbs:TargetState ;
+ sh:property [ sh:path tbs:inBlock ; sh:minCount 1 ; sh:maxCount 1 ; sh:class tbs:Block ] ;
+ sh:property [ sh:path task:hasGoal ; sh:minCount 1 ; sh:maxCount 1 ; sh:class tbs:TargetGoal ] ;
+ sh:property [ sh:path task:hasOption ; sh:minCount 2 ; sh:maxCount 2 ; sh:class tbs:GambleOption ] ;
+ sh:property [ sh:path tbs:points ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minInclusive 0 ] ;
+ sh:property [ sh:path tbs:targetGap ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ] ;
+ sh:property [ sh:path tbs:remainingChoices ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ; sh:maxInclusive 8 ] ;
+ sh:property [ sh:path tbs:multiplier ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minInclusive 1 ] .
+tbs:OptionShape a sh:NodeShape ; sh:targetClass tbs:GambleOption ;
+ sh:property [ sh:path tbs:displayedGain ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minExclusive 0 ] ;
+ sh:property [ sh:path tbs:displayedWinProbability ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:property [ sh:path task:displayedIn ; sh:minCount 1 ; sh:maxCount 1 ; sh:class core:Trial ] .
+tbs:MultiplierShape a sh:NodeShape ; sh:targetClass tbs:FinalWinMultiplierRule ;
+ sh:property [ sh:path tbs:multiplier ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minInclusive 1 ] ;
+ sh:property [ sh:path tbs:appliesOnFinalWin ; sh:hasValue true ] ;
+ sh:property [ sh:path tbs:requiredRemainingChoices ; sh:hasValue 1 ] ;
+ sh:property [ sh:path tbs:requiresPositiveGain ; sh:hasValue true ] .
+tbs:AttainmentShape a sh:NodeShape ; sh:targetClass tbs:AttainmentCalculation ;
+ sh:property [ sh:path task:value ; sh:minCount 1 ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:property [ sh:path task:unit ; sh:hasValue "probability" ] .
+tbs:FinalChoiceShape a sh:NodeShape ; sh:targetClass tbs:AttainmentCalculation ; sh:targetClass tbs:FinalWinScoreCalculation ;
+ sh:property [ sh:path task:inputState ; sh:node [
+   sh:property [ sh:path tbs:remainingChoices ; sh:hasValue 1 ] ;
+   sh:property [ sh:path task:phase ; sh:hasValue "evaluation" ]
+ ] ] .
+tbs:FinalTotalShape a sh:NodeShape ; sh:targetClass tbs:FinalTotalCalculation ;
+ sh:property [ sh:path task:inputState ; sh:node [ sh:property [ sh:path tbs:remainingChoices ; sh:hasValue 1 ] ] ] ;
+ sh:property [ sh:path task:basedOnObservation ; sh:minCount 1 ; sh:node [
+   sh:class task:OutcomeObservation ; sh:property [ sh:path task:value ; sh:minExclusive 0 ]
+ ] ] .

@@ -1,0 +1,12 @@
+PREFIX core: <https://example.org/socratic/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX mab: <https://example.org/socratic/mab/>
+SELECT ?trial ?arm ?value ?unit ?samples ?lower ?upper ?rule WHERE {
+  ?estimate a mab:RewardBelief ; task:inputState ?state ; task:forOption ?option ;
+    task:value ?value ; task:unit ?unit ; task:samples ?samples ;
+    task:lowerBound ?lower ; task:upperBound ?upper ; task:usesRule ?rule ; core:status "inferred" .
+  ?option task:label ?arm .
+  ?state task:forTrial ?trial ; task:phase "evaluation" .
+  ?trial core:trialIndex 8 .
+}
+ORDER BY ?arm

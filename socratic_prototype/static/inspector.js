@@ -33,8 +33,33 @@ function render(){
   paragraph(root,exposure?`Delivered: ${exposure.input.delivered?'yes':'no'} · generation latency ${exposure.input.generation_latency_ms.toFixed(1)} ms · reading exposure ${exposure.input.reading_exposure_ms.toFixed(1)} ms · early attempts ${exposure.input.early_attempts}`:'Delivery acknowledgement not yet recorded.','small muted');
   const responses=current.events.filter(x=>x.input.kind==='response'&&x.input.decision_id===d.id);
   for(const response of responses)paragraph(root,`Participant feedback (${response.input.feedback}): ${response.input.text||'(no text)'} · ${response.attribution}`);
+  for(const response of responses){
+   if(!response.interpretation)continue;
+   details(root,'Proposed response interpretation · '+response.interpretation.status,response.interpretation);
+   const reviewed=current.events.find(x=>x.input.kind==='interpretation-review'&&x.input.response_event_id===response.id);
+   if(reviewed)paragraph(root,`Researcher review: ${reviewed.input.accept?'accepted':'rejected'} · ${reviewed.input.reviewer}. Accepted reports affect future state only, within their original expiry and task scope.`,'small');
+   else if(response.interpretation.status==='pending-review'){
+    paragraph(root,'Review each literal quote and its interpretation before accepting the proposal. Acceptance records attributed self-report; it does not establish a psychological fact.','small');
+    const controls=node('div');
+    const reviewer=node('input');reviewer.placeholder='Researcher pseudonym';reviewer.value='local_researcher';reviewer.setAttribute('aria-label','Researcher pseudonym');controls.append(reviewer);
+    for(const [accept,label] of [[true,'Accept proposed interpretation'],[false,'Reject proposed interpretation']]){
+     const button=node('button',label);button.onclick=async()=>{
+      button.disabled=true;
+      try{
+       const r=await fetch('/api/sessions/'+current.id+'/events',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({kind:'interpretation-review',response_event_id:response.id,accept,reviewer:reviewer.value.trim()})});
+       const result=await r.json();if(!r.ok)throw Error(result.error||'Review failed');
+       const position=selected;current=await read('/api/sessions/'+current.id);selected=position;filter();
+      }catch(error){button.disabled=false;report(error);}
+     };controls.append(button);
+    }
+    root.append(controls);
+   }
+  }
   if(d.candidates.length)table(root,['Candidate','Action','Score','Interpretation'],d.candidates.map(c=>[c.name,c.action,c.score,c.argument_evaluation]));
   details(root,'Full decision and validated language output',d);
+  if(d.evidence_package)details(root,'Condition-filtered language evidence package',d.evidence_package);
+  if(d.language?.mode==='ollama-generated')paragraph(root,'Generated wording passed structural/reference checks. Semantic grounding and usefulness have not been established by those checks.','small muted');
  }else paragraph(root,s.policy_status,'muted');
  root.append(node('h3','Claims and epistemic annotations'));
  for(const c of s.claims){
@@ -55,6 +80,8 @@ function render(){
  details(root,'Record validation',s.validation);details(root,'SHACL validation report',s.shacl);
  details(root,'Exact permitted input event',e.input);details(root,'Fixed policy parameters',current.policy);details(root,'Provisional Bayesian network CPTs',current.network);
  details(root,'Calibration sources',current.calibration_sources);details(root,'Descriptive session summary',current.summary);
+ if(current.language_configuration)details(root,'Frozen language configuration',current.language_configuration);
+ if(current.task_module)details(root,'Task module, namespace and ontology versions',current.task_module);
 }
 function download(name,data,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=node('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 el('refresh').onclick=()=>refresh().catch(report);el('sessionSelect').onchange=()=>load().catch(report);el('eventFilter').onchange=filter;

@@ -1,0 +1,10 @@
+PREFIX s: <https://example.org/socratic/>
+SELECT ?hypothesis ?posterior ?previous
+WHERE {
+  ?hypothesis a s:Hypothesis ;
+              s:status "contested" ;
+              s:confidence ?posterior ;
+              s:revises ?previous .
+  FILTER(STRENDS(STR(?hypothesis), "_underexploration"))
+}
+ORDER BY ?hypothesis

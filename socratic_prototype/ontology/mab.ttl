@@ -1,0 +1,29 @@
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+mab:ontology a owl:Ontology ; owl:versionInfo "mab-ontology-0.1" ; owl:imports task:ontology .
+mab:BanditArm a owl:Class ; rdfs:subClassOf task:Option .
+mab:BanditState a owl:Class ; rdfs:subClassOf task:TaskState .
+mab:RewardBelief a owl:Class ; rdfs:subClassOf task:Estimate .
+mab:ChangeEstimate a owl:Class ; rdfs:subClassOf task:Estimate .
+mab:LearnedValue a owl:Class ; rdfs:subClassOf task:Estimate .
+mab:LearningModel a owl:Class .
+mab:learningModel a owl:ObjectProperty ; rdfs:label "learningModel" ; rdfs:domain mab:LearnedValue ; rdfs:range mab:LearningModel .
+mab:rewardMagnitude a owl:DatatypeProperty ; rdfs:label "rewardMagnitude" ; rdfs:range rdfs:Literal .
+mab:score a owl:DatatypeProperty ; rdfs:label "score" ; rdfs:range rdfs:Literal .
+mab:estimatedLossProbability a owl:DatatypeProperty ; rdfs:label "estimatedLossProbability" ; rdfs:range rdfs:Literal .
+mab:estimatedZeroProbability a owl:DatatypeProperty ; rdfs:label "estimatedZeroProbability" ; rdfs:range rdfs:Literal .
+mab:estimatedGainProbability a owl:DatatypeProperty ; rdfs:label "estimatedGainProbability" ; rdfs:range rdfs:Literal .
+mab:alphaPlus a owl:DatatypeProperty ; rdfs:label "alphaPlus" ; rdfs:range rdfs:Literal .
+mab:alphaMinus a owl:DatatypeProperty ; rdfs:label "alphaMinus" ; rdfs:range rdfs:Literal .
+mab:softmaxSensitivity a owl:DatatypeProperty ; rdfs:label "softmaxSensitivity" ; rdfs:range rdfs:Literal .
+mab:rewardScale a owl:DatatypeProperty ; rdfs:label "rewardScale" ; rdfs:range rdfs:Literal .
+mab:calibrated a owl:DatatypeProperty ; rdfs:label "calibrated" ; rdfs:range xsd:boolean .
+mab:evidenceLevel a owl:DatatypeProperty ; rdfs:label "evidenceLevel" ; rdfs:range xsd:string .
+mab:priorCount a owl:DatatypeProperty ; rdfs:label "priorCount" ; rdfs:range xsd:integer .
+mab:windowSamples a owl:DatatypeProperty ; rdfs:label "windowSamples" ; rdfs:range xsd:integer .

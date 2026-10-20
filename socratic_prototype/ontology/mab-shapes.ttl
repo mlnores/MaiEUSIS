@@ -1,0 +1,28 @@
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+mab:ArmShape a sh:NodeShape ; sh:targetClass mab:BanditArm ;
+ sh:property [ sh:path task:label ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path mab:rewardMagnitude ; sh:minCount 1 ; sh:maxCount 1 ; sh:in (100 200) ] .
+mab:StateShape a sh:NodeShape ; sh:targetClass mab:BanditState ;
+ sh:property [ sh:path task:hasOption ; sh:minCount 6 ; sh:maxCount 6 ; sh:class mab:BanditArm ] ;
+ sh:property [ sh:path mab:score ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ] .
+mab:RewardShape a sh:NodeShape ; sh:targetClass mab:RewardBelief ;
+ sh:property [ sh:path task:forOption ; sh:minCount 1 ; sh:class mab:BanditArm ] ;
+ sh:property [ sh:path task:samples ; sh:minCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+ sh:property [ sh:path task:unit ; sh:hasValue "reward-points" ] ;
+ sh:property [ sh:path mab:estimatedLossProbability ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:property [ sh:path mab:estimatedZeroProbability ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:property [ sh:path mab:estimatedGainProbability ; sh:minCount 1 ; sh:maxCount 1 ; sh:node task:NumberShape ; sh:minInclusive 0 ; sh:maxInclusive 1 ] .
+mab:ChangeShape a sh:NodeShape ; sh:targetClass mab:ChangeEstimate ;
+ sh:property [ sh:path task:value ; sh:node task:NumberShape ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:property [ sh:path task:unit ; sh:hasValue "probability" ] ;
+ sh:property [ sh:path mab:evidenceLevel ; sh:minCount 1 ; sh:in ("insufficient" "low" "medium" "high") ] .
+mab:LearningShape a sh:NodeShape ; sh:targetClass mab:LearningModel ;
+ sh:property [ sh:path mab:alphaPlus ; sh:minCount 1 ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:property [ sh:path mab:alphaMinus ; sh:minCount 1 ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:property [ sh:path mab:softmaxSensitivity ; sh:minCount 1 ; sh:maxCount 1 ; sh:minInclusive 0 ] ;
+ sh:property [ sh:path mab:calibrated ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:boolean ] .

@@ -1,19 +1,41 @@
-@prefix s: <https://example.org/socratic/> .
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-s:ontology a owl:Ontology ; owl:versionInfo "ontology-0.1" .
-s:Participant a owl:Class .
-s:Session a owl:Class .
-s:Trial a owl:Class .
-s:Claim a owl:Class .
-s:Hypothesis a owl:Class ; rdfs:subClassOf s:Claim .
-s:Argument a owl:Class .
-s:Intervention a owl:Class .
-s:supportedBy a owl:ObjectProperty .
-s:observedIn a owl:ObjectProperty .
-s:dependsOn a owl:ObjectProperty .
-s:contradicts a owl:ObjectProperty .
-s:revises a owl:ObjectProperty .
-s:opposes a owl:ObjectProperty .
-s:participant a owl:ObjectProperty .
-s:session a owl:ObjectProperty .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+core:ontology a owl:Ontology ; owl:versionInfo "ontology-0.2" .
+core:Participant a owl:Class .
+core:Session a owl:Class .
+core:Trial a owl:Class .
+core:Claim a owl:Class .
+core:Argument a owl:Class .
+core:Intervention a owl:Class .
+core:Hypothesis a owl:Class ; rdfs:subClassOf core:Claim .
+core:supportedBy a owl:ObjectProperty ; rdfs:label "supportedBy" .
+core:observedIn a owl:ObjectProperty ; rdfs:label "observedIn" .
+core:dependsOn a owl:ObjectProperty ; rdfs:label "dependsOn" .
+core:contradicts a owl:ObjectProperty ; rdfs:label "contradicts" .
+core:revises a owl:ObjectProperty ; rdfs:label "revises" .
+core:opposes a owl:ObjectProperty ; rdfs:label "opposes" .
+core:participant a owl:ObjectProperty ; rdfs:label "participant" .
+core:session a owl:ObjectProperty ; rdfs:label "session" .
+core:task a owl:DatatypeProperty ; rdfs:label "task" ; rdfs:range xsd:string .
+core:content a owl:DatatypeProperty ; rdfs:label "content" ; rdfs:range xsd:string .
+core:scope a owl:DatatypeProperty ; rdfs:label "scope" ; rdfs:range xsd:string .
+core:timestamp a owl:DatatypeProperty ; rdfs:label "timestamp" ; rdfs:range xsd:string .
+core:provenance a owl:DatatypeProperty ; rdfs:label "provenance" ; rdfs:range xsd:string .
+core:model_version a owl:DatatypeProperty ; rdfs:label "model_version" ; rdfs:range xsd:string .
+core:status a owl:DatatypeProperty ; rdfs:label "status" ; rdfs:range xsd:string .
+core:confidenceInterpretation a owl:DatatypeProperty ; rdfs:label "confidenceInterpretation" ; rdfs:range xsd:string .
+core:alternative a owl:DatatypeProperty ; rdfs:label "alternative" ; rdfs:range xsd:string .
+core:revisionCondition a owl:DatatypeProperty ; rdfs:label "revisionCondition" ; rdfs:range xsd:string .
+core:conclusion a owl:DatatypeProperty ; rdfs:label "conclusion" ; rdfs:range xsd:string .
+core:reason a owl:DatatypeProperty ; rdfs:label "reason" ; rdfs:range xsd:string .
+core:action a owl:DatatypeProperty ; rdfs:label "action" ; rdfs:range xsd:string .
+core:rationale a owl:DatatypeProperty ; rdfs:label "rationale" ; rdfs:range xsd:string .
+core:message a owl:DatatypeProperty ; rdfs:label "message" ; rdfs:range xsd:string .
+core:confidence a owl:DatatypeProperty ; rdfs:label "confidence" ; rdfs:range xsd:double .
+core:trialIndex a owl:DatatypeProperty ; rdfs:label "trialIndex" ; rdfs:domain core:Trial ; rdfs:range xsd:integer .

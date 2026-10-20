@@ -3,10 +3,12 @@ import copy
 import json
 from pathlib import Path
 from collections import Counter
-from .models import VERSION, ARMS, KEYS, rl, mab_environment, tbs_context, tbs_pressure_model
+from .tasks import get_task
+from .tasks.base import MODEL_VERSION as VERSION
 from .bayes import EpistemicNetwork
 from .validation import require, validate_event, validate_snapshot, shacl_report
 from .language import realise
+from .grounding import build_evidence_package, realise_question, interpret_response, reviewed_responses
 
 POLICY=json.loads((Path(__file__).parent/'policy.json').read_text())
 NETWORK=EpistemicNetwork()
@@ -20,59 +22,25 @@ def history(session):
         if e.get('kind')=='evaluation':evaluations[e['trial_id']]=e
         if e.get('kind')=='feedback':
             ev=evaluations[e['trial_id']]
-            result.append({**e, 'points_before':ev.get('points'), 'target':ev.get('target'),
-                           'remaining':ev.get('remaining'), 'block':ev.get('block')})
+            result.append({**e, **get_task(session['task']).history_context(ev)})
     return result
 
 
 def hypotheses(session, evaluation, environment, h):
-    task=session['task']; p=session['policy']; window=h[-p['window_trials']:]
-    if task=='TBS':window=[x for x in window if x['block']==evaluation['block']]
+    task=get_task(session['task']); p=session['policy']
+    window=[x for x in h[-p['window_trials']:] if task.same_scope(x,evaluation)]
     valid=[x for x in window if not x['timed_out']]
     evidence=[x['trial_id'] for x in valid]
-    definitions=[]
-    if task=='MAB':
-        choices=[x['choice'] for x in valid]
-        last=choices[-1] if choices else None
-        sampled=set(x['choice'] for x in h if not x['timed_out'])
-        stay=sum(a==b for a,b in zip(choices,choices[1:]))/max(1,len(choices)-1)
-        profile=session.get('calibration_profile') or {}
-        q, updates=rl(h,profile.get('alpha_plus',.3),profile.get('alpha_minus',.3),profile.get('beta',2))
-        model_mismatch=bool(last and q[last]<max(q.values())-.1)
-        choice_compatibility=updates[-1]['choice_probability'] if updates else None
-        arm=next((a for a in environment['arms'] if a['arm']==last),None)
-        rewards=[x['outcome']/200 for x in valid if x['choice']==last]
-        decline=len(rewards)>=6 and sum(rewards[:3])/3-sum(rewards[-3:])/3>=p['decline_threshold']
-        change=bool(arm and arm['change']['posterior']>=.3)
-        switches_after_loss=sum(valid[i-1]['outcome']<0 and valid[i]['choice']!=valid[i-1]['choice'] for i in range(1,len(valid)))
-        definitions=[
-            ('underexploration',len(sampled)<=2, stay>=.75, len(h)>=p['min_evidence'],
-             'Limited sampling may leave useful alternatives unexplored.', ['Persistence may be justified by rewards or an intentional strategy.','The cost of exploration depends on the remaining horizon.'],
-             ['Sampling additional alternatives weakens this interpretation.','An attributed participant explanation can contest this account.']),
-            ('premature_exploitation',decline and change, stay>=.75 and model_mismatch, bool(decline),
-             'Persistence may merit reconsideration after declining feedback.', ['Noisy rewards can explain the apparent decline.','Estimated values may not match the participant’s own beliefs.'],
-             ['A recovered reward pattern weakens change evidence.','Switching or an explicit rationale revises the persistence interpretation.']),
-            ('feedback_overweighting',switches_after_loss>=2, stay<.5, len(valid)>=6,
-             'Recent switching after losses may over-weight individual outcomes.', ['Switching may be planned exploration.','Several outcomes may contain valid evidence of change.'],
-             ['Sustained sampling or an explanation of planned exploration weakens this interpretation.'])]
-        stats={'sampled_arms':sorted(sampled),'stay_rate':round(stay,4),'switches_after_loss':switches_after_loss,
-               'evidence_window':evidence,'rl_choice_compatibility':choice_compatibility,'rl_value_mismatch':model_mismatch}
-    else:
-        choices=[x['choice'] for x in valid]; repeated=len(choices)>=3 and len(set(choices[-3:]))==1
-        sensitivity=tbs_pressure_model(h)
-        calibrated=(session.get('calibration_profile') or {}).get('policy',{})
-        weak_sensitivity=calibrated.get('samples',0)>=6 and calibrated.get('p_positive_sensitivity',.5)<.4
-        definitions=[('constraint_neglect',environment['remaining']<=2, repeated and weak_sensitivity, environment['remaining']<=2,
-            'A repeated choice pattern may warrant checking the shrinking horizon.',
-            ['The same option can still be appropriate after the context changes.','The final-win multiplier can preserve feasibility.','A policy estimate cannot establish that the participant ignored a constraint.'],
-            ['A context-sensitive adjustment or an explicit constraint-aware explanation revises this account.'])]
-        stats={'recent_choices':choices,'pressure_policy':sensitivity,'calibrated_weak_pressure_sensitivity':weak_sensitivity,'evidence_window':evidence}
+    definitions,stats=task.hypothesis_inputs(session,evaluation,environment,h)
     results=[]
     for name,adverse,pattern,relevant,text,alternatives,revisions in definitions:
         inference=NETWORK.query(adverse,pattern,relevant)
         contest=[e for e in session['events'] if e['input'].get('kind')=='response' and e['input'].get('hypothesis')==name and
                  e['input'].get('feedback')=='disagree' and evaluation['index']-e['input']['index']<=p['correction_expiry_trials'] and
-                 (task=='MAB' or e['input'].get('block')==evaluation['block'])]
+                 task.same_scope(e['input'],evaluation)]
+        if session.get('language_configuration'):
+            contest += [r['review'] for r in reviewed_responses(session,evaluation)
+                        if any(u['kind']=='contest_hypothesis' and u['hypothesis']==name for u in r['updates'])]
         results.append({'name':name,'content':text,'alternatives':alternatives,'revision_conditions':revisions,
                         'evidence':evidence,'inference':inference,'contested_by':[e['id'] for e in contest],
                         'eligible':len(valid)>=p['min_evidence'] and bool(adverse or pattern) and bool(relevant),
@@ -83,17 +51,10 @@ def hypotheses(session, evaluation, environment, h):
 def make_snapshot(session, event, event_id, timestamp, recorded_language=None):
     p=session['policy']; task=session['task']; h=history(session)
     ev=event if event['kind']=='evaluation' else next(e['input'] for e in reversed(session['events']) if e['input'].get('kind')=='evaluation')
-    env=mab_environment(h,p['change_prior']) if task=='MAB' else tbs_context(ev)
-    if event['kind']=='feedback' and task=='TBS':
-        after=event['points_after']*(ev['multiplier'] if ev['remaining']==1 and event['outcome']>0 else 1)
-        env['after_feedback']={'points':after,'target_gap':ev['target']-after,'remaining':ev['remaining']-1,
-                               'multiplier_applied':ev['remaining']==1 and event['outcome']>0}
+    module=get_task(task)
+    env=module.environment(h,ev,p,event)
     profile=session.get('calibration_profile') or {}
-    if task=='MAB':
-        q,obs=rl(h,profile.get('alpha_plus',.3),profile.get('alpha_minus',.3),profile.get('beta',2))
-        participant={'q':q,'q_units':'reward / 200; model estimates, not participant beliefs',
-                     'last_rl_update':obs[-1] if obs else None,'parameters':{k:profile.get(k,v) for k,v in [('alpha_plus',.3),('alpha_minus',.3),('beta',2)]}}
-    else:participant={'pressure_policy':tbs_pressure_model(h)}
+    participant=module.participant(h,profile)
     participant['calibration']=profile or {'status':'unknown','reason':'No calibrated task-specific model in this condition.'}
     participant['unknown']=['Intent','Subjective confidence','Overconfidence (confidence not elicited)','Hesitation (response time alone is insufficient)']
     hypothesis_records,stats=hypotheses(session,ev,env,h)
@@ -103,19 +64,18 @@ def make_snapshot(session, event, event_id, timestamp, recorded_language=None):
     claims=[]
     def claim(name,content,statuses,evidence,kind='Claim',**extra):
         c={'id':event_id+'_'+name,'type':kind,'content':content,'statuses':statuses,'evidence':evidence,
-           'scope':task+':'+session['id']+((':block-'+str(ev['block'])) if task=='TBS' else ''),
+           'scope':task+':'+session['id']+module.scope_suffix(ev),
            'timestamp':timestamp,'provenance':'participant-visible task events' if 'known' in statuses else 'bounded-models-and-provisional-assumptions',
            'model_version':VERSION,**extra}
         claims.append(c);return c
     context=claim('context','The participant-visible task state and current options are recorded.', ['known'],[ev['trial_id']])
     unknown=claim('unknown','; '.join(env['unknown']+participant['unknown']), ['unknown'],[ev['trial_id']])
-    estimated=claim('environment','Reward-value and change estimates from sampled outcomes.' if task=='MAB' else
-                    f'Target gap {env["target_gap"]}; {env["remaining"]} choices remain. Immediate EV does not determine final attainment.',
-                    ['inferred','source-dependent'] if task=='MAB' else ['known'],[x['trial_id'] for x in h[-p['window_trials']:]] or [ev['trial_id']], depends_on=[context['id']])
+    description,statuses=module.environment_claim(env)
+    estimated=claim('environment',description,statuses,[x['trial_id'] for x in h[-p['window_trials']:]] or [ev['trial_id']], depends_on=[context['id']])
     for response_event in session['events']:
         response=response_event['input']
         if response.get('kind')!='response' or ev['index']-response['index']>p['correction_expiry_trials']:continue
-        if task=='TBS' and response.get('block')!=ev['block']:continue
+        if not module.same_scope(response,ev):continue
         response_trial=next(e['input']['trial_id'] for e in session['events'] if e.get('snapshot',{}).get('decision',{}).get('id')==response['decision_id'])
         response_claim=claim('response_'+str(response['index'])+'_'+str(session['events'].index(response_event)),
               'Participant feedback ('+response['feedback']+'): '+(response['text'] or '(no text supplied)'),
@@ -133,6 +93,18 @@ def make_snapshot(session, event, event_id, timestamp, recorded_language=None):
                 alternatives=hyp['alternatives'],revision_conditions=hyp['revision_conditions'],depends_on=[estimated['id']],
                 revises=[prev['id']] if prev else [])
         hyp['claim_id']=c['id'];hypothesis_claims[hyp['name']]=c
+    if session.get('language_configuration'):
+        for reviewed in reviewed_responses(session,ev):
+            response=reviewed['response'];review=reviewed['review']
+            response_trial=next(e['input']['trial_id'] for e in session['events']
+                                if e.get('snapshot',{}).get('decision',{}).get('id')==response['input']['decision_id'])
+            for i,update in enumerate(reviewed['updates']):
+                target=hypothesis_claims.get(update['hypothesis'])
+                c=claim('review_'+str(session['events'].index(review))+'_'+str(i),
+                    'Researcher-reviewed participant '+update['kind']+' (verbatim): '+update['quote'],
+                    ['source-dependent','requires-verification'],[response_trial],
+                    contradicts=[target['id']] if update['kind']=='contest_hypothesis' and target else [])
+                c['provenance']='participant-self-report:'+response['id']+'; researcher-review:'+review['id']
     snapshot={'environment':env,'participant':participant,'claims':claims,'previous_claim_ids':sorted({r for c in claims for r in c.get('revises',[]) if r in prior_claims}),
               'arguments':[],'model_version':VERSION,'policy_version':p['version'],'event_kind':event['kind']}
     if event['kind']=='feedback':
@@ -157,54 +129,12 @@ def make_snapshot(session, event, event_id, timestamp, recorded_language=None):
                   ['Consider your goal, the available evidence, and the costs of each alternative.'],[context['id']],
                   'A scheduled generic reminder is available.','Generic support may add cognitive burden without relevance.')
     if condition in {'C','D','E','F'}:
-        if task=='MAB':
-            sampled=stats['sampled_arms']; shift=max((a['change']['posterior'] for a in env['arms'] if a['samples']>=6),default=0)
-            if shift>=.3:
-                candidate('possible_change','ask' if socratic else 'explain',
-                          ['Recent feedback may differ from earlier feedback. What evidence would justify checking another option?',
-                           'Noise and a change are both plausible. What further feedback would help you distinguish them?'] if socratic else
-                          ['Recent feedback may differ from earlier feedback. Compare alternatives while accounting for reward noise.'],
-                          [estimated['id']], 'Observed outcome history raises uncertain evidence of change.', 'Ordinary reward noise remains a competing explanation.',.72)
-            if len(h)>=p['min_evidence'] and len(sampled)<6:
-                candidate('unsampled_alternatives','request-evidence' if socratic else 'explain',
-                          ['Some alternatives remain lightly sampled. What remains unknown, and how much exploration is worthwhile?'] if socratic else
-                          ['Some alternatives remain lightly sampled. Consider gathering more evidence about them.'],
-                          [estimated['id']], 'Observed choices leave some reward estimates uncertain.', 'Further exploration has a cost and persistence may be justified.',.61)
-            if socratic and len(h)>=p['min_evidence'] and not candidates:
-                candidate('support_revision','support',
-                          ['Your approach may be reasonable given uncertain feedback. What evidence would make you revise it?'],
-                          [estimated['id']], 'No strong case for challenging the current pattern.', 'Support can still interrupt useful deliberation.',.56)
-        else:
-            if env['remaining']==1:
-                candidate('final_multiplier','highlight-dependency' if socratic else 'explain',
-                          ['The multiplier applies only if this final choice wins. How does that affect your chance of meeting the target?'] if socratic else
-                          ['On the final trial, compare target attainment after a win and after no gain. The multiplier applies only after a win.'],
-                          [estimated['id']], 'The published final-win rule changes target attainment.', 'Neither immediate EV nor the nominal gap alone determines attainment.',.88)
-            elif env['remaining']<=2:
-                candidate('shrinking_horizon','ask' if socratic else 'explain',
-                          ['Can your current approach still close the target gap with the choices remaining?'] if socratic else
-                          ['Review the target gap against the remaining choices and the conditional final multiplier.'],
-                          [estimated['id']], 'The target gap must be assessed against a short horizon.', 'Future option pairs and outcomes are unknown; do not declare the target unreachable.',.78)
-            if h and h[-1].get('block')==ev['block'] and h[-1]['outcome']>0:
-                candidate('gap_after_gain','ask' if socratic else 'explain',
-                          ['The last gain reduced the target gap. Does the same level of risk still serve your goal?'] if socratic else
-                          ['Reconsider the level of risk after the last gain reduced the target gap.'],
-                          [estimated['id']], 'A recorded gain changed target progress.', 'A smaller gap alone does not imply that less risk is better.',.63)
-            if not candidates and ev['index']%p['fixed_prompt_interval']==0:
-                candidate('expected_value_limit','compare' if socratic else 'explain',
-                          ['How do the expected gains compare with the chance of reaching your target?'] if socratic else
-                          ['Immediate expected gain and final target attainment are different objectives. Consider both.'],
-                          [estimated['id']], 'Displayed probabilities and gains support an EV comparison.', 'No future outcome or optimal multi-trial policy is known.',.60)
+        module.contribute_candidates(session,ev,env,h,stats,estimated,socratic,candidates,candidate)
         if personalised:
             for hyp in hypothesis_records:
                 if not hyp['eligible'] or not hyp.get('claim_id'):continue
                 c=hypothesis_claims[hyp['name']]
-                wording={
-                    'underexploration':'You have sampled few alternatives recently. What evidence supports continuing with the same option?',
-                    'premature_exploitation':'Your recent feedback has declined while your choice has persisted. What would justify revisiting another option?',
-                    'feedback_overweighting':'You have switched after recent losses. What would distinguish a useful switch from reacting to reward noise?',
-                    'constraint_neglect':'Your recent choice pattern has stayed similar as the horizon shrinks. How are you accounting for the remaining chances?'}[hyp['name']]
-                if not socratic:wording=wording.split('. What')[0].split('. How')[0]+'. Consider reviewing this pattern against the available task evidence.'
+                wording=module.hypothesis_message(hyp['name'],socratic)
                 candidate(hyp['name'],'challenge' if socratic else 'advise',[wording],
                           [c['id'],estimated['id']],hyp['content'],' '.join(hyp['alternatives'])+(' Participant disputed this interpretation.' if hyp['contested_by'] else ''),
                           hyp['inference']['usefulness']+p['personalisation_bonus'],hyp)
@@ -224,21 +154,28 @@ def make_snapshot(session, event, event_id, timestamp, recorded_language=None):
     d={'id':event_id+'_decision','action':'silence' if silence else selected['action'],'rationale':rationale,
        'claim_ids':[context['id'],unknown['id']] if silence else selected['claim_ids'],'message':None,
        'candidates':candidates,'threshold':p['threshold'],'interruption_cost':p['interruption_cost'],
-       'cooldown':cooldown,'frequency_preference':pref,'eligible_point':'post-feedback preparation' if task=='MAB' else 'options-visible preparation',
+       'cooldown':cooldown,'frequency_preference':pref,'eligible_point':module.ELIGIBLE_POINT,
        'hypothesis':None if silence else selected['hypothesis'],'language':None}
     if not silence:
-        lang=realise(d['action'],d['claim_ids'],selected['messages'],p['generation_timeout_seconds'],recorded_language)
+        config=session.get('language_configuration')
+        if config:
+            package=build_evidence_package(session,ev,snapshot,selected,h)
+            d['evidence_package']=package
+        if config and config['mode']=='generated':
+            lang=realise_question(package,selected['messages'],p['generation_timeout_seconds'],recorded_language,config)
+        else:
+            lang=realise(d['action'],d['claim_ids'],selected['messages'],p['generation_timeout_seconds'],recorded_language,config)
         d['language']=lang;d['message']=lang['proposal']['message']
     snapshot['decision']=d
     snapshot['validation']=validate_snapshot(snapshot,{e['input']['trial_id'] for e in session['events'] if 'trial_id' in e['input']})
     return snapshot
 
 
-def ingest(session, event, timestamp, recorded_language=None):
+def ingest(session, event, timestamp, recorded_language=None, recorded_interpretation=None, replaying=False):
     """Validate and compute on a copy. No invalid partial updates are committed."""
     candidate=copy.deepcopy(session)
-    require(not candidate['finished'],'Session has finished')
     kind=event.get('kind')
+    require(not candidate['finished'] or kind=='interpretation-review','Session has finished')
     if kind in {'evaluation','feedback'}:
         validate_event(candidate['task'],event)
         h=history(candidate); evaluations=[e['input'] for e in candidate['events'] if e['input'].get('kind')=='evaluation']
@@ -247,30 +184,11 @@ def ingest(session, event, timestamp, recorded_language=None):
             require(len(evaluations)==len(h),'Prior trial has no feedback')
             require(event['index']==len(h)+1,'Out-of-order trial')
             require(not any(e['trial_id']==event['trial_id'] for e in evaluations),'Repeated trial ID')
-            if candidate['task']=='MAB':
-                require(all(o['key']==KEYS[o['id']] for o in event['options']),'Incorrect arm/key mapping')
-                require(event['score']==(h[-1]['score_after'] if h else 0),'Score inconsistent with prior feedback')
-            else:
-                expected_points=h[-1]['points_after'] if h and h[-1]['block']==event['block'] else 0
-                require(event['points']==expected_points,'Points inconsistent with prior feedback')
-                pairs=candidate['task_rules']['options']; pair=[[o['amount'],o['probability']] for o in event['options']]
-                require(pair in pairs,'Options outside the published TBS table')
-                ti=candidate['task_rules']['targets'].index(event['target']) if event['target'] in candidate['task_rules']['targets'] else -1
-                require(ti>=0 and event['multiplier']==candidate['task_rules']['multipliers'][ti],'Target/multiplier mismatch')
-                if evaluations and evaluations[-1].get('block')==event['block']:
-                    require(event['target']==evaluations[-1]['target'],'Target changed within block')
+            get_task(candidate['task']).validate_transition(candidate,event,h,evaluations)
         else:
             require(len(evaluations)==len(h)+1,'Feedback has no pending evaluation')
             ev=evaluations[-1];require(event['trial_id']==ev['trial_id'] and event['index']==ev['index'],'Feedback does not match pending trial')
-            if candidate['task']=='MAB':
-                outcome=-200 if event['timed_out'] else event['outcome']
-                option=next((o for o in ev['options'] if o['id']==event['choice']),None)
-                require((event['timed_out'] and event['outcome']==-200) or (option and event['outcome'] in option['outcomes']),'Impossible reward')
-                require(event['score_after']==ev['score']+outcome,'Score arithmetic mismatch')
-            else:
-                option=next((o for o in ev['options'] if o['id']==event['choice']),None)
-                require((event['timed_out'] and event['outcome']==0) or (option and event['outcome'] in [0,option['amount']]),'Impossible gain')
-                require(event['points_after']==ev['points']+event['outcome'],'Points arithmetic mismatch')
+            get_task(candidate['task']).validate_transition(candidate,event,h,evaluations)
     elif kind=='delivery':
         from .validation import fields
         fields(event,['kind','decision_id','index','delivered','generation_latency_ms','reading_exposure_ms','early_attempts'])
@@ -295,16 +213,28 @@ def ingest(session, event, timestamp, recorded_language=None):
         require(any(e['input'].get('kind')=='delivery' and e['input']['decision_id']==d['id'] and e['input']['delivered'] for e in candidate['events']),'Cannot respond to unexposed assistance')
         require(event.get('hypothesis')==d['hypothesis'],'Response hypothesis mismatch')
         require(event['index']==decision_event['input']['index'],'Response trial mismatch')
-        require(candidate['task']!='TBS' or event.get('block')==decision_event['input']['block'],'Response scope mismatch')
+        require(get_task(candidate['task']).same_scope(event,decision_event['input']),'Response scope mismatch')
         if event['feedback']=='fewer':candidate['preference']='infrequent'
+    elif kind=='interpretation-review':
+        from .validation import fields, identity
+        fields(event,['kind','response_event_id','accept','reviewer'])
+        require(type(event['accept']) is bool and identity(event['reviewer']),'Invalid researcher review')
+        response=next((e for e in candidate['events'] if e['id']==event['response_event_id'] and e['input'].get('kind')=='response'),None)
+        require(response is not None and response.get('interpretation',{}).get('status')=='pending-review','No pending response proposal')
+        require(not any(e['input'].get('kind')=='interpretation-review' and e['input']['response_event_id']==response['id']
+                        for e in candidate['events']),'Response proposal already reviewed')
     else:raise ValueError('Unsupported input event')
     event_id=candidate['id']+'_event_'+str(len(candidate['events'])+1)
     record={'id':event_id,'timestamp':timestamp,'input':copy.deepcopy(event)}
     if kind=='response':record['attribution']='participant self-report; not established fact'
+    config=candidate.get('language_configuration')
+    if kind=='response' and config and config['interpret_responses'] and candidate['condition'] in {'E','F'}:
+        if replaying:require(recorded_interpretation is not None,'Replay is missing a recorded response interpretation')
+        record['interpretation']=interpret_response(event,d,config,candidate['policy']['generation_timeout_seconds'],recorded_interpretation)
     candidate['events'].append(record)
     if kind in {'evaluation','feedback'}:
         record['snapshot']=make_snapshot(candidate,event,event_id,timestamp,recorded_language)
-        report=shacl_report(candidate)
+        report=shacl_report(candidate,incremental='task_module' in candidate)
         record['snapshot']['shacl']=report
         require(report['conforms'] is not False,'SHACL rejected the candidate graph: '+report['report'])
     return candidate,record

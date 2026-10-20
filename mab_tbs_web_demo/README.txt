@@ -1,8 +1,8 @@
 MAB + TBS BROWSER DEMOS
 =======================
 
-Open index.html in Chrome, Edge, Safari or Firefox. Keep slot.png beside it.
-No web server is needed to run locally. To share a link, upload both files
+Open index.html in Chrome, Edge, Safari or Firefox.
+No web server is needed to run locally. To share a link, upload index.html
 inside this folder to GitHub Pages, Netlify Drop or another static web host.
 
 SHORT PROTOCOL
@@ -50,12 +50,34 @@ when the eighth trial wins, matching the original code.
 Logs exist only in browser memory until downloaded. Browser demo is not validated
 for research timing, hardware triggers, neurophysiology, or data acquisition.
 
-MAB VISUAL / KEY MAPPING (restored from original PsychoPy task)
-----------------------------------------------------------------
-Left row 1: Press 1, blue2, probabilities [.5,.3,.2], outcomes [+100,0,-100]
-Left row 2: Press 2, red1, probabilities [.5,.3,.2], outcomes [+200,0,-200]
-Left row 3: Press 3, blue3, probabilities [.34,.33,.33], outcomes [+100,0,-100]
-Right row 1: Press 7, red2 (original key 4), probabilities [.34,.33,.33], outcomes [+200,0,-200]
-Right row 2: Press 8, blue1 (original key 5), probabilities [.7,.2,.1], outcomes [+100,0,-100]
-Right row 3: Press 9, red3 (original key 6), probabilities [.7,.2,.1], outcomes [+200,0,-200]
-Shade classes apply distinct visible blue/red outlines. Volatility rules unchanged.
+MAB VISUAL / KEY MAPPING
+------------------------
+Options are grouped by their reward magnitudes, with keys ordered top to bottom:
+Left row 1: Press 1, blue2, outcomes [+100,0,-100]
+Left row 2: Press 2, blue3, outcomes [+100,0,-100]
+Left row 3: Press 3, blue1, outcomes [+100,0,-100]
+Right row 1: Press 7, red1, outcomes [+200,0,-200]
+Right row 2: Press 8, red2, outcomes [+200,0,-200]
+Right row 3: Press 9, red3, outcomes [+200,0,-200]
+Neutral panels contain green (+), yellow (0) and red (-) open-topped containers.
+One fixed-size ball represents one completed, recorded outcome of that option.
+Timeout penalties do not add balls. Histories persist across stage changes and
+reset with a new run. Full histories remain available by scrolling each container;
+labels stay outside the scrolling area. Narrow screens stack the two groups.
+Click anywhere in an option's panel, including its history, or press its number key.
+
+TBS VISUALS
+-----------
+Equal-width rectangles share a bottom baseline. Total height is proportional to
+possible points at a shared scale: the largest configured reward spans 160 pixels.
+Each rectangle fills from the bottom by its actual win probability (SAFE green,
+RISKY red), including empty/full fills for 0%/100%. Labels remain outside the
+rectangles. Reward/probability tables, random sampling and scoring are unchanged.
+
+VERIFICATION
+------------
+From the project root: node tests/test_demo_visuals.cjs
+This runs the actual inline script with a minimal DOM and accelerated timers.
+It checks grouping, shortcuts, outcome histories, full 200-ball packing, reset,
+rectangle ratios/fills and complete short/full MAB/TBS runs with clicks, keyboard
+choices and timeouts. It does not verify actual browser rendering or physical timing.

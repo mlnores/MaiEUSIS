@@ -1,0 +1,46 @@
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+task:ontology a owl:Ontology ; owl:versionInfo "task-ontology-0.1" ; owl:imports core:ontology .
+task:TaskDefinition a owl:Class .
+task:TaskState a owl:Class .
+task:Option a owl:Class .
+task:Goal a owl:Class .
+task:Observation a owl:Class .
+task:Rule a owl:Class .
+task:Calculation a owl:Class .
+task:ChoiceObservation a owl:Class ; rdfs:subClassOf task:Observation .
+task:OutcomeObservation a owl:Class ; rdfs:subClassOf task:Observation .
+task:Estimate a owl:Class ; rdfs:subClassOf task:Calculation .
+task:hasDefinition a owl:ObjectProperty ; rdfs:label "hasDefinition" ; rdfs:domain core:Session ; rdfs:range task:TaskDefinition .
+task:forTrial a owl:ObjectProperty ; rdfs:label "forTrial" ; rdfs:range core:Trial .
+task:previousState a owl:ObjectProperty ; rdfs:label "previousState" ; rdfs:domain task:TaskState ; rdfs:range task:TaskState .
+task:hasOption a owl:ObjectProperty ; rdfs:label "hasOption" ; rdfs:range task:Option .
+task:hasGoal a owl:ObjectProperty ; rdfs:label "hasGoal" ; rdfs:range task:Goal .
+task:hasRule a owl:ObjectProperty ; rdfs:label "hasRule" ; rdfs:range task:Rule .
+task:inputState a owl:ObjectProperty ; rdfs:label "inputState" ; rdfs:domain task:Calculation ; rdfs:range task:TaskState .
+task:usesRule a owl:ObjectProperty ; rdfs:label "usesRule" ; rdfs:domain task:Calculation ; rdfs:range task:Rule .
+task:forOption a owl:ObjectProperty ; rdfs:label "forOption" ; rdfs:domain task:Calculation ; rdfs:range task:Option .
+task:basedOnCalculation a owl:ObjectProperty ; rdfs:label "basedOnCalculation" ; rdfs:range task:Calculation .
+task:basedOnObservation a owl:ObjectProperty ; rdfs:label "basedOnObservation" ; rdfs:domain task:Calculation ; rdfs:range task:Observation .
+task:chosenOption a owl:ObjectProperty ; rdfs:label "chosenOption" ; rdfs:domain task:ChoiceObservation ; rdfs:range task:Option .
+task:outcomeOf a owl:ObjectProperty ; rdfs:label "outcomeOf" ; rdfs:domain task:OutcomeObservation ; rdfs:range task:ChoiceObservation .
+task:displayedIn a owl:ObjectProperty ; rdfs:label "displayedIn" ; rdfs:domain task:Option ; rdfs:range core:Trial .
+task:label a owl:DatatypeProperty ; rdfs:label "label" ; rdfs:range xsd:string .
+task:version a owl:DatatypeProperty ; rdfs:label "version" ; rdfs:range xsd:string .
+task:phase a owl:DatatypeProperty ; rdfs:label "phase" ; rdfs:range xsd:string .
+task:unit a owl:DatatypeProperty ; rdfs:label "unit" ; rdfs:range xsd:string .
+task:implementation a owl:DatatypeProperty ; rdfs:label "implementation" ; rdfs:range xsd:string .
+task:applicability a owl:DatatypeProperty ; rdfs:label "applicability" ; rdfs:range xsd:string .
+task:expression a owl:DatatypeProperty ; rdfs:label "expression" ; rdfs:range xsd:string .
+task:value a owl:DatatypeProperty ; rdfs:label "value" ; rdfs:range rdfs:Literal .
+task:lowerBound a owl:DatatypeProperty ; rdfs:label "lowerBound" ; rdfs:range rdfs:Literal .
+task:upperBound a owl:DatatypeProperty ; rdfs:label "upperBound" ; rdfs:range rdfs:Literal .
+task:responseTimeMs a owl:DatatypeProperty ; rdfs:label "responseTimeMs" ; rdfs:range rdfs:Literal .
+task:samples a owl:DatatypeProperty ; rdfs:label "samples" ; rdfs:range xsd:integer .
+task:timedOut a owl:DatatypeProperty ; rdfs:label "timedOut" ; rdfs:range xsd:boolean .

@@ -11,10 +11,13 @@ from contextlib import contextmanager
 from .engine import POLICY, NETWORK, ingest, history
 from .models import calibration_profile, VERSION
 from .validation import fields, require, identity, CONDITIONS, turtle, shacl_report
+from .language import configuration as language_configuration
+from .grounding import VERSION as GROUNDING_VERSION
+from .tasks import get_task,available_tasks
+from .tasks.base import SCHEMA_VERSION
+from .tasks.tbs import RULES  # Compatibility import for the original task/demo API.
+from .study import required_calibrations
 
-RULES={'targets':[595,930,1035,1105],'multipliers':[1.1,2.3,3.3,4.2],
-       'options': [[(100,.9),(265,.35)],[(180,.6),(260,.35)],[(145,.75),(245,.35)],[(145,.55),(350,.2)],
-                   [(115,.9),(240,.45)],[(150,.6),(190,.45)],[(170,.75),(245,.4)],[(120,.8),(210,.3)]]}
 # JSON roundtrip makes pairs lists consistently across SQLite and initial state.
 RULES=json.loads(json.dumps(RULES))
 CONFIGURATION_FIELDS=['task','condition','phase','protocol','initial_preference','seed','total_trials','policy','task_rules',
@@ -24,6 +27,10 @@ CONFIGURATION_FIELDS=['task','condition','phase','protocol','initial_preference'
 def now():return datetime.now(timezone.utc).isoformat()
 
 def digest(value):return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+
+def configuration_fields(session):
+    # Legacy traces remain inspectable/replayable without retroactively adding fields.
+    return CONFIGURATION_FIELDS+([k for k in ['language_configuration','task_module'] if k in session])
 
 
 class Store:
@@ -60,10 +67,10 @@ class Store:
     def create(self,data):
         fields(data,['participant_id','task','condition','phase','protocol','preference'],['id','calibration_ids','seed'])
         require(identity(data['participant_id']),'Use a pseudonymous participant ID (letters, digits, dash, underscore)')
-        require(data['task'] in {'MAB','TBS'},'Unknown task')
+        task=get_task(data['task'])
         require(data['condition'] in CONDITIONS,'Unknown condition')
         require(data['phase'] in {'calibration','assisted'},'Unknown phase')
-        require(data['protocol'] in {'short','full'},'Unknown protocol')
+        require(data['protocol'] in task.PROTOCOLS,'Unknown protocol')
         require(data['preference'] in POLICY['cooldown'],'Unknown prompt frequency')
         require(data['phase']!='calibration' or data['condition']=='A','Calibration must be unassisted')
         sid=data.get('id') or 'socratic_'+uuid.uuid4().hex
@@ -72,20 +79,24 @@ class Store:
         calibration={}; profile=None
         if data['phase']=='assisted':
             ids=data.get('calibration_ids',{})
-            require(isinstance(ids,dict) and set(ids)=={'MAB','TBS'},'Comparison sessions require completed unassisted MAB and TBS calibration sessions')
-            for task,source_id in ids.items():
+            require(isinstance(ids,dict) and set(ids)==set(required_calibrations(task.ID)),'Comparison sessions require completed unassisted calibration for the configured study tasks')
+            for calibration_task,source_id in ids.items():
                 source=self.get(source_id)
-                require(source['task']==task and source['participant_id']==data['participant_id'] and source['phase']=='calibration' and source['completed'],'Invalid or incomplete calibration source')
+                require(source['task']==calibration_task and source['participant_id']==data['participant_id'] and source['phase']=='calibration' and source['completed'],'Invalid or incomplete calibration source')
                 require(source['protocol']==data['protocol'],'Calibration and assisted protocol must match')
-                calibration[task]={'session_id':source_id,'profile':source['profile'],'digest':digest(source['events'])}
+                require(source['model_version']==VERSION,'Calibration model version differs')
+                if 'task_module' in source:require(source['task_module']==get_task(source['task']).describe(),'Calibration task module or ontology version differs')
+                calibration[calibration_task]={'session_id':source_id,'profile':source['profile'],'digest':digest(source['events'])}
             if data['condition'] in {'E','F'}:profile=calibration[data['task']]['profile']
         s={'id':sid,'participant_id':data['participant_id'],'task':data['task'],'condition':data['condition'],
            'phase':data['phase'],'protocol':data['protocol'],'preference':data['preference'],'initial_preference':data['preference'],
            'seed':data.get('seed',sid),'created_at':now(),'events':[],'finished':False,'completed':False,
-           'total_trials':(40 if data['protocol']=='short' else 200) if data['task']=='MAB' else (24 if data['protocol']=='short' else 192),
-           'policy':copy.deepcopy(POLICY),'task_rules':copy.deepcopy(RULES),'network':NETWORK.describe(),
-           'model_version':VERSION,'schema_version':'ontology-0.1','calibration_sources':calibration,'calibration_profile':profile}
-        s['configuration_digest']=digest({k:s[k] for k in CONFIGURATION_FIELDS})
+           'total_trials':task.PROTOCOLS[data['protocol']],
+           'policy':copy.deepcopy(POLICY),'task_rules':task.task_rules(),'network':NETWORK.describe(),
+           'model_version':VERSION,'schema_version':SCHEMA_VERSION,'task_module':task.describe(),
+           'calibration_sources':calibration,'calibration_profile':profile}
+        s['language_configuration']={**language_configuration(),'grounding_version':GROUNDING_VERSION}
+        s['configuration_digest']=digest({k:s[k] for k in configuration_fields(s)})
         with self.lock:
             with self.connect() as c:
                 try:c.execute('INSERT INTO sessions VALUES (?,?)',(sid,json.dumps(s)))
@@ -95,6 +106,7 @@ class Store:
     def event(self,sid,data):
         with self.lock:
             s=self.get(sid)
+            if 'task_module' in s:require(s['task_module']==get_task(s['task']).describe(),'Task module or ontology changed; start a new session with the current version')
             # Exact retries are idempotent. Different repeated payloads still fail validation.
             for e in s['events']:
                 if e['input']==data:return e
@@ -116,8 +128,11 @@ class Store:
 
     def replay(self,sid):
         original=self.get(sid)
-        require(original['configuration_digest']==digest({k:original[k] for k in CONFIGURATION_FIELDS}),'Recorded configuration hash does not match; settings were altered')
-        expected={'policy':POLICY,'model_version':VERSION,'schema_version':'ontology-0.1','network':NETWORK.describe()}
+        require(original['configuration_digest']==digest({k:original[k] for k in configuration_fields(original)}),'Recorded configuration hash does not match; settings were altered')
+        if 'language_configuration' in original:
+            require(original['language_configuration']['grounding_version']==GROUNDING_VERSION,'Replay requires the recorded grounding version')
+        expected={'policy':POLICY,'model_version':VERSION,'schema_version':SCHEMA_VERSION if 'task_module' in original else 'ontology-0.1','network':NETWORK.describe()}
+        if 'task_module' in original:expected['task_module']=get_task(original['task']).describe()
         # Reject model/policy drift rather than pretending a new model reproduces an old run.
         for key,value in expected.items():
             require(original[key]==value,'Replay requires recorded '+key+' version/backend; current runtime differs')
@@ -125,7 +140,8 @@ class Store:
         restored['preference']=original['initial_preference']
         for event in original['events']:
             language=event.get('snapshot',{}).get('decision',{}).get('language')
-            restored,new=ingest(restored,event['input'],event['timestamp'],language)
+            restored,new=ingest(restored,event['input'],event['timestamp'],language,
+                                recorded_interpretation=event.get('interpretation'),replaying=True)
             require(new==event,'Replay mismatch at '+event['id'])
         restored['finished']=original['finished'];restored['completed']=original['completed']
         return {'matches':True,'events_replayed':len(restored['events']),'digest':digest(restored['events']),

@@ -1,0 +1,15 @@
+PREFIX core: <https://example.org/socratic/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+SELECT ?trial ?points ?gap ?remaining ?option ?ev ?winScore ?attainment ?rule WHERE {
+  ?state a tbs:TargetState ; task:phase "evaluation" ; task:forTrial ?trial ;
+    tbs:points ?points ; tbs:targetGap ?gap ; tbs:remainingChoices ?remaining .
+  FILTER (?remaining = 1 && ?gap > 500)
+  ?expected a tbs:ExpectedGainCalculation ; task:inputState ?state ; task:forOption ?o ; task:value ?ev .
+  ?win a tbs:FinalWinScoreCalculation ; task:inputState ?state ; task:forOption ?o ; task:value ?winScore .
+  ?chance a tbs:AttainmentCalculation ; task:inputState ?state ; task:forOption ?o ;
+    task:value ?attainment ; task:usesRule ?rule .
+  ?rule a tbs:FinalWinMultiplierRule .
+  ?o task:label ?option .
+}
+ORDER BY ?trial ?option
