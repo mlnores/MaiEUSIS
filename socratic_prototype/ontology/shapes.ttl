@@ -1,0 +1,27 @@
+@prefix s: <https://example.org/socratic/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+s:TrialShape a sh:NodeShape ; sh:targetClass s:Trial ;
+ sh:property [ sh:path s:participant ; sh:minCount 1 ; sh:maxCount 1 ; sh:class s:Participant ] ;
+ sh:property [ sh:path s:session ; sh:minCount 1 ; sh:maxCount 1 ; sh:class s:Session ] ;
+ sh:property [ sh:path s:trialIndex ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ] .
+s:ClaimShape a sh:NodeShape ; sh:targetClass s:Claim ; sh:targetClass s:Hypothesis ;
+ sh:property [ sh:path s:content ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+ sh:property [ sh:path s:scope ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path s:timestamp ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path s:provenance ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path s:model_version ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path s:status ; sh:minCount 1 ; sh:in ("known" "unknown" "assumed" "inferred" "contested" "probable" "low-confidence" "source-dependent" "requires-verification") ] ;
+ sh:property [ sh:path s:supportedBy ; sh:class s:Trial ] ;
+ sh:property [ sh:path s:confidence ; sh:maxCount 1 ; sh:datatype xsd:double ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:or ( [ sh:property [ sh:path s:confidence ; sh:maxCount 0 ] ] [ sh:property [ sh:path s:confidenceInterpretation ; sh:minCount 1 ; sh:datatype xsd:string ] ] ) .
+s:HypothesisShape a sh:NodeShape ; sh:targetClass s:Hypothesis ;
+ sh:property [ sh:path s:supportedBy ; sh:minCount 1 ; sh:class s:Trial ] ;
+ sh:property [ sh:path s:status ; sh:hasValue "inferred" ] ;
+ sh:property [ sh:path s:alternative ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path s:revisionCondition ; sh:minCount 1 ; sh:datatype xsd:string ] .
+s:InterventionShape a sh:NodeShape ; sh:targetClass s:Intervention ;
+ sh:property [ sh:path s:action ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("ask" "challenge" "support" "explain" "compare" "highlight-dependency" "request-evidence" "advise" "silence") ] ;
+ sh:property [ sh:path s:rationale ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+ sh:property [ sh:path s:supportedBy ; sh:minCount 1 ; sh:or ( [ sh:class s:Claim ] [ sh:class s:Hypothesis ] ) ] ;
+ sh:property [ sh:path s:observedIn ; sh:minCount 1 ; sh:class s:Trial ] .

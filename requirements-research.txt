@@ -1,0 +1,4 @@
+# Optional research integrations. The local prototype has no required dependencies.
+pgmpy>=1.0,<2
+rdflib>=7,<8
+pyshacl>=0.30,<1

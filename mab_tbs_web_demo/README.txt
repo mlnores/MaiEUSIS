@@ -1,0 +1,61 @@
+MAB + TBS BROWSER DEMOS
+=======================
+
+Open index.html in Chrome, Edge, Safari or Firefox. Keep slot.png beside it.
+No web server is needed to run locally. To share a link, upload both files
+inside this folder to GitHub Pages, Netlify Drop or another static web host.
+
+SHORT PROTOCOL
+MAB: 10 stable choices + 30 volatile choices (original 50+150).
+TBS: 3 blocks x 8 choices (original 24 x 8).
+The decision rules, probabilities, option tables, rewards and multiplier
+logic come from FullExperiment_WORKING-20May2024.py.
+
+EVENT TIMING / ERP LIMITS
+-------------------------
+No EEG is acquired; this cannot record any ERP. Browser software event markers
+are logged when the evaluation and feedback screens are shown (after a paint
+request) or at the commitment key response. The original Python parallel-port
+trigger pulses are intentionally REMOVED. In the original script some pulses
+were emitted before the corresponding draw and were followed by 200 ms waits.
+Those delays are not reproduced. The short demos keep the 1 s fixation and
+1 s feedback intervals but browser timing is not experimentally calibrated.
+Browser timestamps are not reliable physical display-onset timestamps.
+Markers correspond to original codes:
+MAB: 3 evaluation display, 4 choice, 5 timeout, 6 feedback display.
+TBS: 8 evaluation display, 9 choice, 10 timeout, 11 feedback display.
+
+LOGS
+----
+Press Download Logs to export:
+*_full.json: session metadata, all events, all trial snapshots, option records,
+            block summaries (TBS), all task configs and random seed.
+*_trials.csv: one detailed row per completed trial, including all available
+              options with probabilities and values as JSON in a CSV column.
+*_all_options.csv: one row PER AVAILABLE OPTION PER TRIAL, not only the choice.
+*_events.csv: software marker events, trial IDs, ISO and monotonic timestamps.
+*_blocks.csv (TBS): final-block target and multiplier results.
+
+IMPORTANT
+---------
+MAB probabilities are hidden to the player but recorded in log files, including
+all six arms on every trial. The log shows the current probabilities after any
+volatility changes, as well as volatility checks. Outcomes are sampled only for
+the chosen arm, reflecting the original protocol; counterfactual outcomes for
+unselected arms are NOT generated or invented.
+TBS logs capture all safe/risky options presented, with both probabilities and
+amounts, regardless of which was selected. The final multiplier applies only
+when the eighth trial wins, matching the original code.
+
+Logs exist only in browser memory until downloaded. Browser demo is not validated
+for research timing, hardware triggers, neurophysiology, or data acquisition.
+
+MAB VISUAL / KEY MAPPING (restored from original PsychoPy task)
+----------------------------------------------------------------
+Left row 1: Press 1, blue2, probabilities [.5,.3,.2], outcomes [+100,0,-100]
+Left row 2: Press 2, red1, probabilities [.5,.3,.2], outcomes [+200,0,-200]
+Left row 3: Press 3, blue3, probabilities [.34,.33,.33], outcomes [+100,0,-100]
+Right row 1: Press 7, red2 (original key 4), probabilities [.34,.33,.33], outcomes [+200,0,-200]
+Right row 2: Press 8, blue1 (original key 5), probabilities [.7,.2,.1], outcomes [+100,0,-100]
+Right row 3: Press 9, red3 (original key 6), probabilities [.7,.2,.1], outcomes [+200,0,-200]
+Shade classes apply distinct visible blue/red outlines. Volatility rules unchanged.

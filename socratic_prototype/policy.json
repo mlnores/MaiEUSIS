@@ -1,0 +1,19 @@
+{
+  "version": "policy-0.1",
+  "window_trials": 12,
+  "min_evidence": 6,
+  "threshold": 0.38,
+  "cooldown": {
+    "frequent": 2,
+    "standard": 4,
+    "infrequent": 7
+  },
+  "preparation_ms": 4000,
+  "generation_timeout_seconds": 0.8,
+  "correction_expiry_trials": 8,
+  "interruption_cost": 0.12,
+  "fixed_prompt_interval": 4,
+  "change_prior": 0.15,
+  "decline_threshold": 0.3,
+  "personalisation_bonus": 0.16
+}

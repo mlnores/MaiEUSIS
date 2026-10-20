@@ -1,0 +1,19 @@
+@prefix s: <https://example.org/socratic/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+s:ontology a owl:Ontology ; owl:versionInfo "ontology-0.1" .
+s:Participant a owl:Class .
+s:Session a owl:Class .
+s:Trial a owl:Class .
+s:Claim a owl:Class .
+s:Hypothesis a owl:Class ; rdfs:subClassOf s:Claim .
+s:Argument a owl:Class .
+s:Intervention a owl:Class .
+s:supportedBy a owl:ObjectProperty .
+s:observedIn a owl:ObjectProperty .
+s:dependsOn a owl:ObjectProperty .
+s:contradicts a owl:ObjectProperty .
+s:revises a owl:ObjectProperty .
+s:opposes a owl:ObjectProperty .
+s:participant a owl:ObjectProperty .
+s:session a owl:ObjectProperty .
