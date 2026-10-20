@@ -234,6 +234,11 @@ def ingest(session, event, timestamp, recorded_language=None, recorded_interpret
     candidate['events'].append(record)
     if kind in {'evaluation','feedback'}:
         record['snapshot']=make_snapshot(candidate,event,event_id,timestamp,recorded_language)
+        if 'argumentation_configuration' in candidate:
+            from .argumentation import analyse
+            record['snapshot']['graph_argumentation']=analyse(candidate,record)
+            from .argumentation.validation import validate_analysis
+            record['snapshot']['graph_argumentation']['validation']=validate_analysis(record['snapshot']['graph_argumentation'])
         report=shacl_report(candidate,incremental='task_module' in candidate)
         record['snapshot']['shacl']=report
         require(report['conforms'] is not False,'SHACL rejected the candidate graph: '+report['report'])

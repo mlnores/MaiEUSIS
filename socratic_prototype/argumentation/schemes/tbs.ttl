@@ -1,0 +1,48 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+tbs:argumentOntology a owl:Ontology ; owl:imports arg:ontology .
+tbs:higherExpectedGainThan a owl:ObjectProperty .
+tbs:higherAttainmentThan a owl:ObjectProperty .
+tbs:criteriaDiverge a owl:DatatypeProperty .
+tbs:clarifyObjectiveWarranted a owl:DatatypeProperty .
+tbs:expectedGainArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "high" ; arg:conclusionPredicate tbs:higherExpectedGainThan ; arg:polarity "positive" ; arg:reason "One displayed option has higher immediate expected gain." ; arg:objectVariable "low" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p1 ?p2 ?high ?low WHERE {
+{ SELECT DISTINCT ?p1 ?state ?first ?x WHERE { ?p1 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?first ; arg:object ?x ; arg:polarity "positive" . } }
+{ SELECT DISTINCT ?p2 ?state ?second ?y WHERE { ?p2 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?second ; arg:object ?y ; arg:polarity "positive" . } }
+?first a tbs:ExpectedGainCalculation ; task:forOption ?high . ?second a tbs:ExpectedGainCalculation ; task:forOption ?low . FILTER(?x > ?y)
+}
+""" .
+tbs:attainmentArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "high" ; arg:conclusionPredicate tbs:higherAttainmentThan ; arg:polarity "positive" ; arg:reason "One displayed option has higher current final-choice attainment probability." ; arg:objectVariable "low" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p1 ?p2 ?high ?low WHERE {
+{ SELECT DISTINCT ?p1 ?state ?first ?x WHERE { ?p1 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?first ; arg:object ?x ; arg:polarity "positive" . } }
+{ SELECT DISTINCT ?p2 ?state ?second ?y WHERE { ?p2 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?second ; arg:object ?y ; arg:polarity "positive" . } }
+?first a tbs:AttainmentCalculation ; task:forOption ?high . ?second a tbs:AttainmentCalculation ; task:forOption ?low . FILTER(?x > ?y)
+}
+""" .
+tbs:criteriaDivergenceArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:criteriaDiverge ; arg:polarity "positive" ; arg:reason "Expected gain and final target attainment favour different options in this state." ; arg:conclusionObject true ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p1 ?p2 ?state WHERE {
+{ SELECT DISTINCT ?p1 ?state ?first ?second WHERE { ?p1 a arg:Assertion ; arg:predicate tbs:higherExpectedGainThan ; arg:scope ?state ; arg:subject ?first ; arg:object ?second ; arg:polarity "positive" . } }
+{ SELECT DISTINCT ?p2 ?state ?second ?first WHERE { ?p2 a arg:Assertion ; arg:predicate tbs:higherAttainmentThan ; arg:scope ?state ; arg:subject ?second ; arg:object ?first ; arg:polarity "positive" . } }
+}
+""" .
+tbs:objectiveQuestionArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:clarifyObjectiveWarranted ; arg:polarity "positive" ; arg:reason "The differing criteria warrant checking which objective guides the decision." ; arg:conclusionObject true ; arg:criticalQuestion "Are you comparing immediate expected gain or the chance of reaching the target?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p ?state WHERE {
+{ SELECT DISTINCT ?p ?state WHERE { ?p a arg:Assertion ; arg:predicate tbs:criteriaDiverge ; arg:scope ?state ; arg:subject ?state ; arg:object true ; arg:polarity "positive" . } }
+}
+""" .

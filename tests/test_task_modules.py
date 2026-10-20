@@ -13,7 +13,7 @@ from socratic_prototype.semantics import CORE,DATA,TASK
 from socratic_prototype.store import Store,configuration_fields,digest
 from socratic_prototype.tasks import get_task,register_task,_TASKS
 from socratic_prototype.tasks.base import describe_task,document_paths,MODEL_VERSION
-from socratic_prototype.validation import turtle,shacl_report,_projection
+from socratic_prototype.validation import turtle,shacl_report,_projection,graph_documents
 
 try:
     from rdflib import Graph,Namespace,RDF,OWL,Literal,URIRef
@@ -43,7 +43,7 @@ class TaskModuleTest(unittest.TestCase):
             with self.assertRaises(ValidationError):self.store.event(s['id'],evaluation('MAB',s['id'],1))
 
     def test_legacy_configuration_and_projection_remain_supported(self):
-        s=self.create('MAB');s.pop('task_module');s['schema_version']='ontology-0.1'
+        s=self.create('MAB');s.pop('task_module');s.pop('argumentation_configuration');s['schema_version']='ontology-0.1'
         s['configuration_digest']=digest({k:s[k] for k in configuration_fields(s)});self.store.save(s)
         self.store.event(s['id'],evaluation('MAB',s['id'],1))
         self.assertTrue(self.store.replay(s['id'])['matches'])
@@ -114,9 +114,9 @@ class TaskGraphTest(TaskModuleTest):
         for identifier in ['MAB','TBS']:
             s=self.create(identifier);self.store.event(s['id'],evaluation(identifier,s['id'],1));s=self.store.get(s['id'])
             module=get_task(identifier);ont=Graph()
-            for path in module.documents()[0]:ont.parse(path,format='turtle')
+            for path in graph_documents(s)[0]:ont.parse(path,format='turtle')
             graph=self.graph(s)
-            declared=set(ont.subjects(RDF.type,OWL.ObjectProperty))|set(ont.subjects(RDF.type,OWL.DatatypeProperty))
+            declared=set(ont.subjects(RDF.type,OWL.ObjectProperty))|set(ont.subjects(RDF.type,OWL.DatatypeProperty))|set(ont.subjects(RDF.type,RDF.Property))
             used={p for p in graph.predicates() if str(p).startswith(CORE)}
             self.assertEqual(used-declared,set())
             opposite=CORE+('tbs/' if identifier=='MAB' else 'mab/')

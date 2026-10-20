@@ -20,6 +20,15 @@ S=Namespace('https://example.org/socratic/')
 def main():
     schema=Graph()
     for name in ['schema','task','mab','tbs']:schema.parse(ROOT/('socratic_prototype/ontology/'+name+'.ttl'),format='turtle')
+    # Historical example files can still be audited as core/task-only graphs.
+    # Freshly generated files also carry the separately versioned arg: extension.
+    from socratic_prototype.argumentation import documents as argument_documents
+    extra=set()
+    for task in ['mab','tbs']:
+        data=json.loads(HERE.joinpath(task+'.json').read_text())
+        if 'argumentation_configuration' in data:
+            files=argument_documents(get_task(task.upper()));extra.update((files[0],)+files[2:])
+    for path in sorted(extra):schema.parse(path,format='turtle')
     classes=set(schema.subjects(RDF.type,OWL.Class))
     declared=set().union(*(set(schema.subjects(RDF.type,t)) for t in [OWL.ObjectProperty,OWL.DatatypeProperty,RDF.Property]))
     short=lambda value:str(value).replace(str(S),'s:')
@@ -35,6 +44,10 @@ def main():
         module=get_task(task.upper());ontology=Graph();shapes=Graph()
         for path in module.documents()[0]:ontology.parse(path,format='turtle')
         for path in module.documents()[1]:shapes.parse(path,format='turtle')
+        if 'argumentation_configuration' in json.loads(HERE.joinpath(task+'.json').read_text()):
+            files=argument_documents(module)
+            for path in (files[0],)+files[2:]:ontology.parse(path,format='turtle')
+            shapes.parse(files[1],format='turtle')
         graph=Graph().parse(HERE/(task+'.ttl'),format='turtle');graphs[task]=graph
         ok,_,report=validate(graph,shacl_graph=shapes,ont_graph=ontology,inference='none',do_owl_imports=False)
         assert ok,report

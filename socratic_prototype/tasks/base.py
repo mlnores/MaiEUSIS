@@ -39,6 +39,16 @@ class TaskModule(Protocol):
     def project_rdf(self,writer,session,event,state,evaluation,previous): ...
 
 
+class ArgumentationSchemes(Protocol):
+    """Optional extension, separate from the required TaskModule contract."""
+    def argumentation_documents(self): ...
+
+
+class ArgumentationFacts(Protocol):
+    """Optional task-specific public-history aggregates for graph reasoning."""
+    def project_argumentation_facts(self,writer,session,event,state,history): ...
+
+
 def document_paths(identifier):
     root=Path(__file__).resolve().parents[1]/'ontology'
     return (root/'schema.ttl',root/'task.ttl',root/(identifier.lower()+'.ttl'),

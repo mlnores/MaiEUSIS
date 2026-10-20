@@ -26,6 +26,14 @@ def describe():return describe_task(ID,NAMESPACE,MODULE_VERSION,ONTOLOGY_VERSION
 
 evidence_observation=common_observation
 
+def argumentation_documents():
+    from ..argumentation import ROOT
+    return (ROOT/'schemes/mab.ttl',)
+
+def project_argumentation_facts(writer,session,event,state,history):
+    from .mab_arguments import project
+    project(writer,session,event,state,history)
+
 def task_rules():
     return {'arms':list(ARMS),'keys':dict(KEYS),'blue_outcomes':[100,0,-100],
             'red_outcomes':[200,0,-200],'timeout_penalty':-200,'reward_scale':200}

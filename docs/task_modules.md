@@ -120,3 +120,10 @@ See the [executable ontology walkthrough](ontology_examples/README.md) for MAB/T
 SPARQL queries. Remaining JSON-only details include candidate ranking/cooldown
 quantities and full response/researcher-review event entities; those have not
 been promoted into new shared ontology classes in this change.
+
+The [graph argumentation extension](graph_argumentation.md) adds a separate `arg:`
+layer to new sessions. Optional `argumentation_documents()` and
+`project_argumentation_facts(...)` hooks supply domain schemes and public-history
+aggregates. Its independently frozen configuration preserves the original task
+descriptors and legacy replay. Shadow analysis is researcher-only and does not
+replace `contribute_candidates` or the live intervention policy.

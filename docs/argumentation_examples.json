@@ -1,0 +1,1090 @@
+{
+  "synthetic": true,
+  "notice": "Constructed partial unassisted sessions; shadow arguments are researcher-only, not human data.",
+  "cases": {
+    "mab_8": {
+      "version": "argumentation-0.1",
+      "mode": "shadow",
+      "backend": "rdflib-sparql",
+      "semantics": "grounded",
+      "scope": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
+      "assertions": [
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/e73b652e0af1111eba67b1e0",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary",
+            "predicate": "https://example.org/socratic/mab/completedChoices",
+            "object": {
+              "type": "literal",
+              "value": 7,
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_15/state"
+          },
+          "kind": "calculation",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary",
+          "statuses": [
+            "known"
+          ],
+          "content": "completedChoices = 7"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/6ecfd2ec6efaf1cd895f8d94",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary",
+            "predicate": "https://example.org/socratic/mab/sampledArmCount",
+            "object": {
+              "type": "literal",
+              "value": 1,
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_15/state"
+          },
+          "kind": "calculation",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary",
+          "statuses": [
+            "known"
+          ],
+          "content": "sampledArmCount = 1"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/37ce49141e851d694b2aa7d0",
+          "proposition": {
+            "subject": "https://example.org/socratic/participant-synthetic_argumentation",
+            "predicate": "https://example.org/socratic/argumentation/possiblePattern",
+            "object": {
+              "type": "literal",
+              "value": "underexploration"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_15/state"
+          },
+          "kind": "estimate",
+          "source": "https://example.org/socratic/argumentation_example_mab_event_15_underexploration",
+          "statuses": [
+            "inferred",
+            "source-dependent"
+          ],
+          "content": "Limited sampling may leave useful alternatives unexplored.",
+          "confidence": 0.72
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/7bbe28524198c4a4d1e18c54/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/argumentation_example_mab_event_15_underexploration",
+            "predicate": "https://example.org/socratic/argumentation/warrantsChallenge",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/7bbe28524198c4a4d1e18c54",
+          "statuses": [
+            "inferred"
+          ],
+          "content": "An eligible provisional model interpretation warrants considering a challenge."
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/a9daefb888e8d03fa6139e8f/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
+            "predicate": "https://example.org/socratic/mab/limitedCoverage",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/a9daefb888e8d03fa6139e8f",
+          "statuses": [
+            "known"
+          ],
+          "content": "At least six observed choices still leave alternatives unsampled."
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/fb99833a845cdbc71e2617e7/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
+            "predicate": "https://example.org/socratic/mab/explorationWorthDiscussing",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/fb99833a845cdbc71e2617e7",
+          "statuses": [
+            "inferred"
+          ],
+          "content": "Limited observed coverage supports asking whether further exploration is worthwhile."
+        }
+      ],
+      "arguments": [
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/ff0c7f89796b1d391c154a85",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/37ce49141e851d694b2aa7d0",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/37ce49141e851d694b2aa7d0"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded estimate premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/7bbe28524198c4a4d1e18c54",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/7bbe28524198c4a4d1e18c54/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/37ce49141e851d694b2aa7d0"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/ff0c7f89796b1d391c154a85"
+          ],
+          "rule": "https://example.org/socratic/argumentation/modelChallenge",
+          "rule_kind": "defeasible",
+          "priority": 0,
+          "reason": "An eligible provisional model interpretation warrants considering a challenge.",
+          "critical_questions": [
+            "What evidence or participant explanation would revise this interpretation?"
+          ],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/99de26c5dbf236568726e932",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/6ecfd2ec6efaf1cd895f8d94",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/6ecfd2ec6efaf1cd895f8d94"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded calculation premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/34079c936b4fc6b14662fd15",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/e73b652e0af1111eba67b1e0",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/e73b652e0af1111eba67b1e0"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded calculation premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/a9daefb888e8d03fa6139e8f",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/a9daefb888e8d03fa6139e8f/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/6ecfd2ec6efaf1cd895f8d94",
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/e73b652e0af1111eba67b1e0"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/99de26c5dbf236568726e932",
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/34079c936b4fc6b14662fd15"
+          ],
+          "rule": "https://example.org/socratic/mab/coverageArgument",
+          "rule_kind": "strict",
+          "priority": 0,
+          "reason": "At least six observed choices still leave alternatives unsampled.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/fb99833a845cdbc71e2617e7",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/fb99833a845cdbc71e2617e7/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/a9daefb888e8d03fa6139e8f/claim"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/a9daefb888e8d03fa6139e8f"
+          ],
+          "rule": "https://example.org/socratic/mab/explorationArgument",
+          "rule_kind": "defeasible",
+          "priority": 0,
+          "reason": "Limited observed coverage supports asking whether further exploration is worthwhile.",
+          "critical_questions": [
+            "Could persistence be intentional, and is further exploration worth its cost?"
+          ],
+          "label": "accepted"
+        }
+      ],
+      "attacks": [],
+      "defeats": [],
+      "critical_questions": [
+        "Could persistence be intentional, and is further exploration worth its cost?",
+        "What evidence or participant explanation would revise this interpretation?"
+      ],
+      "facts_turtle": "<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> a arg:HistorySummary .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_15/state> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> mab:completedChoices \"7\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> mab:sampledArmCount \"1\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> mab:remainingDecisions \"33\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_1/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_2/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_3/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_4/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_5/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_6/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_7/choice> .\n<https://example.org/socratic/argumentation_example_mab_event_15_underexploration> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_mab_event_15_underexploration> arg:eligible \"true\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_mab_event_15_underexploration> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_15/state> .\n<https://example.org/socratic/argumentation_example_mab_event_15_premature_exploitation> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_mab_event_15_premature_exploitation> arg:eligible \"false\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_mab_event_15_premature_exploitation> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_15/state> .\n<https://example.org/socratic/argumentation_example_mab_event_15_feedback_overweighting> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_mab_event_15_feedback_overweighting> arg:eligible \"false\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_mab_event_15_feedback_overweighting> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_15/state> .",
+      "notice": "Researcher-only shadow analysis; labels are justification under these rules, not truth or intervention usefulness.",
+      "status": "complete",
+      "stats": {
+        "input_triples": 2076,
+        "input_assertions": 73,
+        "retained_assertions": 6,
+        "schemes": 6,
+        "matches": 6,
+        "rounds": 2
+      },
+      "limits": {
+        "max_rounds": 6,
+        "max_arguments": 256,
+        "max_assertions": 512,
+        "max_matches": 1024
+      },
+      "validation": {
+        "conforms": true,
+        "engine": "argument-record-validator"
+      }
+    },
+    "mab_39": {
+      "version": "argumentation-0.1",
+      "mode": "shadow",
+      "backend": "rdflib-sparql",
+      "semantics": "grounded",
+      "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
+      "assertions": [
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/9c7e956f822a1696900e3313",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary",
+            "predicate": "https://example.org/socratic/mab/completedChoices",
+            "object": {
+              "type": "literal",
+              "value": 38,
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state"
+          },
+          "kind": "calculation",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary",
+          "statuses": [
+            "known"
+          ],
+          "content": "completedChoices = 38"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f784b0d276e8169230503bc0",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary",
+            "predicate": "https://example.org/socratic/mab/remainingDecisions",
+            "object": {
+              "type": "literal",
+              "value": 2,
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state"
+          },
+          "kind": "calculation",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary",
+          "statuses": [
+            "known"
+          ],
+          "content": "remainingDecisions = 2"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/0b707c533fd98d1b483a2509",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary",
+            "predicate": "https://example.org/socratic/mab/sampledArmCount",
+            "object": {
+              "type": "literal",
+              "value": 1,
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state"
+          },
+          "kind": "calculation",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary",
+          "statuses": [
+            "known"
+          ],
+          "content": "sampledArmCount = 1"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f03b50775152efe335741f12",
+          "proposition": {
+            "subject": "https://example.org/socratic/participant-synthetic_argumentation",
+            "predicate": "https://example.org/socratic/argumentation/possiblePattern",
+            "object": {
+              "type": "literal",
+              "value": "underexploration"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state"
+          },
+          "kind": "estimate",
+          "source": "https://example.org/socratic/argumentation_example_mab_event_77_underexploration",
+          "statuses": [
+            "inferred",
+            "source-dependent"
+          ],
+          "content": "Limited sampling may leave useful alternatives unexplored.",
+          "confidence": 0.72
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/bfd4df857689a9df0f40e92b/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/argumentation_example_mab_event_77_underexploration",
+            "predicate": "https://example.org/socratic/argumentation/warrantsChallenge",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/bfd4df857689a9df0f40e92b",
+          "statuses": [
+            "inferred"
+          ],
+          "content": "An eligible provisional model interpretation warrants considering a challenge."
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/a6e95b5f8f4f0068f3bea3a1/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
+            "predicate": "https://example.org/socratic/mab/limitedCoverage",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/a6e95b5f8f4f0068f3bea3a1",
+          "statuses": [
+            "known"
+          ],
+          "content": "At least six observed choices still leave alternatives unsampled."
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/06174dbf8770795e74f27211/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
+            "predicate": "https://example.org/socratic/mab/explorationWorthDiscussing",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/06174dbf8770795e74f27211",
+          "statuses": [
+            "inferred"
+          ],
+          "content": "Limited observed coverage supports asking whether further exploration is worthwhile."
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/734f0723b95628bf4505a5e1/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
+            "predicate": "https://example.org/socratic/mab/explorationWorthDiscussing",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
+            "polarity": "negative"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/734f0723b95628bf4505a5e1",
+          "statuses": [
+            "inferred"
+          ],
+          "content": "A short remaining horizon limits the case for raising further exploration."
+        }
+      ],
+      "arguments": [
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/89b541e54aa9a92e89c5bd4e",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f03b50775152efe335741f12",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f03b50775152efe335741f12"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded estimate premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/bfd4df857689a9df0f40e92b",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/bfd4df857689a9df0f40e92b/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f03b50775152efe335741f12"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/89b541e54aa9a92e89c5bd4e"
+          ],
+          "rule": "https://example.org/socratic/argumentation/modelChallenge",
+          "rule_kind": "defeasible",
+          "priority": 0,
+          "reason": "An eligible provisional model interpretation warrants considering a challenge.",
+          "critical_questions": [
+            "What evidence or participant explanation would revise this interpretation?"
+          ],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/f0ae426891327c03022e6b0d",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/0b707c533fd98d1b483a2509",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/0b707c533fd98d1b483a2509"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded calculation premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/e7dc8ffb29e88bcecc9cdc09",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/9c7e956f822a1696900e3313",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/9c7e956f822a1696900e3313"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded calculation premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/a6e95b5f8f4f0068f3bea3a1",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/a6e95b5f8f4f0068f3bea3a1/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/0b707c533fd98d1b483a2509",
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/9c7e956f822a1696900e3313"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/f0ae426891327c03022e6b0d",
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/e7dc8ffb29e88bcecc9cdc09"
+          ],
+          "rule": "https://example.org/socratic/mab/coverageArgument",
+          "rule_kind": "strict",
+          "priority": 0,
+          "reason": "At least six observed choices still leave alternatives unsampled.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/06174dbf8770795e74f27211",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/06174dbf8770795e74f27211/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/a6e95b5f8f4f0068f3bea3a1/claim"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/a6e95b5f8f4f0068f3bea3a1"
+          ],
+          "rule": "https://example.org/socratic/mab/explorationArgument",
+          "rule_kind": "defeasible",
+          "priority": 0,
+          "reason": "Limited observed coverage supports asking whether further exploration is worthwhile.",
+          "critical_questions": [
+            "Could persistence be intentional, and is further exploration worth its cost?"
+          ],
+          "label": "undecided"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/1107dcdbaa36debb17017d4e",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f784b0d276e8169230503bc0",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f784b0d276e8169230503bc0"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded calculation premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/734f0723b95628bf4505a5e1",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/734f0723b95628bf4505a5e1/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/a6e95b5f8f4f0068f3bea3a1/claim",
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f784b0d276e8169230503bc0"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/a6e95b5f8f4f0068f3bea3a1",
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/1107dcdbaa36debb17017d4e"
+          ],
+          "rule": "https://example.org/socratic/mab/shortHorizonObjection",
+          "rule_kind": "defeasible",
+          "priority": 0,
+          "reason": "A short remaining horizon limits the case for raising further exploration.",
+          "critical_questions": [
+            "Would another exploration prompt help with so few decisions left?"
+          ],
+          "label": "undecided"
+        }
+      ],
+      "attacks": [
+        {
+          "attacker": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/06174dbf8770795e74f27211",
+          "target": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/734f0723b95628bf4505a5e1",
+          "kind": "rebutting",
+          "succeeds": true,
+          "affected": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/734f0723b95628bf4505a5e1"
+          ],
+          "reason": "Explicit contrary in the same state and scope.",
+          "preference": "not-less-preferred"
+        },
+        {
+          "attacker": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/734f0723b95628bf4505a5e1",
+          "target": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/06174dbf8770795e74f27211",
+          "kind": "rebutting",
+          "succeeds": true,
+          "affected": [
+            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/06174dbf8770795e74f27211"
+          ],
+          "reason": "Explicit contrary in the same state and scope.",
+          "preference": "not-less-preferred"
+        }
+      ],
+      "defeats": [
+        [
+          "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/06174dbf8770795e74f27211",
+          "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/734f0723b95628bf4505a5e1"
+        ],
+        [
+          "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/734f0723b95628bf4505a5e1",
+          "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/06174dbf8770795e74f27211"
+        ]
+      ],
+      "critical_questions": [
+        "Could persistence be intentional, and is further exploration worth its cost?",
+        "What evidence or participant explanation would revise this interpretation?",
+        "Would another exploration prompt help with so few decisions left?"
+      ],
+      "facts_turtle": "<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> a arg:HistorySummary .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_77/state> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> mab:completedChoices \"38\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> mab:sampledArmCount \"1\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> mab:remainingDecisions \"2\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_1/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_2/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_3/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_4/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_5/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_6/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_7/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_8/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_9/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_10/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_11/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_12/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_13/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_14/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_15/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_16/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_17/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_18/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_19/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_20/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_21/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_22/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_23/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_24/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_25/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_26/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_27/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_28/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_29/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_30/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_31/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_32/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_33/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_34/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_35/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_36/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_37/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_77/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_38/choice> .\n<https://example.org/socratic/argumentation_example_mab_event_77_underexploration> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_mab_event_77_underexploration> arg:eligible \"true\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_mab_event_77_underexploration> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_77/state> .\n<https://example.org/socratic/argumentation_example_mab_event_77_premature_exploitation> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_mab_event_77_premature_exploitation> arg:eligible \"false\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_mab_event_77_premature_exploitation> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_77/state> .\n<https://example.org/socratic/argumentation_example_mab_event_77_feedback_overweighting> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_mab_event_77_feedback_overweighting> arg:eligible \"false\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_mab_event_77_feedback_overweighting> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_77/state> .",
+      "notice": "Researcher-only shadow analysis; labels are justification under these rules, not truth or intervention usefulness.",
+      "status": "complete",
+      "stats": {
+        "input_triples": 2172,
+        "input_assertions": 73,
+        "retained_assertions": 8,
+        "schemes": 6,
+        "matches": 8,
+        "rounds": 2
+      },
+      "limits": {
+        "max_rounds": 6,
+        "max_arguments": 256,
+        "max_assertions": 512,
+        "max_matches": 1024
+      },
+      "validation": {
+        "conforms": true,
+        "engine": "argument-record-validator"
+      }
+    },
+    "tbs_8": {
+      "version": "argumentation-0.1",
+      "mode": "shadow",
+      "backend": "rdflib-sparql",
+      "semantics": "grounded",
+      "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
+      "assertions": [
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/a909e21b375e8408bf56537b",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/attainment/risky",
+            "predicate": "https://example.org/socratic/task/value",
+            "object": {
+              "type": "literal",
+              "value": 0.35,
+              "datatype": "http://www.w3.org/2001/XMLSchema#double"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state"
+          },
+          "kind": "calculation",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/attainment/risky",
+          "statuses": [
+            "known"
+          ],
+          "content": "value = 0.35"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/26c07d5079501ea28e42bd5b",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/attainment/safe",
+            "predicate": "https://example.org/socratic/task/value",
+            "object": {
+              "type": "literal",
+              "value": 0,
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state"
+          },
+          "kind": "calculation",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/attainment/safe",
+          "statuses": [
+            "known"
+          ],
+          "content": "value = 0"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/73fac9677142d6d753db56d7",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/expected-gain/risky",
+            "predicate": "https://example.org/socratic/task/value",
+            "object": {
+              "type": "literal",
+              "value": 91.0,
+              "datatype": "http://www.w3.org/2001/XMLSchema#double"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state"
+          },
+          "kind": "calculation",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/expected-gain/risky",
+          "statuses": [
+            "known"
+          ],
+          "content": "value = 91.0"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/5be52b23be9cd1a9c721fe7b",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/expected-gain/safe",
+            "predicate": "https://example.org/socratic/task/value",
+            "object": {
+              "type": "literal",
+              "value": 108.0,
+              "datatype": "http://www.w3.org/2001/XMLSchema#double"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state"
+          },
+          "kind": "calculation",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/expected-gain/safe",
+          "statuses": [
+            "known"
+          ],
+          "content": "value = 108.0"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/4a974c00398fd56817552ad1",
+          "proposition": {
+            "subject": "https://example.org/socratic/participant-synthetic_argumentation",
+            "predicate": "https://example.org/socratic/argumentation/possiblePattern",
+            "object": {
+              "type": "literal",
+              "value": "constraint_neglect"
+            },
+            "polarity": "positive",
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state"
+          },
+          "kind": "estimate",
+          "source": "https://example.org/socratic/argumentation_example_tbs_event_15_constraint_neglect",
+          "statuses": [
+            "inferred",
+            "source-dependent"
+          ],
+          "content": "A repeated choice pattern may warrant checking the shrinking horizon.",
+          "confidence": 0.3
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/9f63898fbd68599b271423c2/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/argumentation_example_tbs_event_15_constraint_neglect",
+            "predicate": "https://example.org/socratic/argumentation/warrantsChallenge",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/9f63898fbd68599b271423c2",
+          "statuses": [
+            "inferred"
+          ],
+          "content": "An eligible provisional model interpretation warrants considering a challenge."
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/11e65304e566de8da240e118/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_tbs_trial_8/option/risky",
+            "predicate": "https://example.org/socratic/tbs/higherAttainmentThan",
+            "object": {
+              "type": "iri",
+              "value": "https://example.org/socratic/data/argumentation_example_tbs_trial_8/option/safe"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/11e65304e566de8da240e118",
+          "statuses": [
+            "known"
+          ],
+          "content": "One displayed option has higher current final-choice attainment probability."
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/3be398930d82c2e7aeff1bb4/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_tbs_trial_8/option/safe",
+            "predicate": "https://example.org/socratic/tbs/higherExpectedGainThan",
+            "object": {
+              "type": "iri",
+              "value": "https://example.org/socratic/data/argumentation_example_tbs_trial_8/option/risky"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/3be398930d82c2e7aeff1bb4",
+          "statuses": [
+            "known"
+          ],
+          "content": "One displayed option has higher immediate expected gain."
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/e044458c28e8d8e585b5a639/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
+            "predicate": "https://example.org/socratic/tbs/criteriaDiverge",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/e044458c28e8d8e585b5a639",
+          "statuses": [
+            "known"
+          ],
+          "content": "Expected gain and final target attainment favour different options in this state."
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/0ba785662a2e267887822a17/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
+            "predicate": "https://example.org/socratic/tbs/clarifyObjectiveWarranted",
+            "object": {
+              "type": "literal",
+              "value": true,
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/0ba785662a2e267887822a17",
+          "statuses": [
+            "inferred"
+          ],
+          "content": "The differing criteria warrant checking which objective guides the decision."
+        }
+      ],
+      "arguments": [
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/b7d3fab62cfa404260422741",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/4a974c00398fd56817552ad1",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/4a974c00398fd56817552ad1"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded estimate premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/9f63898fbd68599b271423c2",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/9f63898fbd68599b271423c2/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/4a974c00398fd56817552ad1"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/b7d3fab62cfa404260422741"
+          ],
+          "rule": "https://example.org/socratic/argumentation/modelChallenge",
+          "rule_kind": "defeasible",
+          "priority": 0,
+          "reason": "An eligible provisional model interpretation warrants considering a challenge.",
+          "critical_questions": [
+            "What evidence or participant explanation would revise this interpretation?"
+          ],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/27924e4bdb2d97b319b65955",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/26c07d5079501ea28e42bd5b",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/26c07d5079501ea28e42bd5b"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded calculation premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/8760cbe7314fb98a13137153",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/a909e21b375e8408bf56537b",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/a909e21b375e8408bf56537b"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded calculation premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/11e65304e566de8da240e118",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/11e65304e566de8da240e118/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/26c07d5079501ea28e42bd5b",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/a909e21b375e8408bf56537b"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/27924e4bdb2d97b319b65955",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/8760cbe7314fb98a13137153"
+          ],
+          "rule": "https://example.org/socratic/tbs/attainmentArgument",
+          "rule_kind": "strict",
+          "priority": 0,
+          "reason": "One displayed option has higher current final-choice attainment probability.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/23d3b363edd59240d3add7eb",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/5be52b23be9cd1a9c721fe7b",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/5be52b23be9cd1a9c721fe7b"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded calculation premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/081e0813d5ebe6b84c846e98",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/73fac9677142d6d753db56d7",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/73fac9677142d6d753db56d7"
+          ],
+          "subarguments": [],
+          "rule": null,
+          "rule_kind": "premise",
+          "priority": 0,
+          "reason": "Recorded calculation premise; source and epistemic status retained.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/3be398930d82c2e7aeff1bb4",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/3be398930d82c2e7aeff1bb4/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/5be52b23be9cd1a9c721fe7b",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/73fac9677142d6d753db56d7"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/23d3b363edd59240d3add7eb",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/081e0813d5ebe6b84c846e98"
+          ],
+          "rule": "https://example.org/socratic/tbs/expectedGainArgument",
+          "rule_kind": "strict",
+          "priority": 0,
+          "reason": "One displayed option has higher immediate expected gain.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/e044458c28e8d8e585b5a639",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/e044458c28e8d8e585b5a639/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/11e65304e566de8da240e118/claim",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/3be398930d82c2e7aeff1bb4/claim"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/11e65304e566de8da240e118",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/3be398930d82c2e7aeff1bb4"
+          ],
+          "rule": "https://example.org/socratic/tbs/criteriaDivergenceArgument",
+          "rule_kind": "strict",
+          "priority": 0,
+          "reason": "Expected gain and final target attainment favour different options in this state.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/0ba785662a2e267887822a17",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/0ba785662a2e267887822a17/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/e044458c28e8d8e585b5a639/claim"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/e044458c28e8d8e585b5a639"
+          ],
+          "rule": "https://example.org/socratic/tbs/objectiveQuestionArgument",
+          "rule_kind": "defeasible",
+          "priority": 0,
+          "reason": "The differing criteria warrant checking which objective guides the decision.",
+          "critical_questions": [
+            "Are you comparing immediate expected gain or the chance of reaching the target?"
+          ],
+          "label": "accepted"
+        }
+      ],
+      "attacks": [],
+      "defeats": [],
+      "critical_questions": [
+        "Are you comparing immediate expected gain or the chance of reaching the target?",
+        "What evidence or participant explanation would revise this interpretation?"
+      ],
+      "facts_turtle": "<https://example.org/socratic/argumentation_example_tbs_event_15_constraint_neglect> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_tbs_event_15_constraint_neglect> arg:eligible \"true\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_tbs_event_15_constraint_neglect> arg:inState <https://example.org/socratic/data/argumentation_example_tbs_event_15/state> .",
+      "notice": "Researcher-only shadow analysis; labels are justification under these rules, not truth or intervention usefulness.",
+      "status": "complete",
+      "stats": {
+        "input_triples": 609,
+        "input_assertions": 20,
+        "retained_assertions": 10,
+        "schemes": 6,
+        "matches": 13,
+        "rounds": 3
+      },
+      "limits": {
+        "max_rounds": 6,
+        "max_arguments": 256,
+        "max_assertions": 512,
+        "max_matches": 1024
+      },
+      "validation": {
+        "conforms": true,
+        "engine": "argument-record-validator"
+      }
+    }
+  },
+  "replay": {
+    "MAB": {
+      "matches": true,
+      "events_replayed": 78,
+      "digest": "4f499cc82047915bc75a8c9888bfdbaf98e8b71bc15ebc0ac456a957cf975423",
+      "recorded_digest": "4f499cc82047915bc75a8c9888bfdbaf98e8b71bc15ebc0ac456a957cf975423",
+      "api_calls": 0
+    },
+    "TBS": {
+      "matches": true,
+      "events_replayed": 16,
+      "digest": "6d240952100033360fa320b62222667e497572715abe66aa0ab5595c1086650c",
+      "recorded_digest": "6d240952100033360fa320b62222667e497572715abe66aa0ab5595c1086650c",
+      "api_calls": 0
+    }
+  },
+  "configurations": {
+    "MAB": {
+      "version": "argumentation-0.1",
+      "mode": "shadow",
+      "semantics": "grounded",
+      "backend": "rdflib-sparql",
+      "backend_version": "7.6.0",
+      "limits": {
+        "max_rounds": 6,
+        "max_arguments": 256,
+        "max_assertions": 512,
+        "max_matches": 1024
+      },
+      "documents": {
+        "schema.ttl": "8cd05febd46d5e8b6f87e6b18b355d3cbbdf56d4a0b2709800ddc1dd6390aedf",
+        "shapes.ttl": "dc5e87dfdc27a2f8f876c5f78ce8ba61c983a640a30067c60eb6464fafd61520",
+        "shared.ttl": "01f784995fdb752f0788520147459ddb7aff60edc053d7952520420392505044",
+        "mab.ttl": "9394200b96594689deac3d9bcac10c7080912209caf0b8205ca39347f1204856"
+      }
+    },
+    "TBS": {
+      "version": "argumentation-0.1",
+      "mode": "shadow",
+      "semantics": "grounded",
+      "backend": "rdflib-sparql",
+      "backend_version": "7.6.0",
+      "limits": {
+        "max_rounds": 6,
+        "max_arguments": 256,
+        "max_assertions": 512,
+        "max_matches": 1024
+      },
+      "documents": {
+        "schema.ttl": "8cd05febd46d5e8b6f87e6b18b355d3cbbdf56d4a0b2709800ddc1dd6390aedf",
+        "shapes.ttl": "dc5e87dfdc27a2f8f876c5f78ce8ba61c983a640a30067c60eb6464fafd61520",
+        "shared.ttl": "01f784995fdb752f0788520147459ddb7aff60edc053d7952520420392505044",
+        "tbs.ttl": "41fc03dae7350c9276935afdca446ac8c73c84f6a5fdf42b826fbea4c6df42d1"
+      }
+    }
+  },
+  "local_discovery_benchmark": {
+    "MAB": {
+      "median_ms": 62.448,
+      "max_ms": 63.717,
+      "samples": 5,
+      "scope": "Warm graph discovery only; excludes all other backend and display work."
+    },
+    "TBS": {
+      "median_ms": 33.112,
+      "max_ms": 34.672,
+      "samples": 5,
+      "scope": "Warm graph discovery only; excludes all other backend and display work."
+    }
+  }
+}

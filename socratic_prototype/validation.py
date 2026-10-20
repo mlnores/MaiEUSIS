@@ -101,6 +101,7 @@ def _projection(session,incremental=False):
     module=get_task(session['task']);writer=Writer();writer.definition(session,module)
     header='\n'.join(f'@prefix {name}: <{iri}> .' for name,iri in [
         ('core',CORE),('task',CORE+'task/'),(module.ID.lower(),module.NAMESPACE),('data',DATA)])+'\n'
+    if 'argumentation_configuration' in session:header+='@prefix arg: <'+CORE+'argumentation/> .\n'
     evaluations={};previous=None;focus=set()
     for event in session['events']:
         if not event.get('snapshot'):continue
@@ -108,6 +109,9 @@ def _projection(session,incremental=False):
         if inp['kind']=='evaluation':evaluations[inp['trial_id']]=inp
         state=DATA+event['id']+'/state';writer.subjects=set()
         module.project_rdf(writer,session,event,state,evaluations[inp['trial_id']],previous)
+        if 'argumentation_configuration' in session:
+            from .argumentation.graph import project_report
+            project_report(writer,event)
         previous=state;focus=set(writer.subjects)
         focus.update(PREFIX+c['id'] for c in event['snapshot']['claims'])
         focus.update(PREFIX+a['id'] for a in event['snapshot']['arguments'])
@@ -120,10 +124,9 @@ def _projection(session,incremental=False):
 def _candidate_projection(session):
     """Validate new entities against immutable, previously validated context.
 
-    Avoid serialising/parsing every previous calculation on every trial. Only
-    Context facts are retained for referenced states and observation types;
-    full-session validation
-    remains available for inspection, exports and independent audits.
+    Avoid serialising/parsing every previous calculation on every trial. Context
+    facts are retained for referenced states and observation types; full-session
+    validation remains available for inspection, exports and independent audits.
     """
     from .semantics import Writer,DATA,CORE
     from .tasks import get_task
@@ -138,6 +141,9 @@ def _candidate_projection(session):
     previous=DATA+records[-2]['id']+'/state' if len(records)>1 else None
     state=DATA+current['id']+'/state'
     module.project_rdf(writer,session,current,state,evals[inp['trial_id']],previous)
+    if 'argumentation_configuration' in session:
+        from .argumentation.graph import project_report
+        project_report(writer,current)
     focus=set(writer.subjects)
     # References are resolved only to observations actually present in the store.
     extras=Writer()
@@ -155,6 +161,7 @@ def _candidate_projection(session):
     focus.update([PREFIX+inp['trial_id'],PREFIX+session['id'],PREFIX+'participant-'+session['participant_id']])
     header='\n'.join(f'@prefix {name}: <{iri}> .' for name,iri in [
         ('core',CORE),('task',CORE+'task/'),(module.ID.lower(),module.NAMESPACE),('data',DATA)])+'\n'
+    if 'argumentation_configuration' in session:header+='@prefix arg: <'+CORE+'argumentation/> .\n'
     return core+header+'\n'.join(writer.lines+extras.lines)+'\n',focus
 
 
@@ -167,7 +174,12 @@ def graph_documents(session):
     root=Path(__file__).parent/'ontology'
     if 'task_module' not in session:return (root/'legacy/schema.ttl',),(root/'legacy/shapes.ttl',)
     from .tasks import get_task
-    return get_task(session['task']).documents()
+    module=get_task(session['task']);ont,shapes=module.documents()
+    if 'argumentation_configuration' in session:
+        from .argumentation import documents
+        extra=documents(module)
+        return tuple(ont)+(extra[0],)+extra[2:],tuple(shapes)+(extra[1],)
+    return ont,shapes
 
 
 def _target_candidates(shapes,data,ontology,focus):

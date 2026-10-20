@@ -1,0 +1,58 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+arg:ontology a owl:Ontology ; owl:versionInfo "argumentation-0.1" ; owl:imports task:ontology .
+arg:Assertion a owl:Class ; rdfs:subClassOf core:Claim .
+arg:Proposition a owl:Class .
+arg:Scheme a owl:Class .
+arg:Argument a owl:Class ; rdfs:subClassOf core:Argument .
+arg:Attack a owl:Class .
+arg:Analysis a owl:Class .
+arg:HistorySummary a owl:Class .
+arg:Report a owl:Class .
+arg:asserts a owl:ObjectProperty ; rdfs:range arg:Proposition .
+arg:subject a owl:ObjectProperty .
+arg:predicate a owl:ObjectProperty .
+arg:object a rdf:Property . # An IRI or a typed literal; constrained by SHACL.
+arg:scope a owl:ObjectProperty ; rdfs:range task:TaskState .
+arg:source a owl:ObjectProperty .
+arg:inState a owl:ObjectProperty ; rdfs:range task:TaskState .
+arg:hasArgument a owl:ObjectProperty ; rdfs:range arg:Argument .
+arg:conclusion a owl:ObjectProperty ; rdfs:range arg:Assertion .
+arg:hasPremise a owl:ObjectProperty ; rdfs:range arg:Assertion .
+arg:hasSubargument a owl:ObjectProperty ; rdfs:range arg:Argument .
+arg:usesScheme a owl:ObjectProperty ; rdfs:range arg:Scheme .
+arg:attacker a owl:ObjectProperty ; rdfs:range arg:Argument .
+arg:target a owl:ObjectProperty ; rdfs:range arg:Argument .
+arg:affects a owl:ObjectProperty ; rdfs:range arg:Argument .
+arg:conclusionPredicate a owl:ObjectProperty .
+arg:conclusionObject a rdf:Property .
+arg:possiblePattern a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:contests a owl:ObjectProperty .
+arg:warrantsChallenge a owl:DatatypeProperty ; rdfs:range xsd:boolean .
+arg:inapplicable a owl:ObjectProperty ; rdfs:range arg:Scheme .
+arg:kind a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:polarity a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:modelConfidence a owl:DatatypeProperty ; rdfs:range xsd:double .
+arg:eligible a owl:DatatypeProperty ; rdfs:range xsd:boolean .
+arg:reportedText a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:ruleKind a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:label a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:priority a owl:DatatypeProperty ; rdfs:range xsd:integer .
+arg:criticalQuestion a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:attackKind a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:succeeds a owl:DatatypeProperty ; rdfs:range xsd:boolean .
+arg:status a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:mode a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:semantics a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:version a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:reason a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:query a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:premiseVariables a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:subjectVariable a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:objectVariable a owl:DatatypeProperty ; rdfs:range xsd:string .

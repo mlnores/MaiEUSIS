@@ -13,6 +13,14 @@ const elements=new Map(ids.map(id=>[id,new Element()]));elements.get('eventFilte
 const decision={id:'d1',action:'ask',message:'What evidence would change your approach?',rationale:'Uncertain task evidence',candidates:[],
  language:{mode:'ollama-generated'},evidence_package:{condition:'F'}};
 const snapshot={decision,claims:[],arguments:[],environment:{},participant:{},validation:{conforms:true},shacl:{conforms:true}};
+snapshot.graph_argumentation={status:'complete',mode:'shadow',semantics:'grounded',backend:'rdflib-sparql',
+ notice:'Researcher-only; argument labels do not establish truth.',
+ assertions:[{id:'premise1',content:'Observed sampling',kind:'calculation',source:'urn:observed-history'},
+             {id:'conclusion1',content:'Exploration warrants discussion',kind:'derived'}],
+ arguments:[{id:'argument1',rule:'urn:exploration-rule',rule_kind:'defeasible',label:'undecided',priority:0,
+  reason:'Exploration warrants discussion',conclusion:'conclusion1',premises:['premise1'],subarguments:[],
+  critical_questions:['Is persistence intentional?']}],
+ attacks:[],critical_questions:['Is persistence intentional?']};
 const source={id:'s1',protocol:'short',schema_version:'ontology-0.1',model_version:'models-0.1',policy:{version:'policy-0.2'},
  network:{backend:'exact-enumeration'},events:[
  {id:'evaluation1',timestamp:'2026-10-15',input:{kind:'evaluation',index:7},snapshot},
@@ -40,11 +48,15 @@ function find(root,predicate){if(predicate(root))return root;for(const child of 
  vm.runInContext(fs.readFileSync('socratic_prototype/static/inspector.js','utf8'),context);
  for(let i=0;i<5;i++)await new Promise(resolve=>setImmediate(resolve));
  const root=elements.get('detail');const accept=find(root,e=>e.tagName==='BUTTON'&&e.textContent==='Accept proposed interpretation');
+ assert.ok(find(root,e=>e.textContent==='Graph argumentation · shadow analysis'));
+ assert.ok(find(root,e=>e.tagName==='TD'&&e.textContent==='undecided'));
+ assert.ok(find(root,e=>e.tagName==='PRE'&&e.textContent.includes('urn:observed-history')));
+ assert.ok(find(root,e=>e.tagName==='LI'&&e.textContent==='Is persistence intentional?'));
  assert.ok(accept,'Pending interpretation must show its review controls');
  await accept.click();
  assert.equal(requests.filter(r=>r.options).length,1);
  assert.ok(find(root,e=>e.textContent.startsWith('Researcher review: accepted')));
  assert.equal(find(root,e=>e.tagName==='BUTTON'&&e.textContent==='Accept proposed interpretation'),null);
  assert.equal(JSON.stringify(source.events[0].snapshot.decision),originalDecision);
- console.log('Inspector: pending quote, acceptance event, immutable past decision and reviewed-state rendering passed.');
+ console.log('Inspector: shadow proof labels, premise provenance, critical questions, quote review and immutable past decisions passed.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

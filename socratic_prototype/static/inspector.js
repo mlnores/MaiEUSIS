@@ -75,6 +75,24 @@ function render(){
  root.append(node('h3','Supporting and opposing reasons'));
  if(!s.arguments.length)paragraph(root,'No candidate arguments at this point.','muted');
  for(const a of s.arguments)paragraph(root,`${a.status} · ${a.conclusion}: ${a.reason}`);
+ if(s.graph_argumentation){
+  const g=s.graph_argumentation;root.append(node('h3','Graph argumentation · shadow analysis'));
+  paragraph(root,`${g.status} · ${g.semantics} semantics · ${g.backend}`,'small muted');
+  paragraph(root,g.notice,'small');if(g.reason)paragraph(root,g.reason,'small');
+  const assertions=new Map(g.assertions.map(a=>[a.id,a]));
+  const derived=g.arguments.filter(a=>a.rule_kind!=='premise');
+  if(derived.length)table(root,['Label','Inference','Conclusion','Premises'],derived.map(a=>[
+   a.label,a.rule_kind,assertions.get(a.conclusion)?.content||a.conclusion,a.premises.length]));
+  for(const a of derived){
+   details(root,`${a.label} · ${a.reason}`,{rule:a.rule,rule_kind:a.rule_kind,priority:a.priority,
+    conclusion:assertions.get(a.conclusion),premises:a.premises.map(id=>assertions.get(id)),
+    subarguments:a.subarguments,critical_questions:a.critical_questions,
+    incoming_attacks:g.attacks.filter(attack=>attack.target===a.id||attack.affected.includes(a.id))});
+  }
+  if(g.critical_questions.length){const questions=node('ul');for(const q of g.critical_questions)questions.append(node('li',q));root.append(node('strong','Open critical questions'),questions);}
+  if(g.attacks.length)details(root,'Attacks, successful defeats and affected derivations',g.attacks);
+  details(root,'Complete graph assertions and derivations',g);
+ }
  if(s.environment.arms)table(root,['Arm','Samples','Estimated value','P(change)'],s.environment.arms.map(a=>[a.arm,a.samples,a.estimated_value,a.change.samples<6?'insufficient evidence':a.change.posterior]));
  details(root,'Environment model',s.environment);details(root,'Participant model and calibration',s.participant);
  details(root,'Record validation',s.validation);details(root,'SHACL validation report',s.shacl);
@@ -82,6 +100,7 @@ function render(){
  details(root,'Calibration sources',current.calibration_sources);details(root,'Descriptive session summary',current.summary);
  if(current.language_configuration)details(root,'Frozen language configuration',current.language_configuration);
  if(current.task_module)details(root,'Task module, namespace and ontology versions',current.task_module);
+ if(current.argumentation_configuration)details(root,'Frozen shadow argumentation configuration',current.argumentation_configuration);
 }
 function download(name,data,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=node('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 el('refresh').onclick=()=>refresh().catch(report);el('sessionSelect').onchange=()=>load().catch(report);el('eventFilter').onchange=filter;

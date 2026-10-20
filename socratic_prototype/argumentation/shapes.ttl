@@ -1,0 +1,52 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix core: <https://example.org/socratic/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+arg:AssertionShape a sh:NodeShape ; sh:targetClass arg:Assertion ;
+ sh:property [ sh:path arg:asserts ; sh:minCount 1 ; sh:maxCount 1 ; sh:class arg:Proposition ] ;
+ sh:property [ sh:path arg:source ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ;
+ sh:property [ sh:path arg:kind ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("observation" "calculation" "estimate" "report" "assumption" "derived") ] ;
+ sh:property [ sh:path arg:modelConfidence ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:property [ sh:path (arg:asserts arg:subject) ; sh:equals arg:subject ] ;
+ sh:property [ sh:path (arg:asserts arg:predicate) ; sh:equals arg:predicate ] ;
+ sh:property [ sh:path (arg:asserts arg:object) ; sh:equals arg:object ] ;
+ sh:property [ sh:path (arg:asserts arg:scope) ; sh:equals arg:scope ] ;
+ sh:property [ sh:path (arg:asserts arg:polarity) ; sh:equals arg:polarity ] ;
+ sh:or (
+  [ sh:not [ sh:property [ sh:path arg:kind ; sh:hasValue "estimate" ] ] ]
+  [ sh:property [ sh:path core:status ; sh:hasValue "inferred" ] ]
+ ) ;
+ sh:or (
+  [ sh:not [ sh:property [ sh:path arg:kind ; sh:hasValue "report" ] ] ]
+  [ sh:property [ sh:path core:status ; sh:hasValue "source-dependent" ] ]
+ ) .
+arg:PropositionShape a sh:NodeShape ; sh:targetClass arg:Proposition ;
+ sh:property [ sh:path arg:subject ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ;
+ sh:property [ sh:path arg:predicate ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ;
+ sh:property [ sh:path arg:object ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRIOrLiteral ] ;
+ sh:property [ sh:path arg:scope ; sh:minCount 1 ; sh:maxCount 1 ; sh:class task:TaskState ] ;
+ sh:property [ sh:path arg:polarity ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("positive" "negative") ] .
+arg:ArgumentShape a sh:NodeShape ; sh:targetClass arg:Argument ;
+ sh:property [ sh:path arg:conclusion ; sh:minCount 1 ; sh:maxCount 1 ; sh:class arg:Assertion ] ;
+ sh:property [ sh:path arg:hasPremise ; sh:minCount 1 ; sh:class arg:Assertion ] ;
+ sh:property [ sh:path arg:hasSubargument ; sh:class arg:Argument ] ;
+ sh:property [ sh:path arg:ruleKind ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("premise" "strict" "defeasible") ] ;
+ sh:property [ sh:path arg:priority ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ] ;
+ sh:property [ sh:path arg:label ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("accepted" "rejected" "undecided") ] ;
+ sh:or (
+  [ sh:property [ sh:path arg:ruleKind ; sh:hasValue "premise" ] ; sh:property [ sh:path arg:usesScheme ; sh:maxCount 0 ] ]
+  [ sh:property [ sh:path arg:usesScheme ; sh:minCount 1 ; sh:maxCount 1 ; sh:class arg:Scheme ] ]
+ ) .
+arg:AttackShape a sh:NodeShape ; sh:targetClass arg:Attack ;
+ sh:property [ sh:path arg:attacker ; sh:minCount 1 ; sh:maxCount 1 ; sh:class arg:Argument ] ;
+ sh:property [ sh:path arg:target ; sh:minCount 1 ; sh:maxCount 1 ; sh:class arg:Argument ] ;
+ sh:property [ sh:path arg:attackKind ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("undermining" "rebutting" "undercutting") ] ;
+ sh:property [ sh:path arg:succeeds ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
+ sh:property [ sh:path arg:affects ; sh:class arg:Argument ] .
+arg:AnalysisShape a sh:NodeShape ; sh:targetClass arg:Analysis ;
+ sh:property [ sh:path arg:mode ; sh:hasValue "shadow" ] ;
+ sh:property [ sh:path arg:status ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("complete" "limited" "unavailable" "not-evaluated") ] ;
+ sh:property [ sh:path arg:semantics ; sh:hasValue "grounded" ] ;
+ sh:property [ sh:path arg:inState ; sh:minCount 1 ; sh:maxCount 1 ; sh:class task:TaskState ] .

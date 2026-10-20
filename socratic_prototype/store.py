@@ -17,6 +17,7 @@ from .tasks import get_task,available_tasks
 from .tasks.base import SCHEMA_VERSION
 from .tasks.tbs import RULES  # Compatibility import for the original task/demo API.
 from .study import required_calibrations
+from .argumentation import configuration as argumentation_configuration
 
 # JSON roundtrip makes pairs lists consistently across SQLite and initial state.
 RULES=json.loads(json.dumps(RULES))
@@ -30,7 +31,7 @@ def digest(value):return hashlib.sha256(json.dumps(value,sort_keys=True,separato
 
 def configuration_fields(session):
     # Legacy traces remain inspectable/replayable without retroactively adding fields.
-    return CONFIGURATION_FIELDS+([k for k in ['language_configuration','task_module'] if k in session])
+    return CONFIGURATION_FIELDS+([k for k in ['language_configuration','task_module','argumentation_configuration'] if k in session])
 
 
 class Store:
@@ -96,6 +97,7 @@ class Store:
            'model_version':VERSION,'schema_version':SCHEMA_VERSION,'task_module':task.describe(),
            'calibration_sources':calibration,'calibration_profile':profile}
         s['language_configuration']={**language_configuration(),'grounding_version':GROUNDING_VERSION}
+        s['argumentation_configuration']=argumentation_configuration(task)
         s['configuration_digest']=digest({k:s[k] for k in configuration_fields(s)})
         with self.lock:
             with self.connect() as c:
@@ -107,6 +109,7 @@ class Store:
         with self.lock:
             s=self.get(sid)
             if 'task_module' in s:require(s['task_module']==get_task(s['task']).describe(),'Task module or ontology changed; start a new session with the current version')
+            if 'argumentation_configuration' in s:require(s['argumentation_configuration']==argumentation_configuration(get_task(s['task'])),'Argumentation backend or definitions changed; start a new session')
             # Exact retries are idempotent. Different repeated payloads still fail validation.
             for e in s['events']:
                 if e['input']==data:return e
@@ -133,6 +136,7 @@ class Store:
             require(original['language_configuration']['grounding_version']==GROUNDING_VERSION,'Replay requires the recorded grounding version')
         expected={'policy':POLICY,'model_version':VERSION,'schema_version':SCHEMA_VERSION if 'task_module' in original else 'ontology-0.1','network':NETWORK.describe()}
         if 'task_module' in original:expected['task_module']=get_task(original['task']).describe()
+        if 'argumentation_configuration' in original:expected['argumentation_configuration']=argumentation_configuration(get_task(original['task']))
         # Reject model/policy drift rather than pretending a new model reproduces an old run.
         for key,value in expected.items():
             require(original[key]==value,'Replay requires recorded '+key+' version/backend; current runtime differs')

@@ -41,7 +41,8 @@ def save(store,sid,excerpt):
     data={'synthetic':True,'notice':'Constructed backend walkthrough, not human data or a complete experimental session.',
           'task':session['task'],'condition':session['condition'],'model_version':session['model_version'],
           'policy_version':session['policy']['version'],'schema_version':session['schema_version'],
-          'task_module':session['task_module'],**excerpt}
+          'task_module':session['task_module'],
+          **({'argumentation_configuration':session['argumentation_configuration']} if 'argumentation_configuration' in session else {}),**excerpt}
     OUT.joinpath(session['task'].lower()+'.json').write_text(json.dumps(data,indent=2,allow_nan=False)+'\n')
     return store.replay(sid)
 

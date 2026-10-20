@@ -26,6 +26,10 @@ def describe():return describe_task(ID,NAMESPACE,MODULE_VERSION,ONTOLOGY_VERSION
 
 evidence_observation=common_observation
 
+def argumentation_documents():
+    from ..argumentation import ROOT
+    return (ROOT/'schemes/tbs.ttl',)
+
 def task_rules():return copy.deepcopy(RULES)
 
 def history_context(ev):

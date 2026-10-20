@@ -14,6 +14,8 @@ def register_task(module):
     require(identity(module.ID) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',module.ID),'Invalid task identifier')
     require(module.ID not in _TASKS,'Task is already registered')
     require(all(callable(getattr(module,name,None)) for name in _METHODS),'Task does not implement the task contract')
+    for name in ['argumentation_documents','project_argumentation_facts']:
+        require(not hasattr(module,name) or callable(getattr(module,name)),'Invalid optional task hook: '+name)
     require(bool(module.PROTOCOLS) and all(isinstance(k,str) and type(v) is int and v>0 for k,v in module.PROTOCOLS.items()),'Invalid task protocols')
     _TASKS[module.ID]=module
 

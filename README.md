@@ -105,6 +105,10 @@ this implementation has not been validated for laboratory acquisition.
   A hand-written Bayesian network estimates possible mismatch and usefulness;
   a separate policy weighs thresholds, interruption cost, preferences, and
   cooldown from actually delivered messages.
+- **Graph argumentation (shadow):** with RDFLib, new evaluation snapshots discover
+  arguments through scoped SPARQL schemes over structured assertions. Strict and
+  defeasible derivations retain their premises, subarguments, objections and
+  grounded labels. These researcher-only results do not control live messages.
 - **Silence:** recorded for every eligible point, with its rationale. No language
   request is made for silence.
 - **Corrections:** self-reports are attributed evidence, never silently promoted
@@ -127,6 +131,16 @@ MAB/TBS models, event boundaries, task-specific checks and RDF projections live
 in registered Python task modules. New sessions freeze module/ontology versions
 and definition-file hashes; original core URIs and legacy exports remain supported.
 See the [task module and extension guide](docs/task_modules.md).
+
+The separately versioned `arg:` extension adds structured propositions, argument
+schemes, rule applications and attacks. The inspector exposes derivations,
+accepted/rejected/undecided labels, source records and open critical questions.
+An estimate or attributed report remains uncertain even when its argument is
+accepted. Argumentation definitions, backend and limits are frozen into new
+sessions; older traces retain their original behaviour and export.
+See the [graph argumentation guide](docs/graph_argumentation.md) for semantics,
+limits, task extension hooks and synthetic examples. Restart the research server
+and create a new session to inspect this analysis.
 
 For a concrete audit of what is represented in RDF versus JSON, see the
 [MAB/TBS ontology walkthrough](docs/ontology_examples/README.md), with synthetic
@@ -324,6 +338,7 @@ and calibration-length adequacy need an agreed pilot protocol.
 python3 -m unittest discover -s tests -v
 node tests/test_browser_contract.cjs
 node tests/test_inspector_contract.cjs
+node tests/test_demo_visuals.cjs
 ```
 
 The Python tests exercise both provider request/response contracts with mocked
@@ -339,15 +354,14 @@ it does not establish real-browser appearance or physical timing. A separate
 inspector contract test executes the actual review controls and verifies acceptance
 requests, reviewed-state rendering and preservation of past decisions.
 
-The current catalog contains 64 Python tests. With pgmpy 1.1.2 and pySHACL 0.40.1,
-the full 57-test regression passed with one socket-related skip, and all seven
-new task-module tests passed: 63 distinct passing tests. The latter check a third
-task through the common pipeline, module/document drift, legacy compatibility,
-numerical MAB/TBS RDF provenance, conditional multiplier behaviour and rejection
-of invalid nested values/rules. Both example graphs pass full SHACL validation
-and all five SPARQL queries. Without optional libraries, the full 57-test
-regression and seven focused module tests also passed their applicable cases
-(six skips: socket binding and five RDF-dependent checks).
+The current catalog contains 82 Python tests. Task-module checks cover a third
+task through the common pipeline, version/document drift, legacy compatibility,
+numerical RDF provenance and conditional multiplier behaviour. Eighteen graph
+argumentation tests cover multi-step discovery, independent objections, grounded
+cycles/defence, priorities, attack propagation, state isolation, attributed
+contestation, epistemic preservation, construction limits, shadow-only behaviour,
+SHACL integrity and replay. RDF-dependent tests skip explicitly without the
+research libraries; a local socket test can also skip where binding is forbidden.
 
 MAB/TBS task and inspector JavaScript contract tests passed, including fixed
 preparation timing and interpretation review. Complete short generated-mode

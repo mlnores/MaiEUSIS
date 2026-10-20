@@ -1,0 +1,51 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+mab:argumentOntology a owl:Ontology ; owl:imports arg:ontology .
+mab:completedChoices a owl:DatatypeProperty .
+mab:sampledArmCount a owl:DatatypeProperty .
+mab:remainingDecisions a owl:DatatypeProperty .
+mab:limitedCoverage a owl:DatatypeProperty .
+mab:explorationWorthDiscussing a owl:DatatypeProperty .
+mab:checkPossibleChange a owl:DatatypeProperty .
+mab:coverageArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate mab:limitedCoverage ; arg:polarity "positive" ; arg:reason "At least six observed choices still leave alternatives unsampled." ; arg:conclusionObject true ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p1 ?p2 ?state WHERE {
+{ SELECT DISTINCT ?p1 ?state ?summary ?n WHERE { ?p1 a arg:Assertion ; arg:predicate mab:completedChoices ; arg:scope ?state ; arg:subject ?summary ; arg:object ?n ; arg:polarity "positive" . } }
+{ SELECT DISTINCT ?p2 ?state ?summary ?k WHERE { ?p2 a arg:Assertion ; arg:predicate mab:sampledArmCount ; arg:scope ?state ; arg:subject ?summary ; arg:object ?k ; arg:polarity "positive" . } }
+FILTER(?n >= 6 && ?k < 6)
+}
+""" .
+mab:explorationArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "state" ; arg:conclusionPredicate mab:explorationWorthDiscussing ; arg:polarity "positive" ; arg:reason "Limited observed coverage supports asking whether further exploration is worthwhile." ; arg:conclusionObject true ; arg:criticalQuestion "Could persistence be intentional, and is further exploration worth its cost?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p ?state WHERE {
+{ SELECT DISTINCT ?p ?state WHERE { ?p a arg:Assertion ; arg:predicate mab:limitedCoverage ; arg:scope ?state ; arg:subject ?state ; arg:object true ; arg:polarity "positive" . } }
+}
+""" .
+mab:shortHorizonObjection a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate mab:explorationWorthDiscussing ; arg:polarity "negative" ; arg:reason "A short remaining horizon limits the case for raising further exploration." ; arg:conclusionObject true ; arg:criticalQuestion "Would another exploration prompt help with so few decisions left?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p1 ?p2 ?state WHERE {
+{ SELECT DISTINCT ?p1 ?state WHERE { ?p1 a arg:Assertion ; arg:predicate mab:limitedCoverage ; arg:scope ?state ; arg:subject ?state ; arg:object true ; arg:polarity "positive" . } }
+{ SELECT DISTINCT ?p2 ?state ?summary ?n WHERE { ?p2 a arg:Assertion ; arg:predicate mab:remainingDecisions ; arg:scope ?state ; arg:subject ?summary ; arg:object ?n ; arg:polarity "positive" . } }
+FILTER(?n <= 2)
+}
+""" .
+mab:changeArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "arm" ; arg:conclusionPredicate mab:checkPossibleChange ; arg:polarity "positive" ; arg:reason "Sampled outcomes support checking a possible change; change remains an estimate." ; arg:conclusionObject true ; arg:criticalQuestion "What additional observations would distinguish reward noise from a change?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p1 ?p2 ?arm WHERE {
+{ SELECT DISTINCT ?p1 ?state ?estimate ?prob WHERE { ?p1 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?estimate ; arg:object ?prob ; arg:polarity "positive" . } }
+{ SELECT DISTINCT ?p2 ?state ?estimate ?n WHERE { ?p2 a arg:Assertion ; arg:predicate task:samples ; arg:scope ?state ; arg:subject ?estimate ; arg:object ?n ; arg:polarity "positive" . } }
+?estimate a mab:ChangeEstimate ; task:forOption ?arm . FILTER(?prob >= 0.3 && ?n >= 6)
+}
+""" .
