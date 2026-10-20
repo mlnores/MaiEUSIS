@@ -1,4 +1,4 @@
-# Optional research integrations. The local prototype has no required dependencies.
+# Graph reasoning plus optional Bayesian and SHACL integrations.
+-r requirements.txt
 pgmpy>=1.0,<2
-rdflib>=7,<8
 pyshacl>=0.30,<1

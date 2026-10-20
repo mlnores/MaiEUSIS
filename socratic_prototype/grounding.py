@@ -14,7 +14,7 @@ from .language import configuration, request_ollama
 from .validation import fields, require, ValidationError
 from .tasks import get_task
 
-VERSION='grounding-0.1'
+VERSION='grounding-0.2'
 QUESTION_ACTIONS={'ask','challenge','support','compare','highlight-dependency','request-evidence'}
 SEMANTIC_LIMIT='Hard checks do not establish semantic grounding, usefulness or preservation of uncertainty.'
 
@@ -67,9 +67,28 @@ def build_evidence_package(session,evaluation,snapshot,selected,history):
     unknown=next(c for c in snapshot['claims'] if 'unknown' in c['statuses'])
     package['claims'].append({'ref':'u0','source_id':unknown['id'],'statuses':['unknown'],
           'content':'Task and participant state are unavailable in this condition.' if generic else unknown['content']})
-    arguments={a['id']:a for a in snapshot['arguments']}
-    package['arguments']={name:arguments[selected[key]]['reason'] for name,key in
-                          [('support','supporting_argument'),('opposition','opposing_argument')]}
+    if 'supporting_arguments' in selected:
+        from .intervention_policy import proof_closure
+        graph=snapshot['graph_argumentation'];indexed_arguments={a['id']:a for a in graph['arguments']}
+        support=selected['supporting_arguments'];opposition=selected['opposing_arguments']
+        proofs=proof_closure(graph,support+opposition)
+        assertions={a['id']:a for a in graph['assertions']}
+        # Project only the selected proof and actual attackers, never the full
+        # graph (which may also contain personalised research-only hypotheses).
+        used={a['conclusion'] for a in proofs}|{p for a in proofs for p in a['premises']}
+        package['arguments']={
+            'support':' '.join(indexed_arguments[a]['reason'] for a in support),
+            'opposition':' '.join(indexed_arguments[a]['reason'] for a in opposition),
+            'evaluation':selected['argument_evaluation'],
+            'critical_questions':sorted({q for a in proofs for q in a['critical_questions']}),
+            'proofs':[{'ref':'a'+str(i),'rule':a['rule'],'label':a['label'],'rule_kind':a['rule_kind'],
+                      'reason':a['reason'],'conclusion':pick(assertions[a['conclusion']],['content','statuses','kind']),
+                      'premises':[pick(assertions[p],['content','statuses','kind']) for p in a['premises']]} for i,a in enumerate(proofs)]}
+    else:
+        # Read-only support for historical offline language-evaluation fixtures.
+        arguments={a['id']:a for a in snapshot['arguments']}
+        package['arguments']={name:arguments[selected[key]]['reason'] for name,key in
+                              [('support','supporting_argument'),('opposition','opposing_argument')]}
     if generic:return package
     env=snapshot['environment'];task=get_task(session['task'])
     window=history[-session['policy']['window_trials']:]

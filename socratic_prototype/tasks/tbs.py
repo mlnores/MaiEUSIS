@@ -30,6 +30,15 @@ def argumentation_documents():
     from ..argumentation import ROOT
     return (ROOT/'schemes/tbs.ttl',)
 
+def project_argumentation_facts(w,session,event,state,history):
+    if history and history[-1].get('block')==event['input']['block']:
+        from ..semantics import DATA
+        summary=state+'/history-summary';w.types(summary,'arg:HistorySummary')
+        w.obj(summary,'arg:inState',state)
+        w.value(summary,'tbs:lastObservedGain',history[-1]['outcome'])
+        w.obj(summary,'task:basedOnObservation',DATA+history[-1]['trial_id']+'/outcome')
+
+
 def task_rules():return copy.deepcopy(RULES)
 
 def history_context(ev):
@@ -193,17 +202,6 @@ def hypothesis_inputs(session,evaluation,environment,h):
     definitions = [('constraint_neglect', environment['remaining'] <= 2, repeated and weak_sensitivity, environment['remaining'] <= 2, 'A repeated choice pattern may warrant checking the shrinking horizon.', ['The same option can still be appropriate after the context changes.', 'The final-win multiplier can preserve feasibility.', 'A policy estimate cannot establish that the participant ignored a constraint.'], ['A context-sensitive adjustment or an explicit constraint-aware explanation revises this account.'])]
     stats = {'recent_choices': choices, 'pressure_policy': sensitivity, 'calibrated_weak_pressure_sensitivity': weak_sensitivity, 'evidence_window': evidence}
     return definitions,stats
-
-def contribute_candidates(session,ev,env,h,stats,estimated,socratic,existing,candidate):
-    p=session['policy']
-    if env['remaining'] == 1:
-        candidate('final_multiplier', 'highlight-dependency' if socratic else 'explain', ['The multiplier applies only if this final choice wins. How does that affect your chance of meeting the target?'] if socratic else ['On the final trial, compare target attainment after a win and after no gain. The multiplier applies only after a win.'], [estimated['id']], 'The published final-win rule changes target attainment.', 'Neither immediate EV nor the nominal gap alone determines attainment.', 0.88)
-    elif env['remaining'] <= 2:
-        candidate('shrinking_horizon', 'ask' if socratic else 'explain', ['Can your current approach still close the target gap with the choices remaining?'] if socratic else ['Review the target gap against the remaining choices and the conditional final multiplier.'], [estimated['id']], 'The target gap must be assessed against a short horizon.', 'Future option pairs and outcomes are unknown; do not declare the target unreachable.', 0.78)
-    if h and h[-1].get('block') == ev['block'] and (h[-1]['outcome'] > 0):
-        candidate('gap_after_gain', 'ask' if socratic else 'explain', ['The last gain reduced the target gap. Does the same level of risk still serve your goal?'] if socratic else ['Reconsider the level of risk after the last gain reduced the target gap.'], [estimated['id']], 'A recorded gain changed target progress.', 'A smaller gap alone does not imply that less risk is better.', 0.63)
-    if not existing and ev['index'] % p['fixed_prompt_interval'] == 0:
-        candidate('expected_value_limit', 'compare' if socratic else 'explain', ['How do the expected gains compare with the chance of reaching your target?'] if socratic else ['Immediate expected gain and final target attainment are different objectives. Consider both.'], [estimated['id']], 'Displayed probabilities and gains support an EV comparison.', 'No future outcome or optimal multi-trial policy is known.', 0.6)
 
 HYPOTHESIS_WORDING = {'constraint_neglect': 'Your recent choice pattern has stayed similar as the horizon shrinks. How are you accounting for the remaining chances?'}
 

@@ -1,0 +1,2 @@
+# Required for graph-grounded assistance; no account or external service is needed.
+rdflib>=7,<8

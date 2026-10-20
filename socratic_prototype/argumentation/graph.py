@@ -43,7 +43,7 @@ def write_assertion(w,assertion,event):
     identifier=assertion['id'];p=assertion['proposition'];proposition=identifier+'/proposition'
     w.types(identifier,'arg:Assertion','core:Claim')
     for key,value in [('content',assertion['content']),('scope',p['scope']),('timestamp',event['timestamp']),
-                      ('provenance',assertion['source']),('model_version',VERSION)]:w.value(identifier,'core:'+key,value)
+                      ('provenance',assertion['source']),('model_version',event.get('snapshot',{}).get('graph_argumentation',{}).get('version',VERSION))]:w.value(identifier,'core:'+key,value)
     for status in assertion['statuses']:w.value(identifier,'core:status',status)
     w.obj(identifier,'core:supportedBy',CORE+event['input']['trial_id'])
     w.obj(identifier,'arg:asserts',proposition);w.obj(identifier,'arg:source',assertion['source'])
@@ -93,6 +93,8 @@ def build_input(session,event):
             if not str(predicate).startswith((module.NAMESPACE,TASK,ARG)):continue
             kind='estimate' if task.Estimate in types and predicate!=task.samples else 'calculation' if task.Calculation in types or arg.HistorySummary in types else 'observation'
             add(subject,predicate,value,kind,subject)
+    add(URIRef(state),arg.preparationPoint,Literal(True),'observation',URIRef(state),
+        'A preparation point is recorded; no participant intent is implied.')
     claims={c['id']:c for c in snap['claims']}
     events={e['id']:e for e in session['events']}
     def report_metadata(recorded,quote):
@@ -157,12 +159,16 @@ def project_report(w,event):
         if a['rule']:
             w.obj(identifier,'arg:usesScheme',a['rule'])
             if w.once(a['rule']):
-                w.types(a['rule'],'arg:Scheme');w.value(a['rule'],'arg:version',VERSION)
+                w.types(a['rule'],'arg:Scheme');w.value(a['rule'],'arg:version',report['version'])
                 w.value(a['rule'],'arg:ruleKind',a['rule_kind'])
         for premise in a['premises']:
             w.obj(identifier,'arg:hasPremise',premise);w.obj(identifier,'core:supportedBy',premise)
         for sub in a['subarguments']:w.obj(identifier,'arg:hasSubargument',sub)
         for question in a['critical_questions']:w.value(identifier,'arg:criticalQuestion',question)
+    decision=event['snapshot'].get('decision')
+    if decision:
+        for identifier in decision.get('argument_ids',[]):w.obj(CORE+decision['id'],'arg:justifiedBy',identifier)
+        for identifier in decision.get('opposing_argument_ids',[]):w.obj(CORE+decision['id'],'arg:consideredObjection',identifier)
     for i,attack in enumerate(report['attacks']):
         identifier=root+'/attack/'+str(i);w.types(identifier,'arg:Attack')
         w.obj(identifier,'arg:attacker',attack['attacker']);w.obj(identifier,'arg:target',attack['target'])

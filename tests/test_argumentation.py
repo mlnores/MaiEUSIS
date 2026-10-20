@@ -1,4 +1,4 @@
-"""Graph discovery, structured attacks, uncertainty and shadow-only integration."""
+"""Graph discovery, structured attacks, uncertainty and graph-driven integration."""
 import copy
 import tempfile
 import unittest
@@ -98,13 +98,16 @@ class ConfigurationTest(unittest.TestCase):
             with self.assertRaisesRegex(ValidationError,'argumentation_configuration'):self.store.replay(s['id'])
         self.assertEqual(self.store.get(s['id'])['events'],[])
 
-    def test_old_sessions_do_not_gain_shadow_records(self):
+    def test_historical_sessions_remain_readable_but_require_the_recorded_runtime(self):
         s=self.create();s.pop('argumentation_configuration')
         s['configuration_digest']=digest({k:s[k] for k in configuration_fields(s)});self.store.save(s)
-        e=self.store.event(s['id'],evaluation('MAB',s['id'],1))
-        self.assertNotIn('graph_argumentation',e['snapshot'])
-        self.assertNotIn('@prefix arg:',turtle(self.store.get(s['id'])))
-        self.assertTrue(self.store.replay(s['id'])['matches'])
+        before=self.store.get(s['id'])
+        with self.assertRaisesRegex(ValidationError,'Historical session'):
+            self.store.event(s['id'],evaluation('MAB',s['id'],1))
+        self.assertEqual(self.store.get(s['id']),before)
+        self.assertEqual(self.store.export(s['id'])['events'],[])
+        self.assertNotIn('@prefix arg:',turtle(before))
+        with self.assertRaisesRegex(ValidationError,'Historical replay'):self.store.replay(s['id'])
 
     def test_dependency_absence_is_recorded_without_claiming_inference(self):
         s=self.create();s['argumentation_configuration']['backend']='unavailable'
@@ -117,7 +120,7 @@ class ConfigurationTest(unittest.TestCase):
 @unittest.skipUnless(HAS_RDF,'RDFLib research dependency not installed')
 class DiscoveryTest(ConfigurationTest):
     test_frozen_reasoner_drift_rejected_before_event_or_replay=None
-    test_old_sessions_do_not_gain_shadow_records=None
+    test_historical_sessions_remain_readable_but_require_the_recorded_runtime=None
     test_dependency_absence_is_recorded_without_claiming_inference=None
 
     def emit(self,s,ev,choice,outcome):
@@ -203,14 +206,13 @@ class DiscoveryTest(ConfigurationTest):
         self.assertTrue(self.store.replay(s['id'])['matches'])
         self.assertIsNot(shacl_report(self.store.get(s['id']))['conforms'],False)
 
-    def test_shadow_leaves_decision_and_language_package_unchanged(self):
-        s,e=self.mab();session=self.store.get(s['id'])
-        from socratic_prototype.engine import make_snapshot
-        original=copy.deepcopy(e['snapshot']['decision'])
-        session.pop('argumentation_configuration')
-        self.assertEqual(make_snapshot(session,e['input'],e['id'],e['timestamp'])['decision'],original)
+    def test_graph_is_computed_before_the_delivery_policy_and_is_exported(self):
+        s,e=self.mab();session=self.store.get(s['id']);snap=e['snapshot']
+        self.assertEqual(snap['graph_argumentation']['mode'],'live')
+        self.assertEqual(snap['decision']['reasoning_source'],'graph')
+        self.assertEqual(snap['arguments'],[])
         self.assertTrue(self.store.replay(s['id'])['matches'])
-        g=rdflib.Graph().parse(data=turtle(self.store.get(s['id'])),format='turtle')
+        g=rdflib.Graph().parse(data=turtle(session),format='turtle')
         self.assertTrue(list(g.subjects(rdflib.RDF.type,rdflib.URIRef(ARG+'Assertion'))))
 
     def test_historical_analysis_cannot_see_later_feedback(self):

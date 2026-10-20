@@ -43,6 +43,9 @@ def validate_snapshot(snapshot, trial_ids):
         require(bool(decision['rationale']),'Decision lacks rationale, including silence')
         require(bool(decision['claim_ids']) and set(decision['claim_ids'])<=ids,'Decision lacks grounded claims')
         require(decision['action']=='silence' or bool(decision['message']),'Active decision lacks validated message')
+    if decision and decision.get('reasoning_source')=='graph':
+        from .intervention_policy import validate_decision
+        validate_decision(snapshot)
     for a in snapshot['arguments']:
         require(bool(a['evidence']) and set(a['evidence'])<=ids,'Argument lacks claims')
         require(a['status'] in {'supported','opposed','unresolved'},'Invalid argument status')
@@ -149,7 +152,8 @@ def _candidate_projection(session):
     extras=Writer()
     if previous:
         prior=records[-2];prior_writer=Writer()
-        module.project_rdf(prior_writer,session,prior,previous,evals[prior['input']['trial_id']],None)
+        prior_previous=DATA+records[-3]['id']+'/state' if len(records)>2 else None
+        module.project_rdf(prior_writer,session,prior,previous,evals[prior['input']['trial_id']],prior_previous)
         extras.lines.extend(line for line in prior_writer.lines if line.startswith('<'+previous+'> '))
     for event in session['events']:
         if event['input']['kind']=='feedback' and event['id']!=current['id']:

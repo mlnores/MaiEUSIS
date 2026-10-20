@@ -1,4 +1,4 @@
-"""Build synthetic shadow reasoning examples in a temporary store, with no LLM.
+"""Build synthetic graph reasoning examples in a temporary store, with no LLM.
 
 Run: .venv/bin/python -m socratic_prototype.argumentation.examples --output examples.json
 """
@@ -19,7 +19,7 @@ def main():
     from . import analyse
     from ..store import Store
     from ..demo import evaluation
-    result={'synthetic':True,'notice':'Constructed partial unassisted sessions; shadow arguments are researcher-only, not human data.',
+    result={'synthetic':True,'notice':'Constructed partial unassisted sessions; graph warrants are computed but condition A stays silent. Not human data.',
             'cases':{},'replay':{}}
     with tempfile.TemporaryDirectory(prefix='maieusis-argumentation-examples-') as temp:
         store=Store(Path(temp)/'sessions.sqlite3')

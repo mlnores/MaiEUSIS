@@ -45,12 +45,13 @@ class TaskModuleTest(unittest.TestCase):
     def test_legacy_configuration_and_projection_remain_supported(self):
         s=self.create('MAB');s.pop('task_module');s.pop('argumentation_configuration');s['schema_version']='ontology-0.1'
         s['configuration_digest']=digest({k:s[k] for k in configuration_fields(s)});self.store.save(s)
-        self.store.event(s['id'],evaluation('MAB',s['id'],1))
-        self.assertTrue(self.store.replay(s['id'])['matches'])
+        with self.assertRaisesRegex(ValidationError,'Historical session'):
+            self.store.event(s['id'],evaluation('MAB',s['id'],1))
         graph=turtle(self.store.get(s['id']))
         self.assertNotIn('@prefix task:',graph)
         self.assertIn('<'+CORE+s['id']+'> a s:Session',graph)
 
+    @unittest.skipUnless(HAS_RDF,'Live assistance needs RDFLib')
     def test_new_task_uses_shared_pipeline_without_domain_branches(self):
         # A genuinely different two-step task: only the shared ontologies apply.
         get_task('MAB')
@@ -63,16 +64,17 @@ class TaskModuleTest(unittest.TestCase):
         def transition(s,e,h,evals):
             if e['kind']=='evaluation':require(e['counter']==len(h),'Counter changed')
             else:require(e['choice']=='advance' and e['outcome']==1 and e['counter_after']==len(h)+1,'Invalid advance')
-        def candidates(s,ev,env,h,stats,claim,socratic,existing,add):
-            add('counter_check','explain',['Review the recorded counter.'],[claim['id']],
-                'The counter is public.','Further observations may be useful.',.9)
-        def project(w,s,e,state,ev,previous):w.state(s,e,state,'task:TaskState',previous)
+        pack=Path(self.temp.name)/'toy.ttl'
+        pack.write_text('@prefix toy: <https://example.org/socratic/toy/> .\n@prefix arg: <https://example.org/socratic/argumentation/> .\n@prefix owl: <http://www.w3.org/2002/07/owl#> .\ntoy:counter a owl:DatatypeProperty . toy:review a owl:DatatypeProperty .\ntoy:reviewArgument a arg:Scheme ; arg:version "toy-0.1" ; arg:ruleKind "strict" ;\n arg:premiseVariables "p" ; arg:subjectVariable "state" ; arg:conclusionPredicate toy:review ; arg:conclusionObject true ; arg:polarity "positive" ;\n arg:reason "The counter is recorded." ; arg:issue "counter_check" ; arg:audience "task" ; arg:usefulness 0.9 ; arg:socraticAction "ask" ;\n arg:conventionalMessage "Review the recorded counter." ; arg:socraticMessage "What does the recorded counter show?" ;\n arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>\nPREFIX toy: <https://example.org/socratic/toy/>\nSELECT ?p ?state WHERE { ?p a arg:Assertion ; arg:predicate toy:counter ; arg:scope ?state ; arg:object ?n . }""" .\n')
+        def project(w,s,e,state,ev,previous):
+            w.state(s,e,state,'task:TaskState',previous)
+            w.value(state,'toy:counter',e.get('counter_after',ev['counter']))
         module=SimpleNamespace(ID='TOY',NAMESPACE=CORE+'toy/',MODULE_VERSION='toy-0.1',
             ONTOLOGY_VERSION='toy-ontology-0.1',PROTOCOLS={'short':2},ELIGIBLE_POINT='before advance',
             documents=lambda:docs,task_rules=lambda:{'increment':1},validate_event=validate,validate_transition=transition,
             calibrate=lambda h:{'task':'TOY','model_version':MODEL_VERSION,'samples':len(h)},
             environment=lambda h,ev,p,e:{'counter':e.get('counter_after',ev['counter']),'unknown':['Next observation']},
-            participant=lambda h,p:{},hypothesis_inputs=lambda *args:([],{}),contribute_candidates=candidates,
+            participant=lambda h,p:{},hypothesis_inputs=lambda *args:([],{}),argumentation_documents=lambda:(pack,),
             hypothesis_message=lambda *args:'Review the evidence.',same_scope=lambda *args:True,scope_suffix=lambda e:'',
             environment_claim=lambda e:(f"Counter is {e['counter']}.",['known']),history_context=lambda ev:{'counter_before':ev['counter']},
             evidence_environment=lambda env:({'counter':env['counter']},'The counter is recorded.'),

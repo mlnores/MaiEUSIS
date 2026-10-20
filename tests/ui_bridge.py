@@ -2,6 +2,10 @@
 import json
 import sys
 from pathlib import Path
+# Keep this per-request bridge lightweight. The exact CPT backend uses the same
+# probabilities; SHACL has separate integration checks in the Python suite.
+sys.modules['pgmpy']=None
+sys.modules['pyshacl']=None
 from socratic_prototype.store import Store
 from socratic_prototype.demo import run_scripted
 

@@ -11,7 +11,7 @@ mab:remainingDecisions a owl:DatatypeProperty .
 mab:limitedCoverage a owl:DatatypeProperty .
 mab:explorationWorthDiscussing a owl:DatatypeProperty .
 mab:checkPossibleChange a owl:DatatypeProperty .
-mab:coverageArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate mab:limitedCoverage ; arg:polarity "positive" ; arg:reason "At least six observed choices still leave alternatives unsampled." ; arg:conclusionObject true ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+mab:coverageArgument a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate mab:limitedCoverage ; arg:polarity "positive" ; arg:reason "At least six observed choices still leave alternatives unsampled." ; arg:conclusionObject true ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
@@ -21,7 +21,13 @@ SELECT DISTINCT ?p1 ?p2 ?state WHERE {
 FILTER(?n >= 6 && ?k < 6)
 }
 """ .
-mab:explorationArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "state" ; arg:conclusionPredicate mab:explorationWorthDiscussing ; arg:polarity "positive" ; arg:reason "Limited observed coverage supports asking whether further exploration is worthwhile." ; arg:conclusionObject true ; arg:criticalQuestion "Could persistence be intentional, and is further exploration worth its cost?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+mab:explorationArgument a arg:Scheme ;
+ arg:issue "unsampled_alternatives" ; arg:audience "task" ; arg:usefulness 0.61 ;
+ arg:socraticAction "request-evidence" ;
+ arg:conventionalMessage "Some alternatives remain lightly sampled. Consider gathering more evidence about them." ;
+ arg:socraticMessage "Some alternatives remain lightly sampled. What remains unknown, and how much exploration is worthwhile?" ;
+ arg:clarificationMessage "With so few decisions remaining, what would you gain from trying another option?" ;
+ arg:clarificationObjection mab:shortHorizonObjection ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "state" ; arg:conclusionPredicate mab:explorationWorthDiscussing ; arg:polarity "positive" ; arg:reason "Limited observed coverage supports asking whether further exploration is worthwhile." ; arg:conclusionObject true ; arg:criticalQuestion "Could persistence be intentional, and is further exploration worth its cost?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
@@ -29,7 +35,7 @@ SELECT DISTINCT ?p ?state WHERE {
 { SELECT DISTINCT ?p ?state WHERE { ?p a arg:Assertion ; arg:predicate mab:limitedCoverage ; arg:scope ?state ; arg:subject ?state ; arg:object true ; arg:polarity "positive" . } }
 }
 """ .
-mab:shortHorizonObjection a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate mab:explorationWorthDiscussing ; arg:polarity "negative" ; arg:reason "A short remaining horizon limits the case for raising further exploration." ; arg:conclusionObject true ; arg:criticalQuestion "Would another exploration prompt help with so few decisions left?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+mab:shortHorizonObjection a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate mab:explorationWorthDiscussing ; arg:polarity "negative" ; arg:reason "A short remaining horizon limits the case for raising further exploration." ; arg:conclusionObject true ; arg:criticalQuestion "Would another exploration prompt help with so few decisions left?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
@@ -39,7 +45,10 @@ SELECT DISTINCT ?p1 ?p2 ?state WHERE {
 FILTER(?n <= 2)
 }
 """ .
-mab:changeArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "arm" ; arg:conclusionPredicate mab:checkPossibleChange ; arg:polarity "positive" ; arg:reason "Sampled outcomes support checking a possible change; change remains an estimate." ; arg:conclusionObject true ; arg:criticalQuestion "What additional observations would distinguish reward noise from a change?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+mab:changeArgument a arg:Scheme ;
+ arg:issue "possible_change" ; arg:audience "task" ; arg:usefulness 0.72 ; arg:socraticAction "ask" ;
+ arg:conventionalMessage "Recent feedback may differ from earlier feedback. Compare alternatives while accounting for reward noise." ;
+ arg:socraticMessage "Noise and a change are both plausible. What further feedback would help you distinguish them?" ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "arm" ; arg:conclusionPredicate mab:checkPossibleChange ; arg:polarity "positive" ; arg:reason "Sampled outcomes support checking a possible change; change remains an estimate." ; arg:conclusionObject true ; arg:criticalQuestion "What additional observations would distinguish reward noise from a change?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
@@ -47,5 +56,37 @@ SELECT DISTINCT ?p1 ?p2 ?arm WHERE {
 { SELECT DISTINCT ?p1 ?state ?estimate ?prob WHERE { ?p1 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?estimate ; arg:object ?prob ; arg:polarity "positive" . } }
 { SELECT DISTINCT ?p2 ?state ?estimate ?n WHERE { ?p2 a arg:Assertion ; arg:predicate task:samples ; arg:scope ?state ; arg:subject ?estimate ; arg:object ?n ; arg:polarity "positive" . } }
 ?estimate a mab:ChangeEstimate ; task:forOption ?arm . FILTER(?prob >= 0.3 && ?n >= 6)
+}
+""" .
+
+mab:reviewEvidenceWarranted a owl:DatatypeProperty .
+mab:revisionArgument a arg:Scheme ; arg:version "argumentation-0.2" ;
+ arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "state" ;
+ arg:conclusionPredicate mab:reviewEvidenceWarranted ; arg:conclusionObject true ; arg:polarity "positive" ;
+ arg:reason "An observed choice history permits asking what evidence would lead to revision, without asserting a behavioural deficit." ;
+ arg:criticalQuestion "Would a revision question interrupt useful deliberation?" ;
+ arg:issue "support_revision" ; arg:audience "socratic" ; arg:schedule "fallback" ; arg:usefulness 0.56 ;
+ arg:socraticAction "support" ; arg:conventionalMessage "Review what further evidence would change your approach." ;
+ arg:socraticMessage "What evidence would make you revise your approach?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+SELECT DISTINCT ?p ?state WHERE {
+ ?p a arg:Assertion ; arg:predicate mab:completedChoices ; arg:scope ?state ; arg:object ?n ; arg:polarity "positive" .
+ FILTER(?n >= 6)
+}
+""" .
+# The short horizon also undercuts a personalised underexploration challenge.
+# Its arithmetic premise is independent of the unresolved exploration conclusion.
+mab:shortHorizonChallengeUndercutter a arg:Scheme ; arg:version "argumentation-0.2" ;
+ arg:ruleKind "defeasible" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "hypothesis" ;
+ arg:conclusionPredicate arg:inapplicable ; arg:conclusionObject arg:modelChallenge ; arg:polarity "positive" ;
+ arg:reason "A short horizon calls for clarifying exploration costs before challenging underexploration." ;
+ arg:criticalQuestion "Does the remaining horizon justify discussing the cost of exploration instead of challenging persistence?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX mab: <https://example.org/socratic/mab/>
+SELECT DISTINCT ?p1 ?p2 ?hypothesis WHERE {
+ { SELECT ?p1 ?state ?n WHERE { ?p1 a arg:Assertion ; arg:predicate mab:remainingDecisions ; arg:scope ?state ; arg:object ?n ; arg:polarity "positive" . } }
+ { SELECT ?p2 ?state ?hypothesis WHERE { ?p2 a arg:Assertion ; arg:predicate arg:possiblePattern ; arg:scope ?state ; arg:object "underexploration" ; arg:source ?hypothesis ; arg:polarity "positive" . } }
+ ?hypothesis arg:eligible true . FILTER(?n <= 2)
 }
 """ .

@@ -58,5 +58,12 @@ function find(root,predicate){if(predicate(root))return root;for(const child of 
  assert.ok(find(root,e=>e.textContent.startsWith('Researcher review: accepted')));
  assert.equal(find(root,e=>e.tagName==='BUTTON'&&e.textContent==='Accept proposed interpretation'),null);
  assert.equal(JSON.stringify(source.events[0].snapshot.decision),originalDecision);
- console.log('Inspector: shadow proof labels, premise provenance, critical questions, quote review and immutable past decisions passed.');
+ source.events[0].snapshot.graph_argumentation.mode='live';
+ source.events[0].snapshot.decision.reasoning_source='graph';
+ source.events[0].snapshot.decision.argument_ids=['argument1'];
+ source.events[0].snapshot.decision.opposing_argument_ids=[];
+ await elements.get('refresh').click();
+ assert.ok(find(root,e=>e.textContent==='Graph argumentation · intervention source'));
+ assert.ok(find(root,e=>e.tagName==='SUMMARY'&&e.textContent==='Selected proof and objection links'));
+ console.log('Inspector: historical/live proofs, premise provenance, critical questions, decision links, quote review and immutable past decisions passed.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

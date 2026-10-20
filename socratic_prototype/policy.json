@@ -1,5 +1,5 @@
 {
-  "version": "policy-0.2",
+  "version": "policy-0.3",
   "window_trials": 12,
   "min_evidence": 6,
   "threshold": 0.38,
@@ -15,5 +15,6 @@
   "fixed_prompt_interval": 4,
   "change_prior": 0.15,
   "decline_threshold": 0.3,
-  "personalisation_bonus": 0.16
+  "personalisation_bonus": 0.16,
+  "argument_source": "graph"
 }

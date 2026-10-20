@@ -5,7 +5,7 @@ import re
 _TASKS={}
 _LOADED=False
 _METHODS=('describe','documents','task_rules','calibrate','validate_event','validate_transition','environment',
-          'participant','hypothesis_inputs','contribute_candidates','hypothesis_message','same_scope',
+          'participant','hypothesis_inputs','hypothesis_message','same_scope',
           'scope_suffix','environment_claim','history_context','evidence_environment',
           'evidence_participant','evidence_observation','summarize','project_rdf')
 

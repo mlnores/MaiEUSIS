@@ -31,7 +31,21 @@ def load_schemes(contents):
         kind=str(one('ruleKind'));require(kind in {'strict','defeasible'},'Invalid scheme inference kind')
         variables=str(one('premiseVariables','')).split();require(bool(variables),'Scheme requires premises')
         query=str(one('query',''));require(bool(query),'Scheme lacks a query')
-        result.append({'id':str(node),'query':prepared(query),'kind':kind,'variables':variables,
+        presentation=None
+        if one('issue') is not None:
+            presentation={key:str(one(field,default)) for key,field,default in [
+                ('issue','issue',''),('audience','audience','task'),('schedule','schedule','event'),
+                ('socratic_action','socraticAction','ask'),('conventional_message','conventionalMessage',''),
+                ('socratic_message','socraticMessage',''),('clarification_message','clarificationMessage',''),
+                ('clarification_objection','clarificationObjection','')]}
+            require(not presentation['clarification_message'] or bool(presentation['clarification_objection']),'Clarification requires a named objection scheme')
+            presentation['usefulness']=float(one('usefulness',.65))
+            require(presentation['audience'] in {'generic','task','personalised','socratic'},'Invalid intervention audience')
+            require(presentation['schedule'] in {'event','periodic','fallback'},'Invalid intervention schedule')
+            require(presentation['socratic_action'] in {'ask','challenge','support','compare','highlight-dependency','request-evidence'},'Invalid Socratic action')
+            require(0<=presentation['usefulness']<=1,'Invalid provisional usefulness')
+            require(bool(presentation['conventional_message']) and bool(presentation['socratic_message']),'Scheme lacks reviewed wording')
+        result.append({'intervention':presentation,'id':str(node),'query':prepared(query),'kind':kind,'variables':variables,
                        'subject_variable':str(one('subjectVariable','state')),
                        'predicate':str(one('conclusionPredicate')),
                        'object_variable':str(one('objectVariable','')),
@@ -95,6 +109,7 @@ def discover(session,event,base):
                 a={'id':identifier,'conclusion':conclusion['id'],'premises':premises,'subarguments':subs,
                    'rule':scheme['id'],'rule_kind':scheme['kind'],'priority':scheme['priority'],
                    'reason':scheme['reason'],'critical_questions':scheme['questions'],'label':'undecided'}
+                if scheme['intervention'] is not None:a['intervention']=dict(scheme['intervention'])
                 assertions.append(conclusion);records[conclusion['id']]=conclusion
                 arguments.append(a);nodes[identifier]=a;proofs[conclusion['id']]=identifier
                 ancestors[identifier]=inherited|{key}

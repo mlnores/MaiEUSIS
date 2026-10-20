@@ -222,17 +222,6 @@ def hypothesis_inputs(session,evaluation,environment,h):
     stats = {'sampled_arms': sorted(sampled), 'stay_rate': round(stay, 4), 'switches_after_loss': switches_after_loss, 'evidence_window': evidence, 'rl_choice_compatibility': choice_compatibility, 'rl_value_mismatch': model_mismatch}
     return definitions,stats
 
-def contribute_candidates(session,ev,env,h,stats,estimated,socratic,existing,candidate):
-    p=session['policy']
-    sampled = stats['sampled_arms']
-    shift = max((a['change']['posterior'] for a in env['arms'] if a['samples'] >= 6), default=0)
-    if shift >= 0.3:
-        candidate('possible_change', 'ask' if socratic else 'explain', ['Recent feedback may differ from earlier feedback. What evidence would justify checking another option?', 'Noise and a change are both plausible. What further feedback would help you distinguish them?'] if socratic else ['Recent feedback may differ from earlier feedback. Compare alternatives while accounting for reward noise.'], [estimated['id']], 'Observed outcome history raises uncertain evidence of change.', 'Ordinary reward noise remains a competing explanation.', 0.72)
-    if len(h) >= p['min_evidence'] and len(sampled) < 6:
-        candidate('unsampled_alternatives', 'request-evidence' if socratic else 'explain', ['Some alternatives remain lightly sampled. What remains unknown, and how much exploration is worthwhile?'] if socratic else ['Some alternatives remain lightly sampled. Consider gathering more evidence about them.'], [estimated['id']], 'Observed choices leave some reward estimates uncertain.', 'Further exploration has a cost and persistence may be justified.', 0.61)
-    if socratic and len(h) >= p['min_evidence'] and (not existing):
-        candidate('support_revision', 'support', ['Your approach may be reasonable given uncertain feedback. What evidence would make you revise it?'], [estimated['id']], 'No strong case for challenging the current pattern.', 'Support can still interrupt useful deliberation.', 0.56)
-
 HYPOTHESIS_WORDING = {'underexploration': 'You have sampled few alternatives recently. What evidence supports continuing with the same option?', 'premature_exploitation': 'Your recent feedback has declined while your choice has persisted. What would justify revisiting another option?', 'feedback_overweighting': 'You have switched after recent losses. What would distinguish a useful switch from reacting to reward noise?'}
 
 def hypothesis_message(name,socratic):

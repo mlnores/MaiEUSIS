@@ -1,3 +1,4 @@
+import importlib.util
 import copy
 import json
 import tempfile
@@ -15,6 +16,8 @@ from socratic_prototype.models import tbs_context, change_belief, calibration_pr
 from socratic_prototype.bayes import EpistemicNetwork, CPTS
 from socratic_prototype.server import make_server
 
+
+HAS_RDF=importlib.util.find_spec("rdflib") is not None
 
 class PrototypeTest(unittest.TestCase):
     @classmethod
@@ -128,6 +131,7 @@ class PrototypeTest(unittest.TestCase):
         s=self.create('TBS');self.assertEqual(s['calibration_profile']['task'],'TBS')
         self.assertNotIn('alpha_plus',s['calibration_profile'])
 
+    @unittest.skipUnless(HAS_RDF,'Live assistance requires RDFLib')
     def test_delivery_exposure_and_cooldown_use_actual_exposure(self):
         sid,ev=self.first('TBS');self.feedback(sid,ev,'safe',100)
         ev2=evaluation('TBS',sid,2,points=100);r=self.store.event(sid,ev2);d=r['snapshot']['decision']
@@ -138,6 +142,7 @@ class PrototypeTest(unittest.TestCase):
         self.assertIn('Cooldown',r3['snapshot']['decision']['rationale'])
         self.assertTrue(self.store.replay(sid)['matches'])
 
+    @unittest.skipUnless(HAS_RDF,'Live assistance requires RDFLib')
     def test_participant_correction_and_frequency_recorded_as_attributed_evidence(self):
         sid,ev=self.first('TBS');self.feedback(sid,ev,'safe',100)
         ev2=evaluation('TBS',sid,2,points=100);r=self.store.event(sid,ev2);d=r['snapshot']['decision']
@@ -226,6 +231,7 @@ class InMemoryHTTPTest(unittest.TestCase):
             code,data=request('/inspector.html');self.assertEqual(code,200);self.assertIn(b'Event history',data)
 
 class CorrectionTest(unittest.TestCase):
+    @unittest.skipUnless(HAS_RDF,'Live assistance requires RDFLib')
     def test_disagreement_contests_hypothesis_and_replays(self):
         with tempfile.TemporaryDirectory() as td:
             store=Store(Path(td)/'sessions.sqlite3')
@@ -280,6 +286,7 @@ class SummaryTest(unittest.TestCase):
             changed=copy.deepcopy(s);changed['seed']='altered';store.save(changed)
             with self.assertRaises(ValidationError):store.replay(s['id'])
 
+    @unittest.skipUnless(HAS_RDF,'Live assistance requires RDFLib')
     def test_reviewed_support_is_a_reachable_policy_outcome(self):
         with tempfile.TemporaryDirectory() as td:
             store=Store(Path(td)/'sessions.sqlite3')

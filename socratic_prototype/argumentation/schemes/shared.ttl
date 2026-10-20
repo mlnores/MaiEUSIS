@@ -4,7 +4,11 @@
 @prefix task: <https://example.org/socratic/task/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-arg:modelChallenge a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "hypothesis" ; arg:conclusionPredicate arg:warrantsChallenge ; arg:polarity "positive" ; arg:reason "An eligible provisional model interpretation warrants considering a challenge." ; arg:conclusionObject true ; arg:criticalQuestion "What evidence or participant explanation would revise this interpretation?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+arg:modelChallenge a arg:Scheme ;
+ arg:issue "model_pattern" ; arg:audience "personalised" ; arg:usefulness 0.0 ;
+ arg:socraticAction "challenge" ;
+ arg:conventionalMessage "Review this provisional interpretation against the available evidence." ;
+ arg:socraticMessage "What evidence or explanation would help check this interpretation of your choices?" ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "hypothesis" ; arg:conclusionPredicate arg:warrantsChallenge ; arg:polarity "positive" ; arg:reason "An eligible provisional model interpretation warrants considering a challenge." ; arg:conclusionObject true ; arg:criticalQuestion "What evidence or participant explanation would revise this interpretation?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
@@ -13,11 +17,29 @@ SELECT DISTINCT ?p ?hypothesis WHERE {
 ?p arg:source ?hypothesis . ?hypothesis arg:eligible true .
 }
 """ .
-arg:contestationUndercutter a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "hypothesis" ; arg:conclusionPredicate arg:inapplicable ; arg:polarity "positive" ; arg:reason "Attributed disagreement calls for verification before challenging on this model interpretation." ; arg:conclusionObject arg:modelChallenge ; arg:criticalQuestion "How does the participant explain the recorded pattern?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+arg:contestationUndercutter a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "hypothesis" ; arg:conclusionPredicate arg:inapplicable ; arg:polarity "positive" ; arg:reason "Attributed disagreement calls for verification before challenging on this model interpretation." ; arg:conclusionObject arg:modelChallenge ; arg:criticalQuestion "How does the participant explain the recorded pattern?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
 SELECT DISTINCT ?p ?hypothesis WHERE {
 { SELECT DISTINCT ?p ?state ?report ?hypothesis WHERE { ?p a arg:Assertion ; arg:predicate arg:contests ; arg:scope ?state ; arg:subject ?report ; arg:object ?hypothesis ; arg:polarity "positive" . } }
+}
+""" .
+
+arg:preparationPoint a owl:DatatypeProperty .
+arg:generalReflectionWarranted a owl:DatatypeProperty .
+arg:generalReflectionArgument a arg:Scheme ; arg:version "argumentation-0.2" ;
+ arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "state" ;
+ arg:conclusionPredicate arg:generalReflectionWarranted ; arg:conclusionObject true ; arg:polarity "positive" ;
+ arg:reason "A preparation point permits considering a general reminder about goals, evidence and alternatives." ;
+ arg:criticalQuestion "Would a generic reminder add enough value to justify an interruption?" ;
+ arg:issue "general_guidance" ; arg:audience "generic" ; arg:schedule "periodic" ; arg:usefulness 0.65 ;
+ arg:socraticAction "ask" ;
+ arg:conventionalMessage "Consider your goal, the available evidence, and the costs of each alternative." ;
+ arg:socraticMessage "What goals and evidence matter for this decision?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+SELECT DISTINCT ?p ?state WHERE {
+ ?p a arg:Assertion ; arg:predicate arg:preparationPoint ; arg:scope ?state ;
+    arg:subject ?state ; arg:object true ; arg:polarity "positive" .
 }
 """ .

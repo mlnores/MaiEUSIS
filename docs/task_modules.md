@@ -33,8 +33,9 @@ shared task vocabulary do not depend on either domain.
 [`tasks/__init__.py`](../socratic_prototype/tasks/__init__.py) provides an explicit
 registry. MAB and TBS modules implement public event schemas, legal transitions,
 task rules, protocol lengths, models, calibration and task-scoped hypotheses.
-They supply candidate interventions with supporting/opposing reasons, allowlisted
-language evidence, descriptive summaries and their own RDF projections.
+They supply allowlisted language evidence, descriptive summaries, RDF projections,
+and optional argument scheme packs with reviewed presentation metadata. Independent
+`contribute_candidates` hooks have been removed.
 
 The common engine owns event ordering, epistemic annotations, argument handling,
 condition boundaries, policy selection, delivery cooldowns and corrections. Store,
@@ -87,7 +88,7 @@ version discipline remains necessary.
 
 Existing `ontology-0.1` sessions retain their original core-only export and
 legacy shapes under `ontology/legacy/`. There is no automatic migration of saved
-records. Legacy replay still requires matching model, policy and runtime backend.
+records. Historical replay requires its recorded software version, model, policy and runtime backend.
 Pre-refactor completed MAB/TBS traces were checked for identical replay and
 byte-identical Turtle output.
 
@@ -125,5 +126,7 @@ The [graph argumentation extension](graph_argumentation.md) adds a separate `arg
 layer to new sessions. Optional `argumentation_documents()` and
 `project_argumentation_facts(...)` hooks supply domain schemes and public-history
 aggregates. Its independently frozen configuration preserves the original task
-descriptors and legacy replay. Shadow analysis is researcher-only and does not
-replace `contribute_candidates` or the live intervention policy.
+descriptors. Schemes now supply all intervention warrants; the common delivery
+policy reads only evaluated graph arguments. A new task provides its own local
+scheme pack with presentation metadata to enable task-aware assistance. Historical
+exports remain available; old-policy replay requires its original runtime.

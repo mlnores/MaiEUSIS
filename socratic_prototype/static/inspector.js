@@ -56,7 +56,7 @@ function render(){
     root.append(controls);
    }
   }
-  if(d.candidates.length)table(root,['Candidate','Action','Score','Interpretation'],d.candidates.map(c=>[c.name,c.action,c.score,c.argument_evaluation]));
+  if(d.candidates.length)table(root,['Candidate','Action','Score','Interpretation','Graph support','Graph objections'],d.candidates.map(c=>[c.name,c.action,c.score,c.argument_evaluation,(c.supporting_arguments||[]).length,(c.opposing_arguments||[]).length]));
   details(root,'Full decision and validated language output',d);
   if(d.evidence_package)details(root,'Condition-filtered language evidence package',d.evidence_package);
   if(d.language?.mode==='ollama-generated')paragraph(root,'Generated wording passed structural/reference checks. Semantic grounding and usefulness have not been established by those checks.','small muted');
@@ -72,11 +72,15 @@ function render(){
   if(c.revision_conditions)paragraph(section,'Reconsider when: '+c.revision_conditions.join(' '),'small');
   details(section,'Relations and provenance',c);root.append(section);
  }
- root.append(node('h3','Supporting and opposing reasons'));
- if(!s.arguments.length)paragraph(root,'No candidate arguments at this point.','muted');
+ root.append(node('h3',d?.reasoning_source==='graph'?'Graph-grounded intervention selection':'Supporting and opposing reasons'));
+ if(d?.reasoning_source==='graph'){
+  paragraph(root,'Candidates come from the graph below. Rejected warrants are excluded; explicitly authored clarification questions may address unresolved arguments.','small');
+  details(root,'Selected proof and objection links',{support:d.argument_ids,opposition:d.opposing_argument_ids});
+ }
+ if(!s.arguments.length&&d?.reasoning_source!=='graph')paragraph(root,'No candidate arguments at this point.','muted');
  for(const a of s.arguments)paragraph(root,`${a.status} · ${a.conclusion}: ${a.reason}`);
  if(s.graph_argumentation){
-  const g=s.graph_argumentation;root.append(node('h3','Graph argumentation · shadow analysis'));
+  const g=s.graph_argumentation;root.append(node('h3',g.mode==='live'?'Graph argumentation · intervention source':'Graph argumentation · shadow analysis'));
   paragraph(root,`${g.status} · ${g.semantics} semantics · ${g.backend}`,'small muted');
   paragraph(root,g.notice,'small');if(g.reason)paragraph(root,g.reason,'small');
   const assertions=new Map(g.assertions.map(a=>[a.id,a]));
@@ -100,7 +104,7 @@ function render(){
  details(root,'Calibration sources',current.calibration_sources);details(root,'Descriptive session summary',current.summary);
  if(current.language_configuration)details(root,'Frozen language configuration',current.language_configuration);
  if(current.task_module)details(root,'Task module, namespace and ontology versions',current.task_module);
- if(current.argumentation_configuration)details(root,'Frozen shadow argumentation configuration',current.argumentation_configuration);
+ if(current.argumentation_configuration)details(root,'Frozen argumentation configuration',current.argumentation_configuration);
 }
 function download(name,data,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=node('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 el('refresh').onclick=()=>refresh().catch(report);el('sessionSelect').onchange=()=>load().catch(report);el('eventFilter').onchange=filter;

@@ -9,7 +9,7 @@ tbs:higherExpectedGainThan a owl:ObjectProperty .
 tbs:higherAttainmentThan a owl:ObjectProperty .
 tbs:criteriaDiverge a owl:DatatypeProperty .
 tbs:clarifyObjectiveWarranted a owl:DatatypeProperty .
-tbs:expectedGainArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "high" ; arg:conclusionPredicate tbs:higherExpectedGainThan ; arg:polarity "positive" ; arg:reason "One displayed option has higher immediate expected gain." ; arg:objectVariable "low" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+tbs:expectedGainArgument a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "high" ; arg:conclusionPredicate tbs:higherExpectedGainThan ; arg:polarity "positive" ; arg:reason "One displayed option has higher immediate expected gain." ; arg:objectVariable "low" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
@@ -19,7 +19,7 @@ SELECT DISTINCT ?p1 ?p2 ?high ?low WHERE {
 ?first a tbs:ExpectedGainCalculation ; task:forOption ?high . ?second a tbs:ExpectedGainCalculation ; task:forOption ?low . FILTER(?x > ?y)
 }
 """ .
-tbs:attainmentArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "high" ; arg:conclusionPredicate tbs:higherAttainmentThan ; arg:polarity "positive" ; arg:reason "One displayed option has higher current final-choice attainment probability." ; arg:objectVariable "low" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+tbs:attainmentArgument a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "high" ; arg:conclusionPredicate tbs:higherAttainmentThan ; arg:polarity "positive" ; arg:reason "One displayed option has higher current final-choice attainment probability." ; arg:objectVariable "low" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
@@ -29,7 +29,7 @@ SELECT DISTINCT ?p1 ?p2 ?high ?low WHERE {
 ?first a tbs:AttainmentCalculation ; task:forOption ?high . ?second a tbs:AttainmentCalculation ; task:forOption ?low . FILTER(?x > ?y)
 }
 """ .
-tbs:criteriaDivergenceArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:criteriaDiverge ; arg:polarity "positive" ; arg:reason "Expected gain and final target attainment favour different options in this state." ; arg:conclusionObject true ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+tbs:criteriaDivergenceArgument a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "strict" ; arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:criteriaDiverge ; arg:polarity "positive" ; arg:reason "Expected gain and final target attainment favour different options in this state." ; arg:conclusionObject true ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
@@ -38,11 +38,84 @@ SELECT DISTINCT ?p1 ?p2 ?state WHERE {
 { SELECT DISTINCT ?p2 ?state ?second ?first WHERE { ?p2 a arg:Assertion ; arg:predicate tbs:higherAttainmentThan ; arg:scope ?state ; arg:subject ?second ; arg:object ?first ; arg:polarity "positive" . } }
 }
 """ .
-tbs:objectiveQuestionArgument a arg:Scheme ; arg:version "argumentation-0.1" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:clarifyObjectiveWarranted ; arg:polarity "positive" ; arg:reason "The differing criteria warrant checking which objective guides the decision." ; arg:conclusionObject true ; arg:criticalQuestion "Are you comparing immediate expected gain or the chance of reaching the target?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+tbs:objectiveQuestionArgument a arg:Scheme ;
+ arg:issue "criteria_divergence" ; arg:audience "task" ; arg:usefulness 0.90 ; arg:socraticAction "compare" ;
+ arg:conventionalMessage "Expected gain and final target attainment favour different options. Consider which objective guides your decision." ;
+ arg:socraticMessage "Expected gain and final target attainment favour different options. Which objective guides your choice?" ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:clarifyObjectiveWarranted ; arg:polarity "positive" ; arg:reason "The differing criteria warrant checking which objective guides the decision." ; arg:conclusionObject true ; arg:criticalQuestion "Are you comparing immediate expected gain or the chance of reaching the target?" ; arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
 PREFIX mab: <https://example.org/socratic/mab/>
 PREFIX tbs: <https://example.org/socratic/tbs/>
 PREFIX task: <https://example.org/socratic/task/>
 SELECT DISTINCT ?p ?state WHERE {
 { SELECT DISTINCT ?p ?state WHERE { ?p a arg:Assertion ; arg:predicate tbs:criteriaDiverge ; arg:scope ?state ; arg:subject ?state ; arg:object true ; arg:polarity "positive" . } }
+}
+""" .
+
+tbs:lastObservedGain a owl:DatatypeProperty .
+tbs:finalDependencyWorthDiscussing a owl:DatatypeProperty .
+tbs:horizonWorthDiscussing a owl:DatatypeProperty .
+tbs:riskReviewWorthDiscussing a owl:DatatypeProperty .
+tbs:objectivesWorthComparing a owl:DatatypeProperty .
+
+tbs:finalDependencyArgument a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ;
+ arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:finalDependencyWorthDiscussing ;
+ arg:conclusionObject true ; arg:polarity "positive" ; arg:reason "The final-choice multiplier depends on winning, which warrants examining target attainment." ;
+ arg:criticalQuestion "Neither immediate expected gain nor the nominal target gap alone determines attainment." ; arg:issue "final_multiplier" ; arg:audience "task" ;
+ arg:usefulness 0.88 ; arg:socraticAction "highlight-dependency" ; arg:schedule "event" ;
+ arg:conventionalMessage "On the final trial, compare target attainment after a win and after no gain. The multiplier applies only after a win." ; arg:socraticMessage "The multiplier applies only if this final choice wins. How does that affect your chance of meeting the target?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p1 ?p2 ?state WHERE {
+ { SELECT ?p1 ?state ?n WHERE { ?p1 a arg:Assertion ; arg:predicate tbs:remainingChoices ; arg:scope ?state ; arg:subject ?state ; arg:object ?n ; arg:polarity "positive" . } }
+ { SELECT ?p2 ?state ?m WHERE { ?p2 a arg:Assertion ; arg:predicate tbs:multiplier ; arg:scope ?state ; arg:subject ?state ; arg:object ?m ; arg:polarity "positive" . } }
+ FILTER(?n = 1)
+}
+""" .
+
+tbs:shrinkingHorizonArgument a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ;
+ arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:horizonWorthDiscussing ;
+ arg:conclusionObject true ; arg:polarity "positive" ; arg:reason "The recorded target gap and short remaining horizon warrant checking feasibility." ;
+ arg:criticalQuestion "Future option pairs and outcomes remain unknown; does the final multiplier preserve feasibility?" ; arg:issue "shrinking_horizon" ; arg:audience "task" ;
+ arg:usefulness 0.78 ; arg:socraticAction "ask" ; arg:schedule "event" ;
+ arg:conventionalMessage "Review the target gap against the remaining choices and the conditional final multiplier." ; arg:socraticMessage "Can your current approach still close the target gap with the choices remaining?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p1 ?p2 ?state WHERE {
+ { SELECT ?p1 ?state ?n WHERE { ?p1 a arg:Assertion ; arg:predicate tbs:remainingChoices ; arg:scope ?state ; arg:subject ?state ; arg:object ?n ; arg:polarity "positive" . } }
+ { SELECT ?p2 ?state ?gap WHERE { ?p2 a arg:Assertion ; arg:predicate tbs:targetGap ; arg:scope ?state ; arg:subject ?state ; arg:object ?gap ; arg:polarity "positive" . } }
+ FILTER(?n > 1 && ?n <= 2)
+}
+""" .
+
+tbs:gapAfterGainArgument a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ;
+ arg:premiseVariables "p" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:riskReviewWorthDiscussing ;
+ arg:conclusionObject true ; arg:polarity "positive" ; arg:reason "A recorded gain in the current block changed progress towards the target." ;
+ arg:criticalQuestion "A smaller gap alone does not establish that less risk is better." ; arg:issue "gap_after_gain" ; arg:audience "task" ;
+ arg:usefulness 0.63 ; arg:socraticAction "ask" ; arg:schedule "event" ;
+ arg:conventionalMessage "Reconsider the level of risk after the last gain reduced the target gap." ; arg:socraticMessage "The last gain reduced the target gap. Does the same level of risk still serve your goal?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p ?state WHERE {
+ { SELECT ?p ?state ?gain WHERE { ?p a arg:Assertion ; arg:predicate tbs:lastObservedGain ; arg:scope ?state ; arg:subject ?summary ; arg:object ?gain ; arg:polarity "positive" . } }
+ FILTER(?gain > 0)
+}
+""" .
+
+tbs:objectiveComparisonArgument a arg:Scheme ; arg:version "argumentation-0.2" ; arg:ruleKind "defeasible" ;
+ arg:premiseVariables "p1 p2" ; arg:subjectVariable "state" ; arg:conclusionPredicate tbs:objectivesWorthComparing ;
+ arg:conclusionObject true ; arg:polarity "positive" ; arg:reason "Displayed gains and probabilities permit comparing expected gain while keeping the target objective explicit." ;
+ arg:criticalQuestion "Immediate expected gain does not determine final target attainment or an optimal future policy." ; arg:issue "expected_value_limit" ; arg:audience "task" ;
+ arg:usefulness 0.6 ; arg:socraticAction "compare" ; arg:schedule "periodic" ;
+ arg:conventionalMessage "Immediate expected gain and final target attainment are different objectives. Consider both." ; arg:socraticMessage "How do the expected gains compare with the chance of reaching your target?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+PREFIX task: <https://example.org/socratic/task/>
+SELECT DISTINCT ?p1 ?p2 ?state WHERE {
+ { SELECT ?p1 ?state ?first ?x WHERE { ?p1 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?first ; arg:object ?x ; arg:polarity "positive" . } }
+ { SELECT ?p2 ?state ?second ?y WHERE { ?p2 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?second ; arg:object ?y ; arg:polarity "positive" . } }
+ ?first a tbs:ExpectedGainCalculation . ?second a tbs:ExpectedGainCalculation .
+ FILTER(STR(?first) < STR(?second))
 }
 """ .

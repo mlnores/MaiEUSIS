@@ -4,8 +4,10 @@ from .evaluation import evaluate
 
 
 def validate_analysis(report):
-    require(report['mode']=='shadow','Graph argumentation may not control live decisions')
+    require(report['mode'] in {'shadow','live'},'Invalid graph argumentation mode')
     require(report['status'] in {'complete','limited','unavailable','not-evaluated'},'Invalid argumentation status')
+    if report['status'] in {'unavailable','not-evaluated'}:
+        require(not report['arguments'] and not report['attacks'] and not report['defeats'],'Unevaluated graph contains reasoning')
     assertions={a['id']:a for a in report['assertions']};nodes={a['id']:a for a in report['arguments']}
     require(len(assertions)==len(report['assertions']) and len(nodes)==len(report['arguments']),'Duplicate reasoning identifiers')
     for a in assertions.values():

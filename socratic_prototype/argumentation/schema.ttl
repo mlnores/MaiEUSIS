@@ -6,7 +6,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
-arg:ontology a owl:Ontology ; owl:versionInfo "argumentation-0.1" ; owl:imports task:ontology .
+arg:ontology a owl:Ontology ; owl:versionInfo "argumentation-0.2" ; owl:imports task:ontology .
 arg:Assertion a owl:Class ; rdfs:subClassOf core:Claim .
 arg:Proposition a owl:Class .
 arg:Scheme a owl:Class .
@@ -56,3 +56,21 @@ arg:query a owl:DatatypeProperty ; rdfs:range xsd:string .
 arg:premiseVariables a owl:DatatypeProperty ; rdfs:range xsd:string .
 arg:subjectVariable a owl:DatatypeProperty ; rdfs:range xsd:string .
 arg:objectVariable a owl:DatatypeProperty ; rdfs:range xsd:string .
+
+arg:issue a owl:DatatypeProperty ; rdfs:range xsd:string .
+
+arg:audience a owl:DatatypeProperty ; rdfs:range xsd:string .
+
+arg:schedule a owl:DatatypeProperty ; rdfs:range xsd:string .
+
+arg:socraticAction a owl:DatatypeProperty ; rdfs:range xsd:string .
+
+arg:conventionalMessage a owl:DatatypeProperty ; rdfs:range xsd:string .
+
+arg:socraticMessage a owl:DatatypeProperty ; rdfs:range xsd:string .
+
+arg:clarificationMessage a owl:DatatypeProperty ; rdfs:range xsd:string .
+arg:usefulness a owl:DatatypeProperty ; rdfs:range xsd:double .
+arg:justifiedBy a owl:ObjectProperty ; rdfs:range arg:Argument .
+arg:consideredObjection a owl:ObjectProperty ; rdfs:range arg:Argument .
+arg:clarificationObjection a owl:ObjectProperty ; rdfs:range arg:Scheme .

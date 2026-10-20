@@ -13,12 +13,16 @@ fixation intervals, and conditional final-trial multiplier.
 From this directory, with Python 3.10 or later:
 
 ```bash
-python3 -m socratic_prototype.server
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-research.txt
+.venv/bin/python -m socratic_prototype.server
 ```
 
 Open **http://127.0.0.1:8765** for tasks and
 **http://127.0.0.1:8765/inspector.html** for the researcher inspector.
-No packages, build step, account, or API key are needed for the default mode.
+RDFLib is required for graph-grounded assistance. The research requirements also
+install optional pgmpy and pySHACL integrations. No build step, account, or API key
+is needed for reviewed-template language.
 Use `--port 8766` if the port is occupied. Sessions persist in
 `socratic_prototype/data/sessions.sqlite3`; `--data-dir /path/to/data` selects a
 separate study store. The service binds only to loopback. It has no authentication
@@ -36,7 +40,7 @@ or multi-user hosting configuration and is intended for a local prototype.
 For a quick inspectable walkthrough, generate explicitly **synthetic** sessions:
 
 ```bash
-python3 -m socratic_prototype.demo
+.venv/bin/python -m socratic_prototype.demo
 ```
 
 This creates completed short calibrations and personalised Socratic sessions for
@@ -101,19 +105,20 @@ this implementation has not been validated for laboratory acquisition.
   and possible constraint neglect are task-scoped inferences with supporting
   trials, provisional posteriors, alternatives, and revision conditions. Neither
   persistence nor response time is turned into overconfidence or hesitation.
-- **Reasoning:** explicit supporting and opposing arguments retain objections.
-  A hand-written Bayesian network estimates possible mismatch and usefulness;
-  a separate policy weighs thresholds, interruption cost, preferences, and
-  cooldown from actually delivered messages.
-- **Graph argumentation (shadow):** with RDFLib, new evaluation snapshots discover
-  arguments through scoped SPARQL schemes over structured assertions. Strict and
-  defeasible derivations retain their premises, subarguments, objections and
-  grounded labels. These researcher-only results do not control live messages.
+- **Reasoning:** graph argumentation is the sole source of live reasons and
+  objections. Scoped SPARQL schemes construct strict/defeasible proofs and attacks.
+  The delivery policy maps their conclusions to permitted communication, then
+  applies usefulness, interruption cost, frequency and actual-delivery cooldown.
+  Bayesian confidence never becomes an argument priority.
+- **Unresolved arguments:** rejected warrants cannot create interventions.
+  Authored clarification questions can address an undecided conflict in D/F;
+  conventional conditions withhold advice based on that undecided warrant.
+  Incomplete or unavailable reasoning fails closed to silence in every condition.
 - **Silence:** recorded for every eligible point, with its rationale. No language
   request is made for silence.
 - **Corrections:** self-reports are attributed evidence, never silently promoted
   to facts. Disagreement contests the named hypothesis for a configured window;
-  it lowers that candidate's policy score while alternatives remain available.
+  it undercuts the graph's model-challenge warrant while unrelated task arguments remain available.
 - **Traceability:** immutable input events, snapshots after evaluation and feedback,
   provenance, epistemic labels, model/policy versions, and configuration hashes
   support deterministic replay. Invalid candidate updates do not partially commit.
@@ -137,10 +142,11 @@ schemes, rule applications and attacks. The inspector exposes derivations,
 accepted/rejected/undecided labels, source records and open critical questions.
 An estimate or attributed report remains uncertain even when its argument is
 accepted. Argumentation definitions, backend and limits are frozen into new
-sessions; older traces retain their original behaviour and export.
+sessions. Historical traces remain readable and exportable; replaying a prior
+policy requires its recorded software version. No saved decisions are migrated.
 See the [graph argumentation guide](docs/graph_argumentation.md) for semantics,
 limits, task extension hooks and synthetic examples. Restart the research server
-and create a new session to inspect this analysis.
+and create a new session to use graph-grounded interventions.
 
 For a concrete audit of what is represented in RDF versus JSON, see the
 [MAB/TBS ontology walkthrough](docs/ontology_examples/README.md), with synthetic
@@ -162,7 +168,7 @@ are not durably stored by this server and must be downloaded before closing the
 page or starting a new task. The client-side runner is not a tamper-resistant
 experiment runner; its developer tools can inspect its hidden variables.
 
-## Optional research libraries
+## Reasoning and research libraries
 
 ```bash
 python3 -m venv .venv
@@ -172,9 +178,10 @@ python3 -m venv .venv
 
 `pgmpy` enables the hand-designed discrete network's exact variable-elimination
 queries. Without it, a standard-library exact conditional calculation uses the
-same CPTs. `rdflib` and `pyshacl` enable RDF parsing and SHACL validation. Without
-those libraries, strict Python record validation runs, and the inspector reports
-that SHACL **was not executed**. Runtime backends are recorded and replay rejects
+same CPTs. `rdflib` executes the argument schemes and is required for assistance. Without it,
+tasks and Python record validation still run, but graph reasoning is explicitly
+unavailable and assistance remains silent. `pyshacl` adds graph validation; without
+it, the inspector reports that SHACL **was not executed**. Runtime backends are recorded and replay rejects
 backend or model/policy drift instead of claiming an old trace was reproduced.
 
 The relevant library APIs are described in the [pgmpy inference documentation](https://pgmpy.org/examples/Inference_Discrete_BN.html)
@@ -335,8 +342,8 @@ Primary endpoints, assignment/counterbalancing, participant consent, analysis,
 and calibration-length adequacy need an agreed pilot protocol.
 
 ```bash
-python3 -m unittest discover -s tests -v
-node tests/test_browser_contract.cjs
+.venv/bin/python -m unittest discover -s tests -v
+PYTHON=.venv/bin/python node tests/test_browser_contract.cjs
 node tests/test_inspector_contract.cjs
 node tests/test_demo_visuals.cjs
 ```
@@ -354,14 +361,16 @@ it does not establish real-browser appearance or physical timing. A separate
 inspector contract test executes the actual review controls and verifies acceptance
 requests, reviewed-state rendering and preservation of past decisions.
 
-The current catalog contains 82 Python tests. Task-module checks cover a third
-task through the common pipeline, version/document drift, legacy compatibility,
-numerical RDF provenance and conditional multiplier behaviour. Eighteen graph
-argumentation tests cover multi-step discovery, independent objections, grounded
-cycles/defence, priorities, attack propagation, state isolation, attributed
-contestation, epistemic preservation, construction limits, shadow-only behaviour,
-SHACL integrity and replay. RDF-dependent tests skip explicitly without the
-research libraries; a local socket test can also skip where binding is forbidden.
+Task-module checks cover a third task through the common graph pipeline,
+version/document drift, historical exports, numerical RDF provenance and conditional
+multiplier behaviour. Graph checks cover multi-step discovery, objections,
+grounded cycles/defence, priorities, propagation, state isolation, attributed
+contestation, epistemic preservation, construction limits, SHACL and replay.
+Delivery-boundary checks cover graph-only candidate provenance, all six conditions,
+short-horizon clarification, rejected warrants, actual objections in language
+packages, condition-filtered proof closure and unavailable/incomplete reasoning.
+RDF-dependent checks skip explicitly without RDFLib; a socket check can skip
+where binding is forbidden.
 
 MAB/TBS task and inspector JavaScript contract tests passed, including fixed
 preparation timing and interpretation review. Complete short generated-mode

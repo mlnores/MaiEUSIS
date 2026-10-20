@@ -46,7 +46,11 @@ arg:AttackShape a sh:NodeShape ; sh:targetClass arg:Attack ;
  sh:property [ sh:path arg:succeeds ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
  sh:property [ sh:path arg:affects ; sh:class arg:Argument ] .
 arg:AnalysisShape a sh:NodeShape ; sh:targetClass arg:Analysis ;
- sh:property [ sh:path arg:mode ; sh:hasValue "shadow" ] ;
+ sh:property [ sh:path arg:mode ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("shadow" "live") ] ;
  sh:property [ sh:path arg:status ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("complete" "limited" "unavailable" "not-evaluated") ] ;
  sh:property [ sh:path arg:semantics ; sh:hasValue "grounded" ] ;
  sh:property [ sh:path arg:inState ; sh:minCount 1 ; sh:maxCount 1 ; sh:class task:TaskState ] .
+
+arg:DecisionGroundingShape a sh:NodeShape ; sh:targetSubjectsOf arg:justifiedBy ;
+ sh:property [ sh:path arg:justifiedBy ; sh:minCount 1 ; sh:class arg:Argument ] ;
+ sh:property [ sh:path arg:consideredObjection ; sh:class arg:Argument ] .

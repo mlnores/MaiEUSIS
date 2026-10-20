@@ -5,7 +5,7 @@ const vm=require('node:vm'),fs=require('node:fs'),os=require('node:os'),path=req
 const {spawnSync}=require('node:child_process');
 const root=path.resolve(__dirname,'..'),dataDir=fs.mkdtempSync(path.join(os.tmpdir(),'socratic-ui-'));
 // Avoid requiring tests to be an installed package.
-function bridge(url,body){const r=spawnSync('python3',[path.join(root,'tests/ui_bridge.py'),dataDir],{cwd:root,env:{...process.env,PYTHONPATH:root},input:JSON.stringify({path:url,body}),encoding:'utf8',maxBuffer:30*1024*1024});
+function bridge(url,body){const r=spawnSync(process.env.PYTHON||'python3',[path.join(root,'tests/ui_bridge.py'),dataDir],{cwd:root,env:{...process.env,PYTHONPATH:root},input:JSON.stringify({path:url,body}),encoding:'utf8',maxBuffer:30*1024*1024});
  if(r.status!==0)throw Error(r.stderr);const output=JSON.parse(r.stdout);if(!output.ok)throw Error(output.error);return output.data;}
 const fixture=bridge('/fixture');
 function runtime(task){

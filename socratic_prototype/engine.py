@@ -1,8 +1,7 @@
-"""Models → annotated claims → opposing reasons → policy → validated language."""
+"""Models → annotated claims → graph arguments → delivery policy → validated language."""
 import copy
 import json
 from pathlib import Path
-from collections import Counter
 from .tasks import get_task
 from .tasks.base import MODEL_VERSION as VERSION
 from .bayes import EpistemicNetwork
@@ -111,52 +110,19 @@ def make_snapshot(session, event, event_id, timestamp, recorded_language=None):
         snapshot['policy_status']='Not an eligible intervention point; model update only.'
         snapshot['validation']=validate_snapshot(snapshot,{e['input']['trial_id'] for e in session['events'] if 'trial_id' in e['input']})
         return snapshot
-    condition=session['condition']; personalised=condition in {'E','F'}; socratic=condition in {'D','F'}
-    candidates=[]
-    def candidate(name,action,messages,evidence,reasons,opposition,usefulness=.65,hypothesis=None):
-        score=usefulness-p['interruption_cost']
-        if hypothesis and hypothesis['contested_by']:score-=.5
-        n=len(candidates);support=event_id+'_argument_'+str(n)
-        snapshot['arguments'] += [
-            {'id':support,'conclusion':name,'evidence':evidence,'status':'supported','reason':reasons,'premises':evidence},
-            {'id':support+'_opposition','conclusion':name,'evidence':evidence,'status':'opposed','reason':opposition,'opposes':support,'premises':evidence}]
-        candidates.append({'name':name,'action':action,'messages':messages,'claim_ids':evidence,'usefulness':usefulness,
-                           'score':round(score,6),'supporting_argument':support,'opposing_argument':support+'_opposition',
-                           'hypothesis':hypothesis['name'] if hypothesis else None,
-                           'argument_evaluation':'unresolved' if hypothesis and hypothesis['contested_by'] else 'supported-with-unresolved-objections'})
-    if condition=='B':
-        candidate('general_guidance','ask' if socratic else 'explain',
-                  ['Consider your goal, the available evidence, and the costs of each alternative.'],[context['id']],
-                  'A scheduled generic reminder is available.','Generic support may add cognitive burden without relevance.')
-    if condition in {'C','D','E','F'}:
-        module.contribute_candidates(session,ev,env,h,stats,estimated,socratic,candidates,candidate)
-        if personalised:
-            for hyp in hypothesis_records:
-                if not hyp['eligible'] or not hyp.get('claim_id'):continue
-                c=hypothesis_claims[hyp['name']]
-                wording=module.hypothesis_message(hyp['name'],socratic)
-                candidate(hyp['name'],'challenge' if socratic else 'advise',[wording],
-                          [c['id'],estimated['id']],hyp['content'],' '.join(hyp['alternatives'])+(' Participant disputed this interpretation.' if hyp['contested_by'] else ''),
-                          hyp['inference']['usefulness']+p['personalisation_bonus'],hyp)
-    delivered=[e['input'] for e in session['events'] if e['input'].get('kind')=='delivery' and e['input']['delivered']]
-    last=delivered[-1]['index'] if delivered else None
-    pref=session['preference']
-    since=ev['index']-last if last is not None else None
-    cooldown=p['cooldown'][pref]
-    selected=max(candidates,key=lambda x:x['score'],default=None)
-    rationale='No candidate exceeds the evidence, relevance and interruption threshold.'
-    silence=True
-    if session['phase']=='calibration' or condition=='A':rationale='Unassisted condition: neutral preparation window; no assistance delivered.'
-    elif since is not None and since<cooldown:rationale=f'Cooldown: {since} trials since the last delivered prompt; {cooldown} required for {pref} frequency.'
-    elif condition=='B' and ev['index']%p['fixed_prompt_interval']!=0:rationale='Generic guidance is scheduled every '+str(p['fixed_prompt_interval'])+' trials.'
-    elif selected and selected['score']>=p['threshold']:
-        silence=False;rationale=f'{selected["name"]}: provisional usefulness {selected["usefulness"]:.3f} minus interruption cost {p["interruption_cost"]:.3f}; score {selected["score"]:.3f} exceeds threshold {p["threshold"]:.3f}. Opposing reasons retained.'
-    d={'id':event_id+'_decision','action':'silence' if silence else selected['action'],'rationale':rationale,
-       'claim_ids':[context['id'],unknown['id']] if silence else selected['claim_ids'],'message':None,
-       'candidates':candidates,'threshold':p['threshold'],'interruption_cost':p['interruption_cost'],
-       'cooldown':cooldown,'frequency_preference':pref,'eligible_point':module.ELIGIBLE_POINT,
-       'hypothesis':None if silence else selected['hypothesis'],'language':None}
-    if not silence:
+    # Attach the pre-decision snapshot so graph construction sees only the
+    # current permitted task state. Discovery does not depend on live candidates.
+    record=next(e for e in session['events'] if e['id']==event_id)
+    record['snapshot']=snapshot
+    from .argumentation import analyse
+    from .argumentation.validation import validate_analysis
+    report=analyse(session,record)
+    report['validation']=validate_analysis(report)
+    snapshot['graph_argumentation']=report
+    from .intervention_policy import decide
+    d=decide(session,ev,snapshot,event_id)
+    selected=next((c for c in d['candidates'] if c['id']==d['selected_candidate']),None)
+    if d['action']!='silence':
         config=session.get('language_configuration')
         if config:
             package=build_evidence_package(session,ev,snapshot,selected,h)
@@ -234,7 +200,7 @@ def ingest(session, event, timestamp, recorded_language=None, recorded_interpret
     candidate['events'].append(record)
     if kind in {'evaluation','feedback'}:
         record['snapshot']=make_snapshot(candidate,event,event_id,timestamp,recorded_language)
-        if 'argumentation_configuration' in candidate:
+        if kind=='feedback' and 'argumentation_configuration' in candidate:
             from .argumentation import analyse
             record['snapshot']['graph_argumentation']=analyse(candidate,record)
             from .argumentation.validation import validate_analysis

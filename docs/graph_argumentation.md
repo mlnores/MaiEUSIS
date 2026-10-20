@@ -1,11 +1,15 @@
-# Graph argumentation in shadow mode
+# Graph argumentation and intervention policy
 
-New sessions carry `argumentation_configuration` and evaluation snapshots carry
-`graph_argumentation`. With RDFLib installed, the engine discovers arguments by
-querying typed task records and structured assertions. The existing policy,
-language evidence package and participant messages continue to use the original
-candidate mechanism. Graph results are visible to the researcher in the inspector
-and JSON/RDF exports; they do not select live interventions.
+New sessions use `argumentation-0.2` in live mode with `policy-0.3`. Graph
+argumentation is the single source of substantive reasons and objections. There
+is no independent Python candidate-trigger mechanism. The engine computes models
+and annotated claims, discovers and validates the graph, maps proof-backed
+conclusions to communication candidates, then applies the delivery policy.
+
+RDFLib is required for assistance. Without it the task can still run, but reasoning
+is explicitly unavailable and the policy stays silent. No old trigger mechanism
+is used as a fallback. Complete reasoning is also required: limited construction
+cannot authorize an intervention.
 
 This is a small, explicit structured argumentation implementation. It is inspired
 by strict/defeasible rules and attacks on premises, conclusions and rule applications
@@ -27,6 +31,8 @@ flowchart LR
   Q --> A[Arguments and subarguments]
   A --> D[Attacks and propagated defeats]
   D --> L[Grounded labels]
+  L --> P[Condition and delivery policy]
+  P --> W[Validated wording and fixed-window delivery]
   L --> I[Researcher inspector and exports]
 ```
 
@@ -64,9 +70,9 @@ another copy of every quantity in every reasoning report.
 
 | Pack | Discovered arguments |
 | --- | --- |
-| Shared | An eligible provisional model interpretation warrants considering a challenge; explicit participant contestation undercuts that model-to-challenge inference pending verification |
-| MAB | At least six observed choices leave some arms unsampled; this coverage gap warrants discussing exploration; a horizon of two or fewer decisions supports an objection; sampled change estimates can warrant checking for change |
-| TBS | Compare current expected gains; compare current final-choice attainment probabilities; join the two comparisons to detect differing rankings; consider asking which objective guides the choice |
+| Shared | A preparation point permits considering a generic reminder; an eligible provisional model interpretation warrants considering a challenge; explicit participant contestation undercuts that model-to-challenge inference pending verification |
+| MAB | At least six observed choices leave some arms unsampled; this coverage gap warrants discussing exploration; a horizon of two or fewer decisions supports an objection and undercuts personalised underexploration challenges; sampled change estimates can warrant checking for change; observed histories permit a revision question |
+| TBS | Compare expected gains and final-choice attainment; detect diverging rankings and clarify objectives; discuss conditional final-win dependence, the shrinking horizon, and a changed gap after a recorded gain |
 
 MAB's coverage argument is strict arithmetic about observed counts. Its exploration
 argument is defeasible: limited coverage does not establish that further exploration
@@ -85,6 +91,59 @@ Strict inference preserves uncertainty: a strict consequence of estimated premis
 remains inferred. Known conclusions require a strict rule and exclusively known
 premises. The numerical models and Bayesian probabilities are not recalculated by
 the argument evaluator.
+
+## From proofs to interventions
+
+A scheme can include reviewed presentation metadata: `arg:issue`, `arg:audience`,
+`arg:conventionalMessage`, `arg:socraticMessage`, `arg:socraticAction`, provisional
+`arg:usefulness`, and `arg:schedule` (`event`, `periodic`, or `fallback`). This
+metadata does not add premises or change argument priorities. `discovery.py` stores
+it with the constructed argument. `intervention_policy.py` maps only those graph
+arguments into communication candidates; it does not inspect reward sequences or
+recreate behavioural triggers.
+
+- **A/calibration:** always silent, even when the graph contains accepted warrants.
+- **B:** only generic reminder warrants, scheduled every fourth trial by default.
+- **C/D:** task warrants only; no personalised model-challenge candidates. D uses
+  questions, C conventional guidance.
+- **E/F:** task warrants plus personalised model-challenge warrants. E advises,
+  F asks/challenges. Calibrated task profiles retain their existing boundaries.
+
+Accepted warrants may form candidates. Rejected warrants are excluded regardless
+of their usefulness. An undecided warrant can form a clarification candidate only
+in D/F when the scheme explicitly supplies `arg:clarificationMessage` and names
+its expected attacker with `arg:clarificationObjection`. The actual attacking
+argument must be present. At the end of MAB, the opposed exploration arguments
+therefore support a question about exploration costs; they do not authorize
+conventional exploration advice. A separate short-horizon undercutter blocks a
+personalised underexploration challenge while leaving the cost clarification open.
+
+Candidates carry unique IDs, graph scope, supporting and opposing argument IDs,
+and the argument evaluation. The policy filters audiences and schedules, applies
+provisional usefulness minus interruption cost, and enforces cooldown from actual
+delivery acknowledgements. Personalised usefulness comes from the existing model
+estimate plus its personalisation bonus. It cannot restore a defeated warrant.
+Fallback support is considered only when no other permitted candidate is available.
+
+The decision stores `reasoning_source: graph`, `selected_candidate`, `argument_ids`
+and `opposing_argument_ids`. Python validation checks these links and excludes
+rejected/undecided advice. RDF links interventions to arguments with
+`arg:justifiedBy` and `arg:consideredObjection`. The inspector shows candidate
+scores and proof links alongside the full graph. Historical `snapshot.arguments`
+records remain displayable, but new snapshots leave that old independent-reason
+list empty.
+
+Language packages contain only the selected proof closure and its actual attackers,
+including assertion kinds/statuses and open critical questions. They never receive
+the entire research graph. B remains generic; C/D exclude personalised premises.
+An absent graph objection is represented as an empty opposition, not an invented
+counterargument. Possible explanations on model claims remain uncertainty metadata,
+not fabricated attacking arguments. Bounded or generated language cannot change
+policy selection, graph labels or model claims.
+
+The four-second preparation window, five-second choice window, generation deadline,
+frequency controls, feedback/review semantics and actual-exposure logging remain
+in force. Numerical task models and task mechanics are unchanged.
 
 ## Objections, defeat and labels
 
@@ -109,8 +168,9 @@ intervention benefit. Inconsistent accepted strict conclusions are rejected as a
 rule/premise integrity error, rather than being presented as jointly justified.
 The implementation does not supply arbitrary logical closure, automatic priority
 learning, preferred-extension enumeration or unrestricted argument mining. Related
-issues are not automatically equated: the generic model-challenge warrant and the
-exploration-cost discussion remain different conclusions unless a scheme connects them.
+issues are not automatically equated. The explicit short-horizon challenge
+undercutter connects horizon evidence to a personalised underexploration challenge;
+other connections still require authored schemes.
 
 Critical questions are attached to rules and shown in the inspector. An unanswered
 question is not a fabricated objection. No rule infers unobserved intention, neglect
@@ -126,22 +186,23 @@ feedback and researcher reviews.
 New sessions freeze reasoner version, mode, semantics, RDFLib version, construction
 limits and SHA-256 hashes of the schema, shapes and selected scheme packs. Store
 ingestion and replay reject drift. Source changes require corresponding version
-discipline, just as for the existing model implementations. Old sessions without
-the new configuration retain their original snapshots and RDF projection.
+discipline, just as for the existing model implementations. Historical sessions retain their stored snapshots and exports. They are not
+automatically migrated: new input is refused and replay requires the recorded
+software version. Restart the server and create a new session for the live policy.
 
 Record validation checks links, proof acyclicity, scope, epistemic preservation and
 grounded labels. With pySHACL installed, the normal candidate-event graph validation
 also checks the argumentation projection; full graph validation remains available.
-RDFLib is the existing optional research dependency. If absent when a session starts,
+RDFLib is the required reasoning dependency (`requirements.txt`). If absent when a session starts,
 the analysis explicitly reports `unavailable`; it does not claim reasoning executed.
-Install the research requirements and start a new session to enable it.
+Install the requirements and start a new session to enable assistance.
 
 Construction is bounded to six rounds, 256 arguments, 512 assertions and 1,024
 matches per snapshot. A limited construction labels all arguments undecided because
 an omitted argument could defeat one already found. These are construction limits,
 not a hard real-time guarantee for arbitrary custom SPARQL queries.
 
-Shadow analysis adds backend work. The four-second preparation window and generation
+Graph reasoning adds backend work. The four-second preparation window and generation
 deadline are unchanged; live display latency still requires a pilot. Benchmark graph
 discovery separately from model calculation, SHACL, persistence, generation and browser
 transport, and inspect actual exposure before any study use.
@@ -156,9 +217,10 @@ transport, and inspect actual exposure before any study use.
 
 Restart the server and create a new session. Open an evaluation snapshot in the
 researcher inspector to see labels, rules, premises, subarguments, attacks, open
-questions and the complete report. The example command creates synthetic partial
+questions and the complete report. The example command creates synthetic partial unassisted
 MAB/TBS sessions in a temporary database, verifies replay without generation and
-writes three reasoning cases plus a local discovery-only timing sample. It neither
+writes three reasoning cases plus a local discovery-only timing sample. These
+are condition A, so their live policy remains silent despite accepted warrants. It neither
 reads nor changes participant stores.
 The checked-in [synthetic example report](argumentation_examples.json) illustrates
 accepted MAB exploration arguments, undecided short-horizon objections and the TBS
@@ -171,3 +233,11 @@ kind, premise variable names, conclusion subject/object bindings, polarity, prio
 reason and critical questions. Keep predicates in the task's own namespace, declare
 them in its pack, and explicitly scope every query to the bound current state.
 The shared loader checks that returned premises resolve to that state's assertions.
+
+The delivery integration is exercised separately in `tests/test_graph_policy.py`,
+including all condition projections, generic and task-only proof boundaries,
+removal of necessary premises, rejected personalised warrants, unresolved
+clarification, TBS comparison chains, cross-block isolation, unavailable/limited
+reasoning and tampered decision-proof links. Complete MAB/TBS runs, actual browser
+script contracts, mocked language providers and deterministic replay have their
+existing integration tests.

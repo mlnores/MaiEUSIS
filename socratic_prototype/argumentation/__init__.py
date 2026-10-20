@@ -1,10 +1,10 @@
-"""Versioned, researcher-only graph argumentation. It never controls live policy."""
+"""Versioned graph argumentation; the sole source of live intervention warrants."""
 import hashlib
 from pathlib import Path
 from ..semantics import CORE,DATA
 
 ARG=CORE+'argumentation/'
-VERSION='argumentation-0.1'
+VERSION='argumentation-0.2'
 ROOT=Path(__file__).parent
 LIMITS={'max_rounds':6,'max_arguments':256,'max_assertions':512,'max_matches':1024}
 
@@ -20,17 +20,17 @@ def configuration(module):
         backend='rdflib-sparql';backend_version=rdflib.__version__
     except ImportError:
         backend='unavailable';backend_version=None
-    return {'version':VERSION,'mode':'shadow','semantics':'grounded','backend':backend,
+    return {'version':VERSION,'mode':'live','semantics':'grounded','backend':backend,
             'backend_version':backend_version,'limits':dict(LIMITS),
             'documents':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in documents(module)}}
 
 
 def analyse(session,event):
     config=session['argumentation_configuration']
-    base={'version':VERSION,'mode':'shadow','backend':config['backend'],'semantics':'grounded',
+    base={'version':VERSION,'mode':'live','backend':config['backend'],'semantics':'grounded',
           'scope':DATA+event['id']+'/state','assertions':[],'arguments':[],'attacks':[],
           'defeats':[],'critical_questions':[],'facts_turtle':'',
-          'notice':'Researcher-only shadow analysis; labels are justification under these rules, not truth or intervention usefulness.'}
+          'notice':'Arguments ground live intervention candidates; labels express justification under these rules, not truth or intervention usefulness.'}
     if 'task_module' not in session or event['input']['kind']!='evaluation':
         return {**base,'status':'not-evaluated','reason':'Argument discovery runs on task-module evaluation snapshots.'}
     if config['backend']=='unavailable':

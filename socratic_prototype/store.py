@@ -108,6 +108,7 @@ class Store:
     def event(self,sid,data):
         with self.lock:
             s=self.get(sid)
+            require(s.get('argumentation_configuration',{}).get('mode')=='live','Historical session uses an earlier reasoning policy; export it or start a new session')
             if 'task_module' in s:require(s['task_module']==get_task(s['task']).describe(),'Task module or ontology changed; start a new session with the current version')
             if 'argumentation_configuration' in s:require(s['argumentation_configuration']==argumentation_configuration(get_task(s['task'])),'Argumentation backend or definitions changed; start a new session')
             # Exact retries are idempotent. Different repeated payloads still fail validation.
@@ -131,6 +132,7 @@ class Store:
 
     def replay(self,sid):
         original=self.get(sid)
+        require(original.get('argumentation_configuration',{}).get('mode')=='live','Historical replay requires its recorded software version; stored JSON and RDF remain available')
         require(original['configuration_digest']==digest({k:original[k] for k in configuration_fields(original)}),'Recorded configuration hash does not match; settings were altered')
         if 'language_configuration' in original:
             require(original['language_configuration']['grounding_version']==GROUNDING_VERSION,'Replay requires the recorded grounding version')

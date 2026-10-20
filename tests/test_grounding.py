@@ -1,3 +1,4 @@
+import importlib.util
 import copy
 import io
 import json
@@ -188,6 +189,9 @@ class GroundingTest(unittest.TestCase):
             self.assertEqual(source.read_text(),'{"original":true}')
 
 
+HAS_RDF=importlib.util.find_spec("rdflib") is not None
+
+@unittest.skipUnless(HAS_RDF,'Live generated assistance requires RDFLib')
 class GeneratedSessionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
