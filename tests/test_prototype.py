@@ -168,6 +168,28 @@ class PrototypeTest(unittest.TestCase):
         sid,ev=self.first('TBS');d=self.store.get(sid)['events'][-1]['snapshot']['decision']
         with self.assertRaises(ValidationError):self.store.event(sid,{'kind':'response','decision_id':d['id'],'index':1,'feedback':'disagree','text':'No','hypothesis':d['hypothesis'],'block':1})
 
+    @unittest.skipUnless(HAS_RDF,'Live assistance requires RDFLib')
+    def test_delayed_reply_keeps_origin_after_new_trials_and_session_finish(self):
+        sid,ev=self.first('TBS');self.feedback(sid,ev,'safe',100)
+        ev2=evaluation('TBS',sid,2,points=100);d=self.store.event(sid,ev2)['snapshot']['decision']
+        self.assertNotEqual(d['action'],'silence')
+        self.store.event(sid,dict(kind='delivery',decision_id=d['id'],index=2,delivered=True,
+            generation_latency_ms=1,reading_exposure_ms=7000,early_attempts=0))
+        self.feedback(sid,ev2,'safe',180)
+        ev3=evaluation('TBS',sid,3,points=280);self.store.event(sid,ev3)
+        self.store.finish(sid,{'completed':False});before=self.store.get(sid)
+        reply=dict(kind='response',decision_id=d['id'],index=2,feedback='reply',
+            text='I deliberately compared these alternatives.',hypothesis=d['hypothesis'],block=1)
+        record=self.store.event(sid,reply)
+        self.assertEqual(self.store.event(sid,reply),record,'Retries must not duplicate a reply')
+        after=self.store.get(sid)
+        self.assertTrue(after['finished']);self.assertEqual(after['finished_at'],before['finished_at'])
+        self.assertEqual(after['events'][:-1],before['events'],'Delayed replies must not rewrite prior decisions')
+        self.assertEqual(record['input']['decision_id'],d['id']);self.assertEqual(record['input']['index'],2)
+        with self.assertRaises(ValidationError):self.store.event(sid,{**reply,'block':2})
+        with self.assertRaises(ValidationError):self.feedback(sid,ev3,'safe',145)
+        self.assertTrue(self.store.replay(sid)['matches'])
+
     def test_replay_detects_model_drift(self):
         sid,ev=self.first();s=self.store.get(sid);s['policy']['threshold']=.99;self.store.save(s)
         with self.assertRaises(ValidationError):self.store.replay(sid)

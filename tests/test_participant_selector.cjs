@@ -11,7 +11,7 @@ class Element{
 const row=(name,task,completed=true,protocol='short')=>({participant_id:name,task,completed,protocol,phase:'calibration',id:name+'_'+task+'_'+protocol,trials:task==='MAB'?40:24,created_at:'2026-10-20T12:00:00Z'});
 const records=[row('zeta','MAB'),row('alpha','MAB'),row('alpha','TBS'),row('beta','MAB',false),row('zeta','TBS'),row('alpha','MAB',true,'full')];
 function harness(sessions,{unavailable=false}={}){
- const ids=['participantId','knownParticipant','sessionPhase','protocol','condition','startMab','startTbs','setupStatus','setupError','mabCalibration','tbsCalibration','responseButtons','downloadTrace','promptFrequency'];
+ const ids=['participantId','knownParticipant','sessionPhase','protocol','condition','startMab','startTbs','setupStatus','setupError','mabCalibration','tbsCalibration','responseButtons','responseText','submitReply','downloadTrace','promptFrequency'];
  const el=Object.fromEntries(ids.map(id=>[id,new Element()]));
  Object.assign(el.participantId,{value:'new_participant'});el.sessionPhase.value='calibration';el.protocol.value='short';el.promptFrequency.value='standard';
  const delayed=new Map(),requests=[];

@@ -141,7 +141,7 @@ def ingest(session, event, timestamp, recorded_language=None, recorded_interpret
     """Validate and compute on a copy. No invalid partial updates are committed."""
     candidate=copy.deepcopy(session)
     kind=event.get('kind')
-    require(not candidate['finished'] or kind=='interpretation-review','Session has finished')
+    require(not candidate['finished'] or kind in {'interpretation-review','response'},'Session has finished')
     if kind in {'evaluation','feedback'}:
         validate_event(candidate['task'],event)
         h=history(candidate); evaluations=[e['input'] for e in candidate['events'] if e['input'].get('kind')=='evaluation']
@@ -171,7 +171,7 @@ def ingest(session, event, timestamp, recorded_language=None, recorded_interpret
     elif kind=='response':
         from .validation import fields
         fields(event,['kind','decision_id','index','feedback','text'],['hypothesis','block'])
-        require(event['feedback'] in {'helpful','disagree','fewer','dismiss'},'Invalid feedback')
+        require(event['feedback'] in {'reply','helpful','disagree','fewer','dismiss'},'Invalid feedback')
         require(isinstance(event['text'],str) and len(event['text'])<=2000,'Response too long')
         decision_event=next((e for e in candidate['events'] if e.get('snapshot',{}).get('decision',{}).get('id')==event['decision_id']),None)
         require(decision_event is not None,'Unknown decision')

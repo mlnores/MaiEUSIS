@@ -1,5 +1,5 @@
 'use strict';
-const teammate={id:null,preparing:false,early:0,decision:null,feedback:null,response:'',deliveryPending:Promise.resolve(),pending:new Set()};
+const teammate={id:null,preparing:false,early:0,decision:null,feedback:null,response:'',deliveryPending:Promise.resolve(),pending:new Set(),presentation:null,visibleMessage:null,replies:new Map(),replyTarget:null};
 const knownPseudonyms=new Set();
 let calibrationRefreshVersion=0;
 async function api(path,body){
@@ -73,6 +73,7 @@ async function connectTeammate(task){
     phase:by('sessionPhase').value,protocol:by('protocol').value,preference:by('promptFrequency').value,
     calibration_ids:calibrationIds,seed:session.random_seed});
   teammate.id=response.id;teammate.preparing=false;teammate.pending.clear();teammate.deliveryPending=Promise.resolve();
+  teammate.presentation=null;teammate.visibleMessage=null;teammate.replies.clear();teammate.replyTarget=null;
   session.teammate_configuration=response;session.teammate_events=[];
   knownPseudonyms.add(participant);renderPseudonyms();
 }
@@ -87,7 +88,7 @@ function publicFeedback(t){
   if(session.task==='MAB')return {...base,choice:t.selected_option,outcome:t.outcome,score_after:t.score_after};
   return {...base,choice:t.chosen_option,outcome:t.earned_points,points_after:t.points_after};
 }
-function sendEvent(event){const sid=teammate.id,owner=session;return track(api('/api/sessions/'+sid+'/events',event).then(response=>{owner.teammate_events.push(response.record);return response;}));}
+function sendEvent(event,sid=teammate.id,owner=session){return track(api('/api/sessions/'+sid+'/events',event).then(response=>{owner.teammate_events.push(response.record);return response;}));}
 function recordEarlyAttempt(key){
   if(!['1','2','3','7','8','9'].includes(key))return;
   teammate.early++;logEvent('PREPARATION_EARLY_RESPONSE_ATTEMPT',{key});
@@ -97,58 +98,162 @@ document.addEventListener('keydown',e=>{
     e.preventDefault();recordEarlyAttempt(e.key);
   }
 });
+function presentationContext(p){
+  return {trial_uid:p.trial.trial_uid,global_trial:p.trial.global_trial,block:p.trial.block??'',
+    stage:p.trial.stage??'',trial:p.trial.trial??''};
+}
+function teammateState(state,decision=null){
+  const panel=by('teammatePanel'),p=teammate.presentation;
+  panel.classList.remove('hidden');panel.classList.toggle('is-active',state==='active');panel.classList.toggle('is-silent',state!=='active');
+  panel.dataset.state=state;
+  by('teammateHeading').textContent=state==='active'?'Teammate · active · '+decision.action:state==='pending'?'Teammate · preparing':'Teammate · silent';
+  by('teammateMessage').textContent=teammate.visibleMessage?.message||'No intervention for this trial.';
+  by('teammateContext').textContent=state==='active'?'Current intervention · trial '+p.trial.global_trial:
+    teammate.visibleMessage?'Previous intervention · trial '+teammate.visibleMessage.trial.global_trial+' · no active intervention.':
+    state==='pending'?'Choices open after preparation.':'No active intervention.';
+  renderReplies();
+}
+function endMessageVisibility(reason){
+  const message=teammate.visibleMessage;if(!message)return;
+  logEvent('INTERVENTION_VISIBILITY_END',{...presentationContext(message),decision_id:message.decision_id,
+    visible_ms:clock()-message.shownAt,active_exposure_ms:(message.activeEndedAt??clock())-message.shownAt,reason});
+  teammate.visibleMessage=null;
+}
+function currentReply(){return teammate.replies.get(teammate.replyTarget);}
+function replyIsActive(entry){
+  return !!entry&&entry.p===teammate.presentation&&!entry.p.closed&&entry.p.owner===session&&entry.p.sid===teammate.id;
+}
+function captureReplyDraft(){
+  const entry=currentReply();if(entry&&!entry.payload&&replyIsActive(entry))entry.text=by('responseText').value;
+}
+function renderReplies(){
+  const entry=currentReply(),active=replyIsActive(entry),retry=entry?.status==='error'&&!!entry.payload;
+  by('teammateResponse').classList.remove('hidden');
+  by('replyQuestion').textContent=entry?.decision.message||'';
+  by('responseText').value=entry?.text||'';
+  const locked=!active||['saving','saved'].includes(entry?.status)||retry;
+  by('responseText').disabled=locked;by('submitReply').disabled=retry?false:locked;
+  by('submitReply').textContent=retry?'Retry saving':'Save response';
+  for(const button of by('responseButtons').querySelectorAll('button')){
+    button.disabled=locked;button.classList.toggle('selected',!!entry&&entry.feedback===button.dataset.feedback);
+  }
+  const status=by('replyStatus');status.classList.remove('hidden');
+  status.textContent=!entry?'No active intervention. Replies are disabled.':active?(entry.notice||'Optional. Save your response before this trial ends.'):
+    entry.status==='saved'?'Reply closed · Response saved.':
+    entry.status==='saving'?'Reply closed · Your submitted response is being saved.':
+    retry?'Reply closed · Save not confirmed. Retry saving your already-submitted response.':
+    entry.text||entry.feedback?'Reply closed · This trial has ended. Your draft was not submitted.':
+    'Reply closed · No response is expected for this previous intervention.';
+}
+function addReply(p,decision){
+  const entry={p,decision,text:'',feedback:null,status:'draft',notice:'',submission:null,payload:null};
+  teammate.replies.set(decision.id,entry);
+  // A new intervention starts a fresh response window; previous drafts stay closed.
+  teammate.replyTarget=decision.id;
+}
+by('responseText').oninput=captureReplyDraft;
 for(const button of by('responseButtons').querySelectorAll('button'))button.onclick=()=>{
-  teammate.feedback=button.dataset.feedback;
-  for(const other of by('responseButtons').querySelectorAll('button'))other.classList.toggle('selected',other===button);
+  const entry=currentReply();if(!replyIsActive(entry)||entry.payload)return;
+  captureReplyDraft();entry.feedback=entry.feedback===button.dataset.feedback?null:button.dataset.feedback;renderReplies();
 };
+function submitTeammateReply(){
+  captureReplyDraft();const entry=currentReply();if(!entry)return Promise.resolve(false);
+  if(entry.status==='saving')return entry.submission;
+  // Retrying an immutable, timely submission is distinct from answering a closed question.
+  if(!replyIsActive(entry)&&!entry.payload){renderReplies();return Promise.resolve(false);}
+  if(entry.status==='saved')return Promise.resolve(true);
+  const text=entry.text.trim();if(!text&&!entry.feedback){entry.notice='Write a reply or choose feedback before saving.';renderReplies();return Promise.resolve(false);}
+  const p=entry.p,decision=entry.decision;
+  const payload=entry.payload||{kind:'response',decision_id:decision.id,index:p.trial.global_trial,feedback:entry.feedback||'reply',
+    text,hypothesis:decision.hypothesis,...(p.owner.task==='TBS'?{block:p.trial.block}:{})};
+  entry.payload=payload;entry.status='saving';entry.notice=p.closed?'Saving response…':'Response queued; saving when this trial ends…';renderReplies();
+  entry.submission=track((async()=>{
+    try{
+      await p.deliveryReady;
+      const result=await sendEvent(payload,p.sid,p.owner);
+      entry.status='saved';entry.notice=result.record.interpretation?.status==='pending-review'?
+        'Response saved · interpretation awaiting researcher review.':'Response saved.';
+      return true;
+    }catch(error){entry.status='error';entry.notice='Response not confirmed. Your draft is retained. Retry saving: '+error.message;return false;}
+    finally{
+      if(session===p.owner&&teammate.replies.get(decision.id)===entry)renderReplies();
+    }
+  })());
+  return entry.submission;
+}
+by('submitReply').onclick=()=>{void submitTeammateReply();};
 async function teammatePreparation(t,token){
-  teammate.preparing=true;teammate.early=0;teammate.feedback=null;teammate.decision=null;
-  by('responseText').value='';for(const b of by('responseButtons').querySelectorAll('button'))b.classList.remove('selected');
-  by('teammateResponse').classList.add('hidden');by('teammatePanel').classList.remove('hidden');
-  by('teammateHeading').textContent='Preparation window';by('teammateMessage').textContent='Take a moment to prepare. Choices open after this window.';
+  captureReplyDraft();teammate.preparing=true;teammate.early=0;teammate.decision=null;
+  const p={trial:t,token,sid:teammate.id,owner:session,shownAt:null,result:null,error:null,receivedAt:null,
+    windowOpen:true,closed:false,request:null,delivery:null,early:0};
+  teammate.presentation=p;
+  p.deliveryReady=new Promise((resolve,reject)=>{p.resolveDelivery=resolve;p.rejectDelivery=reject;});
+  p.deliveryReady.catch(()=>{});
+  teammateState('pending');
   if(session.task==='MAB')content('<div class="big">+</div>');
   for(const b of by('taskarea').querySelectorAll('button'))b.setAttribute('aria-disabled','true');
   by('timingNote').textContent='Choice input disabled during preparation';
-  await nextPaint();const startMs=clock();logEvent('PREPARATION_ONSET',{duration_ms:session.teammate_configuration.policy.preparation_ms,options_visible:session.task==='TBS'});
-  let shownAt=null,result=null,error=null,windowOpen=true,receivedAt=null;
-  const request=track(sendEvent(publicEvaluation(t)).then(r=>{
-    result=r;receivedAt=clock();const d=r.record.snapshot.decision;teammate.decision=d;
-    if(windowOpen&&alive&&token===runId&&d.action!=='silence'){
-      shownAt=clock();by('teammateMessage').textContent=d.message;by('teammateHeading').textContent='Teammate · '+d.action;
-      by('teammateResponse').classList.remove('hidden');logEvent('INTERVENTION_DISPLAY',{decision_id:d.id,action:d.action});
+  await nextPaint();if(p.closed||!alive||token!==runId)return;p.startedAt=clock();logEvent('PREPARATION_ONSET',{duration_ms:session.teammate_configuration.policy.preparation_ms,options_visible:false});
+  p.request=track(sendEvent(publicEvaluation(t),p.sid,p.owner).then(r=>{
+    p.result=r;p.receivedAt=clock();const d=r.record.snapshot.decision;
+    if(!p.closed&&teammate.presentation===p)teammate.decision=d;
+    if(p.windowOpen&&!p.closed&&alive&&token===runId){
+      if(d.action==='silence')teammateState('silent');
+      else{
+        endMessageVisibility('replaced');p.shownAt=clock();
+        teammate.visibleMessage={trial:t,decision_id:d.id,message:d.message,shownAt:p.shownAt,activeEndedAt:null};
+        addReply(p,d);teammateState('active',d);logEvent('INTERVENTION_DISPLAY',{decision_id:d.id,action:d.action,presentation:'persistent-trial'});
+      }
+    }else if(!p.closed){
+      logEvent('INTERVENTION_RESULT_LATE',{...presentationContext(p),decision_id:d.id,request_roundtrip_ms:p.receivedAt-p.startedAt});
     }
-  }).catch(e=>{error=e;}));
+  }).catch(e=>{p.error=e;}));
   const duration=session.teammate_configuration.policy.preparation_ms;
-  while(alive&&token===runId&&clock()-startMs<duration){
-    by('prepCountdown').textContent=((duration-(clock()-startMs))/1000).toFixed(1)+' s';await sleep(Math.min(50,duration-(clock()-startMs)));
+  while(alive&&token===runId&&clock()-p.startedAt<duration){
+    by('prepCountdown').textContent='Preparation · '+((duration-(clock()-p.startedAt))/1000).toFixed(1)+' s';await sleep(Math.min(50,duration-(clock()-p.startedAt)));
   }
-  windowOpen=false;teammate.preparing=false;
-  const endedAt=clock();by('teammatePanel').classList.add('hidden');
-  const responseText=by('responseText').value.trim();const feedback=teammate.feedback;
-  // Delivery acknowledgements are queued without extending the fixed window.
-  // A late result is recorded as unexposed and cannot change the next choice.
-  teammate.deliveryPending=track(request.then(async()=>{
-    if(!alive||token!==runId)return;
-    if(error)throw error;
-    const d=result.record.snapshot.decision;
-    const latency=d.language?.generation_ms||0;
-    logEvent('PREPARATION_END',{decision_id:d.id,delivered:shownAt!==null,generation_latency_ms:latency,
-      reading_exposure_ms:shownAt===null?0:endedAt-shownAt,early_attempts:teammate.early,
-      request_roundtrip_ms:receivedAt-startMs,duration_ms:endedAt-startMs,result_late:receivedAt>endedAt});
-    await sendEvent({kind:'delivery',decision_id:d.id,index:t.global_trial,delivered:shownAt!==null,
-      generation_latency_ms:latency,reading_exposure_ms:shownAt===null?0:endedAt-shownAt,early_attempts:teammate.early});
-    if(shownAt!==null&&(feedback||responseText))await sendEvent({kind:'response',decision_id:d.id,index:t.global_trial,
-      feedback:feedback||'dismiss',text:responseText,hypothesis:d.hypothesis,...(session.task==='TBS'?{block:t.block}:{})});
-  }));
-  teammate.deliveryPending.catch(e=>{if(alive&&token===runId)showError(e);});
+  if(teammate.presentation!==p||session!==p.owner)return;
+  p.windowOpen=false;p.prepEndedAt=clock();p.early=teammate.early;
+  // A cancelled run must not change the panel or countdown of a newer run.
+  if(teammate.presentation===p){
+    teammate.preparing=false;by('prepCountdown').textContent='';
+    if(p.shownAt===null)teammateState('silent');
+  }
+  logEvent('PREPARATION_END',{...presentationContext(p),decision_id:p.result?.record.snapshot.decision.id??null,
+    delivered:p.shownAt!==null,generation_latency_ms:p.result?.record.snapshot.decision.language?.generation_ms??null,
+    reading_exposure_ms:p.shownAt===null?0:p.prepEndedAt-p.shownAt,early_attempts:p.early,
+    request_roundtrip_ms:p.receivedAt===null?null:p.receivedAt-p.startedAt,duration_ms:p.prepEndedAt-p.startedAt,
+    result_late:p.receivedAt===null||p.receivedAt>p.prepEndedAt});
   for(const b of by('taskarea').querySelectorAll('button'))b.removeAttribute('aria-disabled');
 }
+function closeTeammatePresentation(reason){
+  const p=teammate.presentation;if(!p)return Promise.resolve();if(p.closed)return p.delivery||Promise.resolve();
+  captureReplyDraft();p.closed=true;p.windowOpen=false;p.endedAt=clock();teammate.preparing=false;
+  const early=p.prepEndedAt===undefined?teammate.early:p.early;
+  const exposure=p.shownAt===null?0:p.endedAt-p.shownAt;
+  if(teammate.visibleMessage&&teammate.visibleMessage.decision_id===p.result?.record.snapshot.decision.id)teammate.visibleMessage.activeEndedAt=p.endedAt;
+  if(p.shownAt!==null)logEvent('INTERVENTION_ACTIVE_END',{...presentationContext(p),decision_id:p.result.record.snapshot.decision.id,
+    reading_exposure_ms:exposure,reason});
+  teammateState('silent');
+  // Acknowledge full active exposure before saving any explicitly submitted reply.
+  p.delivery=track(Promise.resolve(p.request).then(async()=>{
+    if(p.error)throw p.error;if(!p.result)return;
+    const d=p.result.record.snapshot.decision;
+    await sendEvent({kind:'delivery',decision_id:d.id,index:p.trial.global_trial,delivered:p.shownAt!==null,
+      generation_latency_ms:d.language?.generation_ms||0,reading_exposure_ms:exposure,early_attempts:early},p.sid,p.owner);
+    p.resolveDelivery();
+    const entry=teammate.replies.get(d.id);if(entry?.submission)await entry.submission;
+  }).catch(error=>{p.rejectDelivery(error);throw error;}));
+  teammate.deliveryPending=p.delivery;return p.delivery;
+}
 async function teammateFeedback(t){
-  // Called after score fields and final-trial scoring are finalized.
-  await teammate.deliveryPending;await sendEvent(publicFeedback(t));
+  // The message stays active through choice, commitment, feedback and intertrial fixation.
+  await closeTeammatePresentation('trial-complete');await sendEvent(publicFeedback(t));
 }
 async function finishTeammate(completed){
-  if(!teammate.id)return;const sid=teammate.id;await Promise.all([...teammate.pending]);
+  if(!teammate.id)return;const sid=teammate.id;
+  const closing=closeTeammatePresentation('session-ended');endMessageVisibility('session-ended');
+  const pending=[...teammate.pending];await closing;await Promise.all(pending);
   await api('/api/sessions/'+sid+'/finish',{completed});void refreshCalibration();
 }
 async function downloadTrace(){

@@ -114,16 +114,65 @@ model/version and language mode, and agreeing the study protocol.
 
 A **four-second preparation window** is used in all conditions, then the original
 **five-second choice window**. MAB preparation precedes the next options display
-and uses previous feedback. The first MAB window has no prior feedback. TBS options
-are visible throughout preparation; keyboard and mouse choice input is disabled
-until the choice window. Number-key attempts during preparation are logged.
-The prompt disappears before commitment. No assistance is delivered after the
-last trial because there is no next decision.
+and uses previous feedback. The first MAB window has no prior feedback. TBS shows
+the target and progress during preparation; its SAFE/RISKY choices, amounts and
+probabilities appear only when preparation ends. Evaluation onset is logged after
+the choices are rendered, and the five-second response timer starts then. Keyboard
+and mouse choice input is disabled during preparation; number-key attempts are logged.
+On desktop, the teammate occupies a dedicated right-hand column alongside the
+task. It stays in view while scrolling, with its own scrolling for long content.
+Below 1100px the layout stacks the teammate above the task; the panel never
+overlaps choice controls.
+
+The teammate panel remains visible during preparation, evaluation, commitment,
+feedback, fixation and between-trial pauses. A delivered intervention is highlighted
+and labelled active through the end of its trial. When silent, the panel is dimmed;
+the last message remains readable and is explicitly labelled as a previous
+intervention. It is replaced only by a new delivered intervention, and cleared for
+a new session. The text area, feedback buttons and Save response button remain
+visible throughout the task. They are enabled only for an active intervention in
+the current trial; they are disabled while silent, after submission, and after the
+trial ends. There is no Reply toggle or previous-question selector. **Save response** explicitly
+submits one reply per intervention, with a **Response saved** acknowledgement only
+after server confirmation. At trial end the response window closes. A visible
+**Reply closed** status explains that no answer is expected to the dimmed question.
+The composer remains readable but disabled, and an unfinished draft is clearly
+labelled as not submitted. Each new intervention starts with a fresh, enabled
+composer; old drafts cannot be submitted against a new context.
+
+An answer explicitly submitted while active can finish saving after the window
+closes. If saving fails, Retry saving resends only that immutable submission; it
+does not reopen the expired question for editing. Number keys typed in the response
+field do not choose a task option. Task timers continue while composing. No new
+replies are offered during silent trials, between-trial pauses or after completion.
+
+A text-only submission uses neutral `feedback: "reply"`; it is not labelled a
+dismissal. Helpful/Disagree/Fewer prompts/Dismiss are optional feedback selections
+submitted with Save response. Disagree can contest the original hypothesis and
+Fewer prompts changes frequency. Plain text is recorded as attributed self-report;
+there is no automatic conversational answer. Optional interpretation and researcher
+review are described below. A submitted reply retains its original decision, trial,
+hypothesis and TBS block, even if its acknowledgement is delayed. It never rewrites
+past decisions. Existing hypothesis correction expiry (eight trials from the
+original intervention) and task/block scope still apply. The storage API retains
+support for origin-linked delayed reports and exact retries; the participant UI
+accepts new replies only while the intervention is active.
 
 Generation runs inside the fixed window. Late messages are not displayed and
 receive an unexposed delivery record; API acknowledgements do not extend that
-window. Logs distinguish generation latency, request round-trip time, actual
-reading exposure, late arrival, and early attempts. Backend validation and saving
+window. Delivery acknowledgements are saved at trial end. A response explicitly
+submitted during that trial is queued until delivery is acknowledged, then saved
+before task feedback is sent to the model. A transport retry preserves the already
+submitted payload. Completed task events remain closed. The
+delivery's `reading_exposure_ms` measures
+the active, highlighted display through that trial, rather than preparation alone.
+`PREPARATION_END.reading_exposure_ms` measures only its preparation portion.
+Browser `INTERVENTION_ACTIVE_END` records close the active interval;
+`INTERVENTION_VISIBILITY_END` additionally records total visible time, including
+dimmed display across silent trials or pauses, until replacement or session end.
+These are display durations, not evidence that the participant read the text.
+Logs also distinguish generation latency, request round-trip time, late arrival,
+and early attempts. Backend validation and saving
 can add infrastructure delay between trials. The inherited browser timing is
 uncalibrated software timing, with no EEG triggers or physical onset measurement;
 this implementation has not been validated for laboratory acquisition.
@@ -488,6 +537,7 @@ and calibration-length adequacy need an agreed pilot protocol.
 ```bash
 .venv/bin/python -m unittest discover -s tests -v
 PYTHON=.venv/bin/python node tests/test_browser_contract.cjs
+node tests/test_teammate_presentation.cjs
 node tests/test_participant_selector.cjs
 node tests/test_inspector_contract.cjs
 node tests/test_demo_visuals.cjs
@@ -502,7 +552,10 @@ validation, score rules and the actual HTTP handler via an in-memory transport.
 The task JavaScript contract test executes the actual extended task scripts against
 the real Python store, using a minimal DOM and accelerated clock. It verifies
 complete task runs, delivery, persistence, replay, and the public event contract;
-it does not establish real-browser appearance or physical timing. A separate
+it does not establish real-browser appearance or physical timing. The teammate
+presentation test checks persistent active/silent states, explicit replies,
+current-trial reply expiry, fresh drafts, queued submission, immutable retry, input focus,
+passive visibility, late results and cancelled-run isolation. A separate
 inspector contract test executes the actual review controls and verifies acceptance
 requests, reviewed-state rendering and preservation of past decisions.
 
