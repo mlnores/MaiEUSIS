@@ -131,6 +131,18 @@ class PrototypeTest(unittest.TestCase):
         s=self.create('TBS');self.assertEqual(s['calibration_profile']['task'],'TBS')
         self.assertNotIn('alpha_plus',s['calibration_profile'])
 
+    def test_invalid_calibration_selection_identifies_the_missing_task(self):
+        before=len(self.store.list())
+        for task in ['MAB','TBS']:
+            for value,message in [('',f'completed {task} calibration'),
+                                  (None,f'completed {task} calibration'),
+                                  ('x'*56,f'Invalid {task} calibration selection'),
+                                  ('missing_calibration',f'selected {task} calibration was not found')]:
+                with self.subTest(task=task,value=value):
+                    sources={**self.calibrations,task:value}
+                    with self.assertRaisesRegex(ValueError,message):self.create(calibration_ids=sources)
+                    self.assertEqual(len(self.store.list()),before)
+
     @unittest.skipUnless(HAS_RDF,'Live assistance requires RDFLib')
     def test_delivery_exposure_and_cooldown_use_actual_exposure(self):
         sid,ev=self.first('TBS');self.feedback(sid,ev,'safe',100)

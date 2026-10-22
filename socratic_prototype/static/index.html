@@ -4,7 +4,7 @@
 <section id="welcome" class="panel"><h2>Set up a session</h2>
 <p>Begin with unassisted calibration in both tasks, then compare assistance conditions. Questions use the information you can see. You retain every choice.</p>
 <div class="setup-grid">
-<label>Participant pseudonym<input id="participantId" value="participant_demo" maxlength="100" autocomplete="off"></label>
+<div class="participant-setup"><label for="participantId">Participant pseudonym</label><input id="participantId" value="participant_demo" maxlength="100" autocomplete="off"><label class="known-participant-label" for="knownParticipant">Known pseudonyms</label><select id="knownParticipant" disabled><option value="">Loading saved pseudonyms…</option></select></div>
 <label>Session phase<select id="sessionPhase"><option value="calibration">Unassisted calibration</option><option value="assisted">Comparison session</option></select></label>
 <label>Assistance condition<select id="condition"><option value="A">A · No assistance</option><option value="B">B · General guidance</option><option value="C">C · Task-aware guidance</option><option value="F">F · Personalised Socratic teammate</option><option value="D">D · Task-aware Socratic (extension)</option><option value="E">E · Personalised guidance (extension)</option></select></label>
 <label>Protocol<select id="protocol"><option value="short">Short · MAB 40 / TBS 24</option><option value="full">Full · MAB 200 / TBS 192</option></select></label>

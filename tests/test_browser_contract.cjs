@@ -39,7 +39,7 @@ function runtime(task){
   removeEventListener:(type,fn)=>listeners.get(type)?.delete(fn),dispatchEvent:event=>{for(const fn of [...(listeners.get(event.type)||[])])fn(event);}};
  const sandbox={document,performance:{now:()=>now},setTimeout:schedule,clearTimeout:cancel,requestAnimationFrame:fn=>schedule(fn,16),cancelAnimationFrame:cancel,
   Date,Math,JSON,Promise,console:{log:console.log,error:e=>errors.push(e)},Blob,URL,KeyboardEvent:class{constructor(type,options){this.type=type;Object.assign(this,options);this.target={tagName:'BODY'};}preventDefault(){}},alert:e=>errors.push(e),confirm:()=>true,
-  fetch:async(url,options)=>{const body=options?JSON.parse(options.body):undefined;requests.push({url,body});try{return{ok:true,json:async()=>bridge(url,body)};}catch(e){return{ok:false,json:async()=>({error:e.message})};}}};
+  fetch:async(url,options)=>{const body=options?.body===undefined?undefined:JSON.parse(options.body);requests.push({url,body});try{return{ok:true,json:async()=>bridge(url,body)};}catch(e){return{ok:false,json:async()=>({error:e.message})};}}};
  context=vm.createContext(sandbox);vm.runInContext(html.split('<script>')[1].split('</script>')[0],context);
  vm.runInContext(fs.readFileSync(path.join(root,'socratic_prototype/static/teammate.js'),'utf8'),context);
  return {context,elements,requests,errors,now:()=>now};
@@ -49,7 +49,12 @@ function runtime(task){
   for(const task of ['MAB','TBS']){
    const r=runtime(task);await new Promise(resolve=>setImmediate(resolve));
    r.elements.get('sessionPhase').value='assisted';r.elements.get('condition').value='F';
-   r.elements.get('mabCalibration').value=fixture.MAB;r.elements.get('tbsCalibration').value=fixture.TBS;
+   r.elements.get('mabCalibration').value=fixture.MAB;r.elements.get('tbsCalibration').value='';
+   await vm.runInContext(`start('${task}')`,r.context);
+   assert.match(r.elements.get('setupError').textContent,/Missing: TBS/);
+   assert.equal(vm.runInContext('alive',r.context),false);
+   assert.equal(r.requests.filter(x=>x.url==='/api/sessions'&&x.body).length,0,'Missing calibration must be caught before session creation');
+   r.elements.get('tbsCalibration').value=fixture.TBS;
    await vm.runInContext(`start('${task}')`,r.context);
    const deadline=Date.now()+120000;
    while(vm.runInContext('alive',r.context)&&Date.now()<deadline)await new Promise(resolve=>setImmediate(resolve));

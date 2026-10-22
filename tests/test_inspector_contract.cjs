@@ -65,5 +65,11 @@ function find(root,predicate){if(predicate(root))return root;for(const child of 
  await elements.get('refresh').click();
  assert.ok(find(root,e=>e.textContent==='Graph argumentation · intervention source'));
  assert.ok(find(root,e=>e.tagName==='SUMMARY'&&e.textContent==='Selected proof and objection links'));
+ source.synthetic_profile={description:'Scripted broad sampling.',version:'fixture'};
+ await elements.get('refresh').click();
+ assert.ok(find(root,e=>e.textContent==='Synthetic calibration fixture · Scripted broad sampling.'));
+ delete source.synthetic_profile;source.uses_synthetic_calibration=true;
+ await elements.get('refresh').click();
+ assert.ok(find(root,e=>e.textContent.startsWith('This session uses synthetic calibration profiles.')));
  console.log('Inspector: historical/live proofs, premise provenance, critical questions, decision links, quote review and immutable past decisions passed.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

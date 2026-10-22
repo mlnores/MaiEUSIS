@@ -27,6 +27,10 @@ function render(){
  const root=el('detail');root.replaceChildren();if(!visible.length){paragraph(root,'No state updates yet.');return;}
  const e=visible[selected],s=e.snapshot,d=s.decision;root.append(node('h2',`Trial ${e.input.index} · ${e.input.kind}`));
  paragraph(root,e.timestamp+' · '+e.id,'muted small');
+ if(current.synthetic_profile){
+  paragraph(root,'Synthetic calibration fixture · '+current.synthetic_profile.description,'notice small');
+  details(root,'Synthetic profile definition',current.synthetic_profile);
+ }else if(current.uses_synthetic_calibration)paragraph(root,'This session uses synthetic calibration profiles. Its subsequent participant choices are recorded separately.','notice small');
  if(d){
   root.append(node('h3','Policy decision · '+d.action));paragraph(root,d.message||'No message generated.');paragraph(root,d.rationale);
   const exposure=current.events.find(x=>x.input.kind==='delivery'&&x.input.decision_id===d.id);

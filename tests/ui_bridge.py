@@ -15,6 +15,7 @@ def main():
     if path=='/fixture':
         return {task:run_scripted(store,task,participant='synthetic_ui') for task in ['MAB','TBS']}
     if path.startswith('/api/sessions?'):return store.list('synthetic_ui')
+    if path=='/api/sessions' and body is None:return store.list()
     if path=='/api/sessions':
         s=store.create(body);return {k:s[k] for k in ['id','condition','policy','total_trials','phase','configuration_digest']}
     bits=path.strip('/').split('/');sid=bits[2];action=bits[3]

@@ -65,7 +65,7 @@ class Store:
             result.append({k:s[k] for k in ['id','participant_id','task','condition','phase','protocol','created_at','finished','completed','total_trials']}|{'trials':len(history(s))})
         return result
 
-    def create(self,data):
+    def create(self,data,*,synthetic_profile=None):
         fields(data,['participant_id','task','condition','phase','protocol','preference'],['id','calibration_ids','seed'])
         require(identity(data['participant_id']),'Use a pseudonymous participant ID (letters, digits, dash, underscore)')
         task=get_task(data['task'])
@@ -82,12 +82,19 @@ class Store:
             ids=data.get('calibration_ids',{})
             require(isinstance(ids,dict) and set(ids)==set(required_calibrations(task.ID)),'Comparison sessions require completed unassisted calibration for the configured study tasks')
             for calibration_task,source_id in ids.items():
-                source=self.get(source_id)
-                require(source['task']==calibration_task and source['participant_id']==data['participant_id'] and source['phase']=='calibration' and source['completed'],'Invalid or incomplete calibration source')
+                require(bool(source_id),f'Comparison sessions require a completed {calibration_task} calibration. Complete it with the same participant pseudonym and protocol, then select it.')
+                require(identity(source_id) and len(source_id)<=55,f'Invalid {calibration_task} calibration selection. Choose a completed calibration from the list.')
+                try:source=self.get(source_id)
+                except KeyError:
+                    raise ValueError(f'The selected {calibration_task} calibration was not found in this data directory. Refresh the page and select a completed calibration.') from None
+                require(source['task']==calibration_task and source['participant_id']==data['participant_id'] and source['phase']=='calibration' and source['completed'],f'The selected {calibration_task} calibration must be completed and belong to this participant.')
                 require(source['protocol']==data['protocol'],'Calibration and assisted protocol must match')
                 require(source['model_version']==VERSION,'Calibration model version differs')
                 if 'task_module' in source:require(source['task_module']==get_task(source['task']).describe(),'Calibration task module or ontology version differs')
                 calibration[calibration_task]={'session_id':source_id,'profile':source['profile'],'digest':digest(source['events'])}
+                if source.get('synthetic'):
+                    calibration[calibration_task]['synthetic']=True
+                    calibration[calibration_task]['synthetic_profile']=copy.deepcopy(source.get('synthetic_profile'))
             if data['condition'] in {'E','F'}:profile=calibration[data['task']]['profile']
         s={'id':sid,'participant_id':data['participant_id'],'task':data['task'],'condition':data['condition'],
            'phase':data['phase'],'protocol':data['protocol'],'preference':data['preference'],'initial_preference':data['preference'],
@@ -96,6 +103,11 @@ class Store:
            'policy':copy.deepcopy(POLICY),'task_rules':task.task_rules(),'network':NETWORK.describe(),
            'model_version':VERSION,'schema_version':SCHEMA_VERSION,'task_module':task.describe(),
            'calibration_sources':calibration,'calibration_profile':profile}
+        if synthetic_profile is not None:
+            fields(synthetic_profile,['name','version','description','notice'])
+            require(data['phase']=='calibration' and synthetic_profile['name']==data['participant_id'],'Synthetic profile must identify its calibration participant')
+            s['synthetic']=True;s['synthetic_profile']=copy.deepcopy(synthetic_profile)
+        if any(source.get('synthetic') for source in calibration.values()):s['uses_synthetic_calibration']=True
         s['language_configuration']={**language_configuration(),'grounding_version':GROUNDING_VERSION}
         s['argumentation_configuration']=argumentation_configuration(task)
         s['configuration_digest']=digest({k:s[k] for k in configuration_fields(s)})

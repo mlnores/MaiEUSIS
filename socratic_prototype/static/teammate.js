@@ -1,5 +1,7 @@
 'use strict';
 const teammate={id:null,preparing:false,early:0,decision:null,feedback:null,response:'',deliveryPending:Promise.resolve(),pending:new Set()};
+const knownPseudonyms=new Set();
+let calibrationRefreshVersion=0;
 async function api(path,body){
   const response=await fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   const data=await response.json();if(!response.ok)throw Error(data.error||'Server request failed');return data;
@@ -8,13 +10,43 @@ function track(promise){teammate.pending.add(promise);promise.finally(()=>teamma
 function configureProtocol(){
   const full=by('protocol').value==='full';configs.MAB.stable_trials=full?50:10;configs.MAB.volatile_trials=full?150:30;configs.TBS.blocks=full?24:3;
 }
-async function refreshCalibration(){
+function syncPseudonymSelection(){
+  const participant=by('participantId').value.trim();
+  by('knownParticipant').value=knownPseudonyms.has(participant)?participant:'';
+}
+function renderPseudonyms(){
+  const select=by('knownParticipant');select.replaceChildren();
+  const blank=document.createElement('option');blank.value='';
+  blank.textContent=knownPseudonyms.size?'Choose a saved pseudonym':'No saved pseudonyms yet';select.append(blank);
+  for(const participant of [...knownPseudonyms].sort((a,b)=>a.localeCompare(b))){
+    const option=document.createElement('option');option.value=participant;option.textContent=participant;select.append(option);
+  }
+  select.disabled=!knownPseudonyms.size;syncPseudonymSelection();
+}
+async function refreshPseudonyms(){
   try{
-    const sessions=await api('/api/sessions?participant='+encodeURIComponent(by('participantId').value.trim()));
+    const sessions=await api('/api/sessions');
+    for(const session of sessions)knownPseudonyms.add(session.participant_id);
+    renderPseudonyms();
+  }catch(e){
+    const select=by('knownParticipant'),notice=document.createElement('option');
+    notice.value='';notice.textContent='Saved pseudonyms unavailable';select.replaceChildren(notice);select.disabled=true;
+  }
+}
+function changeParticipant(){
+  syncPseudonymSelection();by('setupError').textContent='';
+  for(const id of ['mabCalibration','tbsCalibration'])by(id).value='';
+  return refreshCalibration();
+}
+async function refreshCalibration(){
+  const version=++calibrationRefreshVersion,participant=by('participantId').value.trim(),protocol=by('protocol').value;
+  try{
+    const sessions=await api('/api/sessions?participant='+encodeURIComponent(participant));
+    if(version!==calibrationRefreshVersion||participant!==by('participantId').value.trim()||protocol!==by('protocol').value)return;
     for(const task of ['MAB','TBS']){
       const select=by(task==='MAB'?'mabCalibration':'tbsCalibration');const current=select.value;select.replaceChildren();
       const blank=document.createElement('option');blank.value='';blank.textContent='Choose a completed '+task+' calibration';select.append(blank);
-      for(const s of sessions.filter(x=>x.task===task&&x.phase==='calibration'&&x.completed&&x.protocol===by('protocol').value)){
+      for(const s of sessions.filter(x=>x.task===task&&x.phase==='calibration'&&x.completed&&x.protocol===protocol)){
         const option=document.createElement('option');option.value=s.id;option.textContent=s.trials+' trials · '+new Date(s.created_at).toLocaleString();select.append(option);
       }
       if([...select.options].some(x=>x.value===current)&&current)select.value=current;
@@ -22,7 +54,7 @@ async function refreshCalibration(){
     }
     const calibrated=!!by('mabCalibration').value&&!!by('tbsCalibration').value;
     by('setupStatus').textContent=calibrated?'Both calibration tasks are ready for comparison sessions.':'Complete unassisted calibration in both tasks before running comparison sessions.';
-  }catch(e){by('setupError').textContent='Start the local Python server to connect: '+e.message;}
+  }catch(e){if(version===calibrationRefreshVersion&&participant===by('participantId').value.trim()&&protocol===by('protocol').value)by('setupError').textContent='Start the local Python server to connect: '+e.message;}
 }
 function updateSetup(){
   const calibration=by('sessionPhase').value==='calibration';by('condition').disabled=calibration;if(calibration)by('condition').value='A';
@@ -30,12 +62,19 @@ function updateSetup(){
   void refreshCalibration();
 }
 async function connectTeammate(task){
+  const participant=by('participantId').value.trim();
+  const calibrationIds={MAB:by('mabCalibration').value,TBS:by('tbsCalibration').value};
+  if(by('sessionPhase').value==='assisted'){
+    const missing=Object.keys(calibrationIds).filter(task=>!calibrationIds[task]);
+    if(missing.length)throw Error('Comparison sessions require completed MAB and TBS calibrations. Missing: '+missing.join(' and ')+'. Complete and select them using the same participant pseudonym and protocol.');
+  }
   const response=await api('/api/sessions',{
-    id:session.id,participant_id:by('participantId').value.trim(),task,condition:by('condition').value,
+    id:session.id,participant_id:participant,task,condition:by('condition').value,
     phase:by('sessionPhase').value,protocol:by('protocol').value,preference:by('promptFrequency').value,
-    calibration_ids:{MAB:by('mabCalibration').value,TBS:by('tbsCalibration').value},seed:session.random_seed});
+    calibration_ids:calibrationIds,seed:session.random_seed});
   teammate.id=response.id;teammate.preparing=false;teammate.pending.clear();teammate.deliveryPending=Promise.resolve();
   session.teammate_configuration=response;session.teammate_events=[];
+  knownPseudonyms.add(participant);renderPseudonyms();
 }
 function publicEvaluation(t){
   const base={kind:'evaluation',trial_id:t.trial_uid,index:t.global_trial};
@@ -117,5 +156,11 @@ async function downloadTrace(){
   const s=await api('/api/sessions/'+teammate.id+'/export');blobDownload(s.id+'_teammate.json',JSON.stringify(s,null,2),'application/json');
 }
 by('downloadTrace').onclick=()=>downloadTrace().catch(e=>by('setupError').textContent=e.message);
-by('sessionPhase').onchange=updateSetup;by('protocol').onchange=updateSetup;by('participantId').onchange=refreshCalibration;
+by('sessionPhase').onchange=updateSetup;by('protocol').onchange=updateSetup;
+by('participantId').oninput=syncPseudonymSelection;by('participantId').onchange=changeParticipant;
+by('knownParticipant').onchange=()=>{
+  if(!by('knownParticipant').value)return;
+  by('participantId').value=by('knownParticipant').value;return changeParticipant();
+};
+void refreshPseudonyms();
 updateSetup();
