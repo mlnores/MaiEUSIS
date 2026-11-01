@@ -1,0 +1,20 @@
+\BOOKMARK [1][-]{section.1}{Motivation: supporting judgment without manufacturing closure}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Research questions and intended contribution}{section.1}% 2
+\BOOKMARK [1][-]{section.2}{Empirical setting and task fidelity}{}% 3
+\BOOKMARK [2][-]{subsection.2.1}{Empirical cohort and multilevel configurations}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Experimental design: five conditions and staged validation}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Factorial comparison and baseline}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{All 62 as the target; 16 for development}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.3}{Two validation problems before assistance effects}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.4}{Matched runs, response assumptions and interpretation}{section.3}% 9
+\BOOKMARK [1][-]{section.4}{Architecture: separate epistemic and behavioural responsibilities}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{Actor, assistance response and assistant model}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.2}{Knowledge representation and graph reasoning}{section.4}% 12
+\BOOKMARK [3][-]{subsubsection.4.2.1}{Represented knowledge and epistemic status}{subsection.4.2}% 13
+\BOOKMARK [3][-]{subsubsection.4.2.2}{Argument construction and evaluation}{subsection.4.2}% 14
+\BOOKMARK [3][-]{subsubsection.4.2.3}{Two illustrative reasoning traces}{subsection.4.2}% 15
+\BOOKMARK [2][-]{subsection.4.3}{From justified reasons to justified interruption}{section.4}% 16
+\BOOKMARK [2][-]{subsection.4.4}{Timing, exposure and participant contestation}{section.4}% 17
+\BOOKMARK [2][-]{subsection.4.5}{Extensibility and reproducibility}{section.4}% 18
+\BOOKMARK [1][-]{section.5}{Human implications for national security and governance}{}% 19
+\BOOKMARK [1][-]{section.6}{Current limits and next research steps}{}% 20
