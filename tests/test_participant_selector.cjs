@@ -10,13 +10,15 @@ class Element{
 }
 const row=(name,task,completed=true,protocol='short')=>({participant_id:name,task,completed,protocol,phase:'calibration',id:name+'_'+task+'_'+protocol,trials:task==='MAB'?40:24,created_at:'2026-10-20T12:00:00Z'});
 const records=[row('zeta','MAB'),row('alpha','MAB'),row('alpha','TBS'),row('beta','MAB',false),row('zeta','TBS'),row('alpha','MAB',true,'full')];
-function harness(sessions,{unavailable=false}={}){
+function harness(sessions,{unavailable=false,study=null}={}){
  const ids=['participantId','knownParticipant','sessionPhase','protocol','condition','startMab','startTbs','setupStatus','setupError','mabCalibration','tbsCalibration','responseButtons','responseText','submitReply','downloadTrace','promptFrequency'];
  const el=Object.fromEntries(ids.map(id=>[id,new Element()]));
  Object.assign(el.participantId,{value:'new_participant'});el.sessionPhase.value='calibration';el.protocol.value='short';el.promptFrequency.value='standard';
+ for(const value of ['A','C','E','D','F']){const option=new Element();option.value=value;el.condition.append(option);}
  const delayed=new Map(),requests=[];
  const context=vm.createContext({by:id=>el[id],document:{createElement:()=>new Element(),addEventListener(){}},
- configs:{MAB:{},TBS:{}},session:{id:'fixture_new_session',random_seed:'fixture_seed'},console,
+ browserTaskEntries:()=>[{id:'MAB',startId:'startMab',calibrationId:'mabCalibration'},{id:'TBS',startId:'startTbs',calibrationId:'tbsCalibration'}],
+ browserTask:()=>({configureProtocol(){}}),protocolFor:task=>study?.fixed_protocols?study.tasks[task].protocol:el.protocol.value,windowStudy:study,start(){},configs:{MAB:{},TBS:{}},session:{id:'fixture_new_session',random_seed:'fixture_seed'},console,
  fetch:async(path,options)=>{
   requests.push({path,body:options?.body===undefined?undefined:JSON.parse(options.body)});
   if(unavailable)throw Error('Offline fixture');
@@ -58,5 +60,14 @@ const flush=()=>new Promise(resolve=>setImmediate(resolve));
  const offline=harness([],{unavailable:true});await flush();
  assert.equal(offline.el.knownParticipant.disabled,true);assert.equal(offline.el.knownParticipant.options[0].textContent,'Saved pseudonyms unavailable');
  assert.equal(offline.el.participantId.value,'new_participant');
- console.log('Pseudonym selector: saved names, manual entry, new names, calibration refresh, protocol filtering, stale replies and empty/offline stores passed.');
+ const configured=harness([...records,row('alpha','TBS',true,'full')],{study:{fixed_protocols:true,conditions:['C','F'],tasks:{MAB:{protocol:'short'},TBS:{protocol:'full'}}}});await flush();
+ assert.equal(configured.el.protocol.disabled,true);assert.equal(configured.el.condition.value,'A');
+ configured.el.participantId.value='alpha';await configured.el.participantId.onchange();
+ assert.equal(configured.el.mabCalibration.value,'alpha_MAB_short');assert.equal(configured.el.tbsCalibration.value,'alpha_TBS_full');
+ configured.el.sessionPhase.value='assisted';configured.el.sessionPhase.onchange();
+ assert.equal(configured.el.condition.value,'C');assert.ok(configured.el.condition.options.find(o=>o.value==='A').disabled);
+ assert.equal(configured.el.condition.options.find(o=>o.value==='F').disabled,false);
+ configured.el.sessionPhase.value='calibration';configured.el.sessionPhase.onchange();
+ assert.equal(configured.el.condition.value,'A');assert.equal(configured.el.condition.disabled,true);
+ console.log('Pseudonym selector: identity, calibration refresh, mixed study protocols/conditions, stale replies and empty/offline stores passed.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

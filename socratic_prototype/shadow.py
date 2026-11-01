@@ -26,8 +26,7 @@ def fixtures():
                   ('mab_personalised','MAB','F','underexploration','challenge'),
                   ('tbs_horizon','TBS','D','shrinking_horizon','ask'),
                   ('tbs_multiplier','TBS','F','final_multiplier','highlight-dependency'),
-                  ('generic_boundary','MAB','B','general_guidance','explain'),
-                  ('conventional_boundary','TBS','C','shrinking_horizon','explain')]
+                  ('conventional_boundary','TBS','C','shrinking_horizon','advise')]
     for name,task,condition,issue,action in descriptions:
         h=[{'trial_id':'synthetic_trial_'+str(i),'choice':'blue1','outcome':o,'timed_out':False}
            for i,o in enumerate([100,0,100,-100,0,-100],1)] if task=='MAB' else []
@@ -52,7 +51,7 @@ def fixtures():
         session={'condition':condition,'task':task,'events':[],'policy':{'window_trials':12,'correction_expiry_trials':8}}
         package=build_evidence_package(session,ev,snap,selected,h)
         cases.append({'id':name,'kind':'question','synthetic':True,'package':package,
-                      'messages':['What evidence would make you revise your choice?'],'generation_budget_seconds':3,'preparation_ms':4000})
+                      'messages':['I recommend RISKY because its immediate expected gain is higher; future target attainment remains uncertain.'] if condition=='C' else ['What evidence would make you revise your choice?'],'generation_budget_seconds':3,'preparation_ms':4000})
     injected=copy.deepcopy(next(c for c in cases if c['id']=='mab_personalised'))
     injected['id']='instruction_in_quoted_report'
     injected['package']['participant']['reviewed_self_reports']=[{

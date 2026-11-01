@@ -48,6 +48,14 @@ class ArgumentationFacts(Protocol):
     def project_argumentation_facts(self,writer,session,event,state,history): ...
 
 
+class ExecutionExtensions(Protocol):
+    """Optional full execution hooks; independent of the public-record contract."""
+    def simulation_adapter(self): ...  # tasks.execution.SimulationAdapter
+    def browser_adapter(self): ...     # Local script and setup element metadata
+    def recommendation_message(self,recommendation): ...
+    def intervention_focus(self,issue): ...
+
+
 def document_paths(identifier):
     root=Path(__file__).resolve().parents[1]/'ontology'
     return (root/'schema.ttl',root/'task.ttl',root/(identifier.lower()+'.ttl'),

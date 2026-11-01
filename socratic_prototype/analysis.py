@@ -14,7 +14,7 @@ def summarize(session):
     responses=[e['input'] for e in session['events'] if e['input'].get('kind')=='response']
     latency=[x['generation_latency_ms'] for x in delivery]
     languages=[d['language'] for d in decisions if d.get('language')]
-    result={'session_id':session['id'],'participant_id':session['participant_id'],'task':session['task'],'condition':session['condition'],
+    result={'synthetic':bool(session.get('synthetic')),'session_id':session['id'],'participant_id':session['participant_id'],'task':session['task'],'condition':session['condition'],
             'phase':session['phase'],'protocol':session['protocol'],'completed':session['completed'],'completed_trials':len(h),
             'timeouts':len(h)-len(valid),'median_response_ms':statistics.median([x['response_ms'] for x in valid if x['response_ms'] is not None]) if any(x['response_ms'] is not None for x in valid) else None,
             'eligible_points':len(decisions),'silence_decisions':sum(d['action']=='silence' for d in decisions),

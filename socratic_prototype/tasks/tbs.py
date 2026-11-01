@@ -28,7 +28,7 @@ evidence_observation=common_observation
 
 def argumentation_documents():
     from ..argumentation import ROOT
-    return (ROOT/'schemes/tbs.ttl',)
+    return (ROOT/'schemes/tbs.ttl',ROOT/'schemes/tbs_recommendations.ttl')
 
 def project_argumentation_facts(w,session,event,state,history):
     if history and history[-1].get('block')==event['input']['block']:
@@ -217,3 +217,21 @@ def summarize(session,h,valid):
     result.update({'completed_blocks': len(blocks), 'targets_met': sum((score >= b['target'] for score, b in zip(scores, blocks))), 'final_block_scores': scores, 'risky_choice_rate': sum((x['choice'] == 'risky' for x in valid)) / len(valid) if valid else None})
     return result
 
+
+
+def simulation_adapter():
+    from . import tbs_execution
+    return tbs_execution
+
+
+def recommendation_message(recommendation):
+    explanations={'immediate_expected_gain':'its displayed probability and gain give higher immediate expected points. This does not maximise the unknown chance of reaching the target over future trials',
+                  'final_target_attainment':'it has the higher calculated chance of reaching the target on this final trial, including the conditional multiplier'}
+    require(recommendation['criterion'] in explanations,'Unsupported TBS recommendation criterion')
+    return f"I recommend {recommendation['option_id'].upper()} (key {recommendation['key']}) because {explanations[recommendation['criterion']]}."
+
+def intervention_focus(issue):
+    return 'target_attainment' if issue in {'final_multiplier','criteria_divergence'} else 'target_pressure'
+
+def browser_adapter():
+    return {'help':'TBS probabilities and possible gains are displayed. The final multiplier applies only after a final-trial win.','script':'task-adapters/tbs.js','title':'Target-Based Sequential (TBS)','start_id':'startTbs','calibration_id':'tbsCalibration'}

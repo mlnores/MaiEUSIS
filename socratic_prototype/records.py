@@ -4,7 +4,7 @@ import re
 
 STATUSES = {'known','unknown','assumed','inferred','contested','probable','low-confidence','source-dependent','requires-verification'}
 ACTIONS = {'ask','challenge','support','explain','compare','highlight-dependency','request-evidence','advise','silence'}
-CONDITIONS = {'A','B','C','D','E','F'}
+CONDITIONS = {'A','C','D','E','F'}
 
 class ValidationError(ValueError):
     pass

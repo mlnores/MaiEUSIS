@@ -1,0 +1,10 @@
+[
+  {
+    "id": "synthetic_example",
+    "source": "Illustrative assumed parameters, not reconstructed human data",
+    "task_models": {
+      "MAB": {"alpha_plus": 0.45, "alpha_minus": 0.45, "beta": 2.0},
+      "TBS": {"intercept": 0.0, "slope": 1.5}
+    }
+  }
+]

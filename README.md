@@ -92,23 +92,43 @@ the user's new choices synthetic. The inspector displays this distinction.
 ## Study conditions and timing
 
 The meeting notes describe alternatives for discussion, not an agreed protocol.
-The compact comparison is implemented as A/B/C/F; D/E expose its six-condition
-extension. Assignment is manual, not randomised, and no protocol is preregistered.
+The agreed comparison uses A/C/E/D/F: a no-assistance baseline and a 2 × 2
+comparison of direct versus Socratic assistance and personalisation. Assignment is manual, not randomised, and no protocol is preregistered.
 All comparison groups have the same completed unassisted calibration, but only
 E/F supply those calibrated estimates to the intervention policy.
 
 | Condition | Policy inputs and delivery |
 | --- | --- |
 | A | No assistance; matched neutral preparation window |
-| B | Scheduled general guidance; no task-specific or person-specific advice |
-| C | Task-aware conventional guidance; no calibrated person model |
-| D | Task-aware Socratic questions; no calibrated person model |
-| E | Task-aware conventional guidance with task-specific calibration |
-| F | Task-aware personalised Socratic support, challenge, or justified silence |
+| C | Generic task-aware direct recommendations |
+| E | Personalised task-aware direct recommendations |
+| D | Generic task-aware Socratic questions |
+| F | Personalised task-aware Socratic questions |
+
+Condition B has been removed; new sessions support only A/C/E/D/F. Generic assistance uses public task
+information without a calibrated participant model. Direct messages recommend a
+specific option with a graph-supported comparison criterion and explanation;
+Socratic messages invite examination without prescribing an action. Both retain
+uncertainty and the participant's final choice. No personalisation bonus is used.
+
+The [personalisation and simulation guide](docs/simulation/README.md) describes
+the separate task actor, assistance-response model, assistant's participant model,
+graph reasoning and intervention policy, with a runnable matched five-condition
+experiment. Its illustrative response scenarios are assumptions, not measured
+human attitudes or evidence that assistance improves decisions.
+
+Environment execution is modular too: each registered task owns its synthetic
+actor, private simulator, metrics, graph criterion and browser adapter. A study
+JSON selects environments, protocols, calibrations and conditions for both the
+server and simulator (`--study PATH`). MAB/TBS remain the default. A runnable
+[REFERENCE study](docs/simulation/README.md#study-configuration-and-new-environments)
+checks a third environment through the full pipeline; it is an engineering
+fixture, not a validated research task. See the
+[extension contract](docs/task_modules.md#adding-another-task).
 
 The default language layer uses reviewed templates in every condition. An
 experimental Ollama mode can now compose new questions for D/F from a
-condition-filtered evidence package. B/C/E retain reviewed conventional wording.
+condition-filtered evidence package. C/E retain reviewed direct recommendation wording.
 An empirical comparison requires piloting the provider layer, fixing its
 model/version and language mode, and agreeing the study protocol.
 
@@ -254,7 +274,7 @@ and task-module compatibility before accepting selected sources. Existing comple
 calibrations can be reused; comparison sessions store their source IDs, profiles
 and event digests for traceability.
 
-Only E/F load a calibrated participant profile. A/B/C/D do not use fitted personal
+Only E/F load a calibrated participant profile. A/C/D do not use fitted personal
 parameters to select assistance. In E/F:
 
 - MAB reuses the fitted mean learning rates and `beta`, while option values reset
@@ -546,7 +566,7 @@ node tests/test_demo_visuals.cjs
 The Python tests exercise both provider request/response contracts with mocked
 transports, local-only Ollama routing, generated-question checks, condition-filtered
 packages, shadow reporting, reviewed self-report updates, safe fallback and replay without generation,
-plus all six conditions in complete short MAB/TBS sessions,
+plus all five conditions in complete short MAB/TBS sessions,
 replay, correction/revision, uncertainty, information boundaries, language-output
 validation, score rules and the actual HTTP handler via an in-memory transport.
 The task JavaScript contract test executes the actual extended task scripts against
@@ -564,7 +584,7 @@ version/document drift, historical exports, numerical RDF provenance and conditi
 multiplier behaviour. Graph checks cover multi-step discovery, objections,
 grounded cycles/defence, priorities, propagation, state isolation, attributed
 contestation, epistemic preservation, construction limits, SHACL and replay.
-Delivery-boundary checks cover graph-only candidate provenance, all six conditions,
+Delivery-boundary checks cover graph-only candidate provenance, all five conditions,
 short-horizon clarification, rejected warrants, actual objections in language
 packages, condition-filtered proof closure and unavailable/incomplete reasoning.
 RDF-dependent checks skip explicitly without RDFLib; a socket check can skip

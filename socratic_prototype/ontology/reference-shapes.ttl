@@ -1,0 +1,5 @@
+@prefix reference: <https://example.org/socratic/reference/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+reference:StateShape a sh:NodeShape ; sh:targetClass reference:ChoiceState ;
+ sh:property [ sh:path reference:points ; sh:minCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] .

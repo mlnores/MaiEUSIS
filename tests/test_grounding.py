@@ -39,13 +39,10 @@ class GroundingTest(unittest.TestCase):
     def setUp(self):
         self.case=fixtures()[0];self.package=self.case['package']
 
-    def test_generic_package_exposes_no_task_or_person(self):
-        package=next(c['package'] for c in fixtures() if c['id']=='generic_boundary')
-        self.assertIsNone(package['task'])
-        for field in ['observations','environment','participant']:self.assertFalse(package[field])
-        prompt=json.dumps(prompt_package(package))
-        for forbidden in ['MAB','TBS','synthetic_current','synthetic_evidence','sampled','reward']:
-            self.assertNotIn(forbidden,prompt)
+    def test_generic_is_task_aware_without_a_person_model(self):
+        package=next(c['package'] for c in fixtures() if c['id']=='conventional_boundary')
+        self.assertEqual(package['task'],'TBS')
+        self.assertTrue(package['environment']);self.assertFalse(package['participant'])
 
     def test_task_only_package_excludes_calibration_and_person_reports(self):
         for case in fixtures():
@@ -117,7 +114,7 @@ class GroundingTest(unittest.TestCase):
     def test_conventional_conditions_make_no_question_request(self):
         with patch('socratic_prototype.grounding.request_ollama',side_effect=AssertionError('Provider called')):
             for case in fixtures():
-                if case['kind']=='question' and case['package']['condition'] in {'B','C'}:
+                if case['kind']=='question' and case['package']['condition'] in {'C','E'}:
                     self.assertEqual(realise_question(case['package'],case['messages'],config=CONFIG)['mode'],'reviewed-template')
 
     def test_provider_failure_and_wall_deadline_fall_back(self):

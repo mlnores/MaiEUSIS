@@ -3,7 +3,7 @@
   "notice": "Constructed partial unassisted sessions; graph warrants are computed but condition A stays silent. Not human data.",
   "cases": {
     "mab_8": {
-      "version": "argumentation-0.2",
+      "version": "argumentation-0.3",
       "mode": "live",
       "backend": "rdflib-sparql",
       "semantics": "grounded",
@@ -50,26 +50,6 @@
           "content": "sampledArmCount = 1"
         },
         {
-          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/85866b23d8dd4bb42c5ec311",
-          "proposition": {
-            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
-            "predicate": "https://example.org/socratic/argumentation/preparationPoint",
-            "object": {
-              "type": "literal",
-              "value": true,
-              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
-            },
-            "polarity": "positive",
-            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_15/state"
-          },
-          "kind": "observation",
-          "source": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
-          "statuses": [
-            "known"
-          ],
-          "content": "A preparation point is recorded; no participant intent is implied."
-        },
-        {
           "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/37ce49141e851d694b2aa7d0",
           "proposition": {
             "subject": "https://example.org/socratic/participant-synthetic_argumentation",
@@ -89,26 +69,6 @@
           ],
           "content": "Limited sampling may leave useful alternatives unexplored.",
           "confidence": 0.72
-        },
-        {
-          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/626c2c1d516c9e64aad6701e/claim",
-          "proposition": {
-            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
-            "predicate": "https://example.org/socratic/argumentation/generalReflectionWarranted",
-            "object": {
-              "type": "literal",
-              "value": true,
-              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
-            },
-            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_15/state",
-            "polarity": "positive"
-          },
-          "kind": "derived",
-          "source": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/626c2c1d516c9e64aad6701e",
-          "statuses": [
-            "inferred"
-          ],
-          "content": "A preparation point permits considering a general reminder about goals, evidence and alternatives."
         },
         {
           "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/7bbe28524198c4a4d1e18c54/claim",
@@ -192,49 +152,6 @@
         }
       ],
       "arguments": [
-        {
-          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/5ae740788498e5f9a00cb8d8",
-          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/85866b23d8dd4bb42c5ec311",
-          "premises": [
-            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/85866b23d8dd4bb42c5ec311"
-          ],
-          "subarguments": [],
-          "rule": null,
-          "rule_kind": "premise",
-          "priority": 0,
-          "reason": "Recorded observation premise; source and epistemic status retained.",
-          "critical_questions": [],
-          "label": "accepted"
-        },
-        {
-          "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/626c2c1d516c9e64aad6701e",
-          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/626c2c1d516c9e64aad6701e/claim",
-          "premises": [
-            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/85866b23d8dd4bb42c5ec311"
-          ],
-          "subarguments": [
-            "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/5ae740788498e5f9a00cb8d8"
-          ],
-          "rule": "https://example.org/socratic/argumentation/generalReflectionArgument",
-          "rule_kind": "defeasible",
-          "priority": 0,
-          "reason": "A preparation point permits considering a general reminder about goals, evidence and alternatives.",
-          "critical_questions": [
-            "Would a generic reminder add enough value to justify an interruption?"
-          ],
-          "label": "accepted",
-          "intervention": {
-            "issue": "general_guidance",
-            "audience": "generic",
-            "schedule": "periodic",
-            "socratic_action": "ask",
-            "conventional_message": "Consider your goal, the available evidence, and the costs of each alternative.",
-            "socratic_message": "What goals and evidence matter for this decision?",
-            "clarification_message": "",
-            "clarification_objection": "",
-            "usefulness": 0.65
-          }
-        },
         {
           "id": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/argument/ff0c7f89796b1d391c154a85",
           "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_15/state/assertion/37ce49141e851d694b2aa7d0",
@@ -388,7 +305,6 @@
       "critical_questions": [
         "Could persistence be intentional, and is further exploration worth its cost?",
         "What evidence or participant explanation would revise this interpretation?",
-        "Would a generic reminder add enough value to justify an interruption?",
         "Would a revision question interrupt useful deliberation?"
       ],
       "facts_turtle": "<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> a arg:HistorySummary .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_15/state> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> mab:completedChoices \"7\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> mab:sampledArmCount \"1\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> mab:remainingDecisions \"33\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_1/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_2/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_3/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_4/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_5/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_6/choice> .\n<https://example.org/socratic/data/argumentation_example_mab_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_mab_trial_7/choice> .\n<https://example.org/socratic/argumentation_example_mab_event_15_underexploration> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_mab_event_15_underexploration> arg:eligible \"true\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_mab_event_15_underexploration> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_15/state> .\n<https://example.org/socratic/argumentation_example_mab_event_15_premature_exploitation> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_mab_event_15_premature_exploitation> arg:eligible \"false\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_mab_event_15_premature_exploitation> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_15/state> .\n<https://example.org/socratic/argumentation_example_mab_event_15_feedback_overweighting> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_mab_event_15_feedback_overweighting> arg:eligible \"false\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_mab_event_15_feedback_overweighting> arg:inState <https://example.org/socratic/data/argumentation_example_mab_event_15/state> .",
@@ -397,9 +313,9 @@
       "stats": {
         "input_triples": 2099,
         "input_assertions": 74,
-        "retained_assertions": 9,
+        "retained_assertions": 7,
         "schemes": 9,
-        "matches": 10,
+        "matches": 8,
         "rounds": 2
       },
       "limits": {
@@ -414,7 +330,7 @@
       }
     },
     "mab_39": {
-      "version": "argumentation-0.2",
+      "version": "argumentation-0.3",
       "mode": "live",
       "backend": "rdflib-sparql",
       "semantics": "grounded",
@@ -481,26 +397,6 @@
           "content": "sampledArmCount = 1"
         },
         {
-          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/5c6cec1158d7fc4ccb1dc458",
-          "proposition": {
-            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
-            "predicate": "https://example.org/socratic/argumentation/preparationPoint",
-            "object": {
-              "type": "literal",
-              "value": true,
-              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
-            },
-            "polarity": "positive",
-            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state"
-          },
-          "kind": "observation",
-          "source": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
-          "statuses": [
-            "known"
-          ],
-          "content": "A preparation point is recorded; no participant intent is implied."
-        },
-        {
           "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f03b50775152efe335741f12",
           "proposition": {
             "subject": "https://example.org/socratic/participant-synthetic_argumentation",
@@ -520,26 +416,6 @@
           ],
           "content": "Limited sampling may leave useful alternatives unexplored.",
           "confidence": 0.72
-        },
-        {
-          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/916d34300abbd7292ecd6730/claim",
-          "proposition": {
-            "subject": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
-            "predicate": "https://example.org/socratic/argumentation/generalReflectionWarranted",
-            "object": {
-              "type": "literal",
-              "value": true,
-              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
-            },
-            "scope": "https://example.org/socratic/data/argumentation_example_mab_event_77/state",
-            "polarity": "positive"
-          },
-          "kind": "derived",
-          "source": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/916d34300abbd7292ecd6730",
-          "statuses": [
-            "inferred"
-          ],
-          "content": "A preparation point permits considering a general reminder about goals, evidence and alternatives."
         },
         {
           "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/bfd4df857689a9df0f40e92b/claim",
@@ -662,49 +538,6 @@
         }
       ],
       "arguments": [
-        {
-          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/b446822d44dad74d79c5150b",
-          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/5c6cec1158d7fc4ccb1dc458",
-          "premises": [
-            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/5c6cec1158d7fc4ccb1dc458"
-          ],
-          "subarguments": [],
-          "rule": null,
-          "rule_kind": "premise",
-          "priority": 0,
-          "reason": "Recorded observation premise; source and epistemic status retained.",
-          "critical_questions": [],
-          "label": "accepted"
-        },
-        {
-          "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/916d34300abbd7292ecd6730",
-          "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/916d34300abbd7292ecd6730/claim",
-          "premises": [
-            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/5c6cec1158d7fc4ccb1dc458"
-          ],
-          "subarguments": [
-            "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/b446822d44dad74d79c5150b"
-          ],
-          "rule": "https://example.org/socratic/argumentation/generalReflectionArgument",
-          "rule_kind": "defeasible",
-          "priority": 0,
-          "reason": "A preparation point permits considering a general reminder about goals, evidence and alternatives.",
-          "critical_questions": [
-            "Would a generic reminder add enough value to justify an interruption?"
-          ],
-          "label": "accepted",
-          "intervention": {
-            "issue": "general_guidance",
-            "audience": "generic",
-            "schedule": "periodic",
-            "socratic_action": "ask",
-            "conventional_message": "Consider your goal, the available evidence, and the costs of each alternative.",
-            "socratic_message": "What goals and evidence matter for this decision?",
-            "clarification_message": "",
-            "clarification_objection": "",
-            "usefulness": 0.65
-          }
-        },
         {
           "id": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/argument/89b541e54aa9a92e89c5bd4e",
           "conclusion": "https://example.org/socratic/data/argumentation_example_mab_event_77/state/assertion/f03b50775152efe335741f12",
@@ -960,7 +793,6 @@
         "Could persistence be intentional, and is further exploration worth its cost?",
         "Does the remaining horizon justify discussing the cost of exploration instead of challenging persistence?",
         "What evidence or participant explanation would revise this interpretation?",
-        "Would a generic reminder add enough value to justify an interruption?",
         "Would a revision question interrupt useful deliberation?",
         "Would another exploration prompt help with so few decisions left?"
       ],
@@ -970,9 +802,9 @@
       "stats": {
         "input_triples": 2195,
         "input_assertions": 74,
-        "retained_assertions": 12,
+        "retained_assertions": 10,
         "schemes": 9,
-        "matches": 14,
+        "matches": 12,
         "rounds": 2
       },
       "limits": {
@@ -987,7 +819,7 @@
       }
     },
     "tbs_8": {
-      "version": "argumentation-0.2",
+      "version": "argumentation-0.3",
       "mode": "live",
       "backend": "rdflib-sparql",
       "semantics": "grounded",
@@ -1114,26 +946,6 @@
           "content": "value = 108.0"
         },
         {
-          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/8327e06f97d150e49c57e112",
-          "proposition": {
-            "subject": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
-            "predicate": "https://example.org/socratic/argumentation/preparationPoint",
-            "object": {
-              "type": "literal",
-              "value": true,
-              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
-            },
-            "polarity": "positive",
-            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state"
-          },
-          "kind": "observation",
-          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
-          "statuses": [
-            "known"
-          ],
-          "content": "A preparation point is recorded; no participant intent is implied."
-        },
-        {
           "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/4a974c00398fd56817552ad1",
           "proposition": {
             "subject": "https://example.org/socratic/participant-synthetic_argumentation",
@@ -1153,26 +965,6 @@
           ],
           "content": "A repeated choice pattern may warrant checking the shrinking horizon.",
           "confidence": 0.3
-        },
-        {
-          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/b55c8af8682e17c51b552d8d/claim",
-          "proposition": {
-            "subject": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
-            "predicate": "https://example.org/socratic/argumentation/generalReflectionWarranted",
-            "object": {
-              "type": "literal",
-              "value": true,
-              "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
-            },
-            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
-            "polarity": "positive"
-          },
-          "kind": "derived",
-          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/b55c8af8682e17c51b552d8d",
-          "statuses": [
-            "inferred"
-          ],
-          "content": "A preparation point permits considering a general reminder about goals, evidence and alternatives."
         },
         {
           "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/9f63898fbd68599b271423c2/claim",
@@ -1273,6 +1065,25 @@
           "content": "Displayed gains and probabilities permit comparing expected gain while keeping the target objective explicit."
         },
         {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/eec0c45682070d8b1f77b4e4/claim",
+          "proposition": {
+            "subject": "https://example.org/socratic/data/argumentation_example_tbs_trial_8/option/risky",
+            "predicate": "https://example.org/socratic/argumentation/recommendedByCriterion",
+            "object": {
+              "type": "literal",
+              "value": "final_target_attainment"
+            },
+            "scope": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
+            "polarity": "positive"
+          },
+          "kind": "derived",
+          "source": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/eec0c45682070d8b1f77b4e4",
+          "statuses": [
+            "known"
+          ],
+          "content": "The two public option calculations favour one option under the explicitly stated criterion; future option pairs and outcomes remain unknown."
+        },
+        {
           "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/e044458c28e8d8e585b5a639/claim",
           "proposition": {
             "subject": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state",
@@ -1314,49 +1125,6 @@
         }
       ],
       "arguments": [
-        {
-          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/3e4e48a52c508193f6df4077",
-          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/8327e06f97d150e49c57e112",
-          "premises": [
-            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/8327e06f97d150e49c57e112"
-          ],
-          "subarguments": [],
-          "rule": null,
-          "rule_kind": "premise",
-          "priority": 0,
-          "reason": "Recorded observation premise; source and epistemic status retained.",
-          "critical_questions": [],
-          "label": "accepted"
-        },
-        {
-          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/b55c8af8682e17c51b552d8d",
-          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/b55c8af8682e17c51b552d8d/claim",
-          "premises": [
-            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/8327e06f97d150e49c57e112"
-          ],
-          "subarguments": [
-            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/3e4e48a52c508193f6df4077"
-          ],
-          "rule": "https://example.org/socratic/argumentation/generalReflectionArgument",
-          "rule_kind": "defeasible",
-          "priority": 0,
-          "reason": "A preparation point permits considering a general reminder about goals, evidence and alternatives.",
-          "critical_questions": [
-            "Would a generic reminder add enough value to justify an interruption?"
-          ],
-          "label": "accepted",
-          "intervention": {
-            "issue": "general_guidance",
-            "audience": "generic",
-            "schedule": "periodic",
-            "socratic_action": "ask",
-            "conventional_message": "Consider your goal, the available evidence, and the costs of each alternative.",
-            "socratic_message": "What goals and evidence matter for this decision?",
-            "clarification_message": "",
-            "clarification_objection": "",
-            "usefulness": 0.65
-          }
-        },
         {
           "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/b7d3fab62cfa404260422741",
           "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/4a974c00398fd56817552ad1",
@@ -1583,6 +1351,26 @@
           }
         },
         {
+          "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/eec0c45682070d8b1f77b4e4",
+          "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/eec0c45682070d8b1f77b4e4/claim",
+          "premises": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/26c07d5079501ea28e42bd5b",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/a909e21b375e8408bf56537b",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/assertion/b8d674e044dcc6ba8519efaf"
+          ],
+          "subarguments": [
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/27924e4bdb2d97b319b65955",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/8760cbe7314fb98a13137153",
+            "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/2bf3da43dd54a34e882166b8"
+          ],
+          "rule": "https://example.org/socratic/tbs/recommendFinal",
+          "rule_kind": "strict",
+          "priority": 0,
+          "reason": "The two public option calculations favour one option under the explicitly stated criterion; future option pairs and outcomes remain unknown.",
+          "critical_questions": [],
+          "label": "accepted"
+        },
+        {
           "id": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/e044458c28e8d8e585b5a639",
           "conclusion": "https://example.org/socratic/data/argumentation_example_tbs_event_15/state/argument/e044458c28e8d8e585b5a639/claim",
           "premises": [
@@ -1636,8 +1424,7 @@
         "Are you comparing immediate expected gain or the chance of reaching the target?",
         "Immediate expected gain does not determine final target attainment or an optimal future policy.",
         "Neither immediate expected gain nor the nominal target gap alone determines attainment.",
-        "What evidence or participant explanation would revise this interpretation?",
-        "Would a generic reminder add enough value to justify an interruption?"
+        "What evidence or participant explanation would revise this interpretation?"
       ],
       "facts_turtle": "<https://example.org/socratic/data/argumentation_example_tbs_event_15/state/history-summary> a arg:HistorySummary .\n<https://example.org/socratic/data/argumentation_example_tbs_event_15/state/history-summary> arg:inState <https://example.org/socratic/data/argumentation_example_tbs_event_15/state> .\n<https://example.org/socratic/data/argumentation_example_tbs_event_15/state/history-summary> tbs:lastObservedGain \"0\"^^xsd:integer .\n<https://example.org/socratic/data/argumentation_example_tbs_event_15/state/history-summary> task:basedOnObservation <https://example.org/socratic/data/argumentation_example_tbs_trial_7/outcome> .\n<https://example.org/socratic/argumentation_example_tbs_event_15_constraint_neglect> a core:Hypothesis .\n<https://example.org/socratic/argumentation_example_tbs_event_15_constraint_neglect> arg:eligible \"true\"^^xsd:boolean .\n<https://example.org/socratic/argumentation_example_tbs_event_15_constraint_neglect> arg:inState <https://example.org/socratic/data/argumentation_example_tbs_event_15/state> .",
       "notice": "Arguments ground live intervention candidates; labels express justification under these rules, not truth or intervention usefulness.",
@@ -1645,8 +1432,8 @@
       "stats": {
         "input_triples": 659,
         "input_assertions": 22,
-        "retained_assertions": 16,
-        "schemes": 11,
+        "retained_assertions": 15,
+        "schemes": 12,
         "matches": 22,
         "rounds": 3
       },
@@ -1666,21 +1453,21 @@
     "MAB": {
       "matches": true,
       "events_replayed": 78,
-      "digest": "d49da1101fc9f8ee29ee3f3951d2aec3ed932a92c4850c344b7d4b6c8d05aa78",
-      "recorded_digest": "d49da1101fc9f8ee29ee3f3951d2aec3ed932a92c4850c344b7d4b6c8d05aa78",
+      "digest": "ce9c3f385ef3019bccdb7aa15fa675ea9fbaf1b0748595a8f671432f06dfd729",
+      "recorded_digest": "ce9c3f385ef3019bccdb7aa15fa675ea9fbaf1b0748595a8f671432f06dfd729",
       "api_calls": 0
     },
     "TBS": {
       "matches": true,
       "events_replayed": 16,
-      "digest": "771cece006968bd40861a577f902b1b61de72b7f0a5bc3255d3c09c1da01c116",
-      "recorded_digest": "771cece006968bd40861a577f902b1b61de72b7f0a5bc3255d3c09c1da01c116",
+      "digest": "03838e81ac7ed015459bffbd5f61667b6757554b8553858985aeea8e1f02914b",
+      "recorded_digest": "03838e81ac7ed015459bffbd5f61667b6757554b8553858985aeea8e1f02914b",
       "api_calls": 0
     }
   },
   "configurations": {
     "MAB": {
-      "version": "argumentation-0.2",
+      "version": "argumentation-0.3",
       "mode": "live",
       "semantics": "grounded",
       "backend": "rdflib-sparql",
@@ -1694,12 +1481,13 @@
       "documents": {
         "schema.ttl": "0dbe7a6dd8557aed7715c7410b86d468b041d1e69df2e5c66a934fd195ed221b",
         "shapes.ttl": "bbe382473126213699b67e95d9bec240f0ee673c4dc613ba7268e7adfd587ed9",
-        "shared.ttl": "7b4a4da27a3ffd883e562de029ff0d6ffeb7e08aed570c8ebf441cd2996c4374",
-        "mab.ttl": "1dcd7444654c333222300311f668e4697c2dab5eeeac44c1fd43ba690ff7c812"
+        "shared.ttl": "f44dc794b218f408a0500f9a983006ad3f1d8ea10a06a804d7b68a26cbff56a2",
+        "mab.ttl": "1dcd7444654c333222300311f668e4697c2dab5eeeac44c1fd43ba690ff7c812",
+        "mab_recommendations.ttl": "b341c84b8170bf5794946b7dbe540041f7f9605efcc4c129b8d4083d1dcb5912"
       }
     },
     "TBS": {
-      "version": "argumentation-0.2",
+      "version": "argumentation-0.3",
       "mode": "live",
       "semantics": "grounded",
       "backend": "rdflib-sparql",
@@ -1713,21 +1501,22 @@
       "documents": {
         "schema.ttl": "0dbe7a6dd8557aed7715c7410b86d468b041d1e69df2e5c66a934fd195ed221b",
         "shapes.ttl": "bbe382473126213699b67e95d9bec240f0ee673c4dc613ba7268e7adfd587ed9",
-        "shared.ttl": "7b4a4da27a3ffd883e562de029ff0d6ffeb7e08aed570c8ebf441cd2996c4374",
-        "tbs.ttl": "7d8131b3422bae9cb4830c42b95b73129e36ced8424d52ab0b95c51d30f6a3d5"
+        "shared.ttl": "f44dc794b218f408a0500f9a983006ad3f1d8ea10a06a804d7b68a26cbff56a2",
+        "tbs.ttl": "7d8131b3422bae9cb4830c42b95b73129e36ced8424d52ab0b95c51d30f6a3d5",
+        "tbs_recommendations.ttl": "ee54938fc415ff5bacd818338769856038c9ebfb38245d8634542c73e2246ea0"
       }
     }
   },
   "local_discovery_benchmark": {
     "MAB": {
-      "median_ms": 81.734,
-      "max_ms": 150.027,
+      "median_ms": 108.476,
+      "max_ms": 161.318,
       "samples": 5,
       "scope": "Warm graph discovery only; excludes all other backend and display work."
     },
     "TBS": {
-      "median_ms": 81.539,
-      "max_ms": 121.202,
+      "median_ms": 79.477,
+      "max_ms": 87.309,
       "samples": 5,
       "scope": "Warm graph discovery only; excludes all other backend and display work."
     }

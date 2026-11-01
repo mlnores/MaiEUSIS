@@ -1,0 +1,34 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+arg:recommendedByCriterion a owl:DatatypeProperty .
+tbs:recommendImmediate a arg:Scheme ; arg:version "argumentation-0.3" ; arg:ruleKind "strict" ;
+arg:premiseVariables "p1 p2 p3" ; arg:subjectVariable "option" ; arg:conclusionPredicate arg:recommendedByCriterion ;
+arg:conclusionObject "immediate_expected_gain" ; arg:polarity "positive" ;
+arg:reason "The two public option calculations favour one option under the explicitly stated criterion; future option pairs and outcomes remain unknown." ;
+arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+SELECT DISTINCT ?p1 ?p2 ?p3 ?option WHERE {
+{ SELECT ?p1 ?state ?x ?option WHERE { ?e1 a tbs:ExpectedGainCalculation ; task:forOption ?option . ?p1 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e1 ; arg:object ?x ; arg:polarity "positive" . } }
+{ SELECT ?p2 ?state ?y ?other WHERE { ?e2 a tbs:ExpectedGainCalculation ; task:forOption ?other . ?p2 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e2 ; arg:object ?y ; arg:polarity "positive" . } }
+{ SELECT ?p3 ?state ?n WHERE { ?p3 a arg:Assertion ; arg:predicate tbs:remainingChoices ; arg:scope ?state ; arg:subject ?state ; arg:object ?n ; arg:polarity "positive" . } }
+FILTER(?option != ?other && ?x > ?y && ?n > 1)
+}""" .
+tbs:recommendFinal a arg:Scheme ; arg:version "argumentation-0.3" ; arg:ruleKind "strict" ;
+arg:premiseVariables "p1 p2 p3" ; arg:subjectVariable "option" ; arg:conclusionPredicate arg:recommendedByCriterion ;
+arg:conclusionObject "final_target_attainment" ; arg:polarity "positive" ;
+arg:reason "The two public option calculations favour one option under the explicitly stated criterion; future option pairs and outcomes remain unknown." ;
+arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+SELECT DISTINCT ?p1 ?p2 ?p3 ?option WHERE {
+{ SELECT ?p1 ?state ?x ?option WHERE { ?e1 a tbs:AttainmentCalculation ; task:forOption ?option . ?p1 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e1 ; arg:object ?x ; arg:polarity "positive" . } }
+{ SELECT ?p2 ?state ?y ?other WHERE { ?e2 a tbs:AttainmentCalculation ; task:forOption ?other . ?p2 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e2 ; arg:object ?y ; arg:polarity "positive" . } }
+{ SELECT ?p3 ?state ?n WHERE { ?p3 a arg:Assertion ; arg:predicate tbs:remainingChoices ; arg:scope ?state ; arg:subject ?state ; arg:object ?n ; arg:polarity "positive" . } }
+FILTER(?option != ?other && ?x > ?y && ?n = 1)
+}""" .

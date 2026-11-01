@@ -112,8 +112,8 @@ class PrototypeTest(unittest.TestCase):
         with patch.dict('os.environ',{'SOCRATIC_LLM':'offline'}),patch('urllib.request.urlopen',side_effect=AssertionError('API called')):
             r=realise('ask',['c'],['What matters?']);self.assertEqual(r['mode'],'reviewed-template')
 
-    def test_all_six_conditions_complete_replay_and_respect_calibration_access(self):
-        for condition in ['A','B','C','D','E','F']:
+    def test_all_five_conditions_complete_replay_and_respect_calibration_access(self):
+        for condition in ['A','C','D','E','F']:
             for task in ['MAB','TBS']:
                 with self.subTest(condition=condition,task=task):
                     sid=run_scripted(self.store,task,condition,'assisted',self.calibrations)
@@ -122,7 +122,7 @@ class PrototypeTest(unittest.TestCase):
                     decisions=[e['snapshot']['decision'] for e in s['events'] if e.get('snapshot',{}).get('decision')]
                     self.assertTrue(all(d['rationale'] for d in decisions))
                     if condition=='A':self.assertTrue(all(d['action']=='silence' for d in decisions))
-                    if condition in {'B','C','E'}:self.assertFalse(any(d['action'] in {'challenge','request-evidence'} for d in decisions))
+                    if condition in {'C','E'}:self.assertFalse(any(d['action'] in {'challenge','request-evidence'} for d in decisions))
                     if condition in {'C','D'}:self.assertTrue(all(c['hypothesis'] is None for d in decisions for c in d['candidates']))
 
     def test_common_calibration_mandatory_and_task_scoped(self):

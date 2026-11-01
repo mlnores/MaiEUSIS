@@ -6,3 +6,5 @@ socratic_prototype/data/
 .env.*
 !.env.example
 .DS_Store
+docs/questions_3109.md
+docs/notes_3109.md

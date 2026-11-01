@@ -1,10 +1,13 @@
 # Graph argumentation and intervention policy
 
-New sessions use `argumentation-0.2` in live mode with `policy-0.3`. Graph
+New sessions use `argumentation-0.3` in live mode with `policy-0.4`. Graph
 argumentation is the single source of substantive reasons and objections. There
 is no independent Python candidate-trigger mechanism. The engine computes models
 and annotated claims, discovers and validates the graph, maps proof-backed
 conclusions to communication candidates, then applies the delivery policy.
+
+See [personalisation and matched simulations](simulation/README.md) for the separate
+actor, assistance-response and assistant participant models.
 
 RDFLib is required for assistance. Without it the task can still run, but reasoning
 is explicitly unavailable and the policy stays silent. No old trigger mechanism
@@ -103,10 +106,9 @@ arguments into communication candidates; it does not inspect reward sequences or
 recreate behavioural triggers.
 
 - **A/calibration:** always silent, even when the graph contains accepted warrants.
-- **B:** only generic reminder warrants, scheduled every fourth trial by default.
 - **C/D:** task warrants only; no personalised model-challenge candidates. D uses
-  questions, C conventional guidance.
-- **E/F:** task warrants plus personalised model-challenge warrants. E advises,
+  questions. C additionally requires an accepted option-comparison proof and recommends a specific action.
+- **E/F:** task warrants plus personalised model-challenge warrants. E recommends a specific action with an accepted option-comparison proof;
   F asks/challenges. Calibrated task profiles retain their existing boundaries.
 
 Accepted warrants may form candidates. Rejected warrants are excluded regardless
@@ -122,7 +124,7 @@ Candidates carry unique IDs, graph scope, supporting and opposing argument IDs,
 and the argument evaluation. The policy filters audiences and schedules, applies
 provisional usefulness minus interruption cost, and enforces cooldown from actual
 delivery acknowledgements. Personalised usefulness comes from the existing model
-estimate plus its personalisation bonus. It cannot restore a defeated warrant.
+estimate, with no automatic personalisation bonus. It cannot restore a defeated warrant.
 Fallback support is considered only when no other permitted candidate is available.
 
 The decision stores `reasoning_source: graph`, `selected_candidate`, `argument_ids`
@@ -135,7 +137,9 @@ list empty.
 
 Language packages contain only the selected proof closure and its actual attackers,
 including assertion kinds/statuses and open critical questions. They never receive
-the entire research graph. B remains generic; C/D exclude personalised premises.
+the entire research graph. C/D are task-aware and exclude personalised premises.
+Condition B has been removed. Personalisation has no automatic usefulness bonus; explicit reports
+of burden can adjust interruption cost through the participant-model component.
 An absent graph objection is represented as an empty opposition, not an invented
 counterargument. Possible explanations on model claims remain uncertainty metadata,
 not fabricated attacking arguments. Bounded or generated language cannot change

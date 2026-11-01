@@ -27,7 +27,7 @@ class UnavailableTest(unittest.TestCase):
             store=Store(Path(td)/'s.sqlite3')
             session=store.create(dict(participant_id='unavailable',task='MAB',condition='A',phase='calibration',protocol='short',preference='standard'))
             record=store.event(session['id'],evaluation('MAB',session['id'],1))
-            for condition in ['B','C','D','E','F']:
+            for condition in ['C','D','E','F']:
                 projected={**session,'condition':condition,'phase':'assisted'}
                 d=decide(projected,record['input'],record['snapshot'],record['id'])
                 self.assertEqual(d['action'],'silence');self.assertEqual(d['candidates'],[])
@@ -50,10 +50,10 @@ class GraphPolicyTest(unittest.TestCase):
             outcome=outcome,timed_out=False,response_ms=500,
             **{'points_after' if s['task']=='TBS' else 'score_after':ev.get('points',ev.get('score',0))+outcome}))
 
-    def mab(self,index=7,arms=None):
+    def mab(self,index=7,arms=None,reward=0):
         s=self.create()
-        for i in range(1,index):self.emit(s,evaluation('MAB',s['id'],i),(arms or ['blue1'])[(i-1)%len(arms or ['blue1'])],0)
-        record=self.store.event(s['id'],evaluation('MAB',s['id'],index))
+        for i in range(1,index):self.emit(s,evaluation('MAB',s['id'],i,score=(i-1)*reward),(arms or ['blue1'])[(i-1)%len(arms or ['blue1'])],reward)
+        record=self.store.event(s['id'],evaluation('MAB',s['id'],index,score=(index-1)*reward))
         return self.store.get(s['id']),record
 
     def choice(self,s,e,condition='D'):
@@ -62,10 +62,9 @@ class GraphPolicyTest(unittest.TestCase):
         validate_decision(snap)
         return projected,snap
 
-    def test_one_history_six_conditions_and_graph_proof_language_boundary(self):
-        s,e=self.mab(9)
-        expected={'A':'silence','B':'silence','C':'explain','D':'request-evidence','E':'advise','F':'challenge'}
-        # B is periodic: trial 9 is deliberately not a scheduled reminder.
+    def test_one_history_five_conditions_and_graph_proof_language_boundary(self):
+        s,e=self.mab(9,reward=100)
+        expected={'A':'silence','C':'advise','D':'request-evidence','E':'advise','F':'challenge'}
         for condition,action in expected.items():
             session,snap=self.choice(s,e,condition);d=snap['decision']
             self.assertEqual(d['action'],action,condition)
@@ -83,14 +82,24 @@ class GraphPolicyTest(unittest.TestCase):
         # Every label may remain accepted while A still forbids assistance.
         _,a=self.choice(s,e,'A');self.assertTrue(a['graph_argumentation']['arguments'])
 
-    def test_generic_reminder_has_only_generic_proof_and_schedule(self):
-        s,e=self.mab(8);session,snap=self.choice(s,e,'B');d=snap['decision']
-        self.assertEqual(d['selected_candidate'],d['candidates'][0]['id'])
-        self.assertEqual(d['candidates'][0]['name'],'general_guidance')
-        package=build_evidence_package(session,e['input'],snap,d['candidates'][0],[])
-        self.assertIsNone(package['task']);self.assertEqual(package['participant'],{})
-        text=str(prompt_package(package))
-        for forbidden in ['MAB','blue1','underexploration','completedChoices']:self.assertNotIn(forbidden,text)
+    def test_condition_b_is_removed_from_sessions_studies_and_interface(self):
+        import re
+        from socratic_prototype.server import render_index
+        from socratic_prototype.study import default_study,validate_study
+        for phase in ['calibration','assisted']:
+            with self.subTest(phase=phase),self.assertRaisesRegex(ValidationError,'Unknown condition'):
+                self.store.create(dict(participant_id='removed',task='MAB',condition='B',phase=phase,protocol='short',preference='standard'))
+        self.assertEqual(self.store.list(),[])
+        study=default_study();study['conditions'].append('B')
+        with self.assertRaisesRegex(ValidationError,'Invalid study conditions'):validate_study(study)
+        selector=re.search(r'<select id="condition">(.*?)</select>',render_index(),re.S).group(1)
+        self.assertEqual(set(re.findall(r'value="([^"]+)"',selector)),{'A','C','D','E','F'})
+
+    def test_task_unaware_guidance_schemes_are_rejected(self):
+        from socratic_prototype.argumentation import ROOT
+        from socratic_prototype.argumentation.discovery import load_schemes
+        contents=(ROOT/'schemes/shared.ttl').read_text().replace('arg:audience "personalised"','arg:audience "generic"')
+        with self.assertRaisesRegex(ValidationError,'Invalid intervention audience'):load_schemes((contents,))
 
     def test_removing_graph_premises_removes_live_exploration_candidate(self):
         s,e=self.mab()
@@ -153,6 +162,10 @@ class GraphPolicyTest(unittest.TestCase):
         for rule in ['expectedGainArgument','attainmentArgument','criteriaDivergenceArgument','objectiveQuestionArgument']:
             self.assertIn(CORE+'tbs/'+rule,rules)
         self.assertEqual(package['arguments']['opposition'],'')
+        from socratic_prototype.recommendations import from_graph
+        recommendation=from_graph('TBS',ev,snap['graph_argumentation'])
+        self.assertEqual(recommendation['criterion'],'final_target_attainment')
+        self.assertEqual(recommendation['option_id'],'risky')
 
     def test_tbs_gain_reason_does_not_leak_across_blocks(self):
         s=self.create('TBS');points=0

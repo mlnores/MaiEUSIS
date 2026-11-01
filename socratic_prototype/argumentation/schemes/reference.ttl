@@ -1,0 +1,23 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix reference: <https://example.org/socratic/reference/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+arg:recommendedByCriterion a owl:DatatypeProperty .
+reference:reviewWarranted a owl:DatatypeProperty .
+reference:comparison a arg:Scheme ; arg:version "reference-0.1" ; arg:ruleKind "strict" ;
+ arg:premiseVariables "p1 p2" ; arg:subjectVariable "option" ; arg:conclusionPredicate arg:recommendedByCriterion ;
+ arg:conclusionObject "public_expected_gain" ; arg:polarity "positive" ; arg:reason "Displayed probabilities identify the greater expected gain, not a certain outcome." ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX reference: <https://example.org/socratic/reference/>
+SELECT ?p1 ?p2 ?option WHERE {
+ { SELECT ?p1 ?state ?option ?x WHERE { ?e a reference:ExpectedGainCalculation ; task:forOption ?option . ?p1 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e ; arg:object ?x . } }
+ { SELECT ?p2 ?state ?other ?y WHERE { ?e a reference:ExpectedGainCalculation ; task:forOption ?other . ?p2 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e ; arg:object ?y . } }
+ FILTER(?x > ?y && ?option != ?other)
+}""" .
+reference:review a arg:Scheme ; arg:version "reference-0.1" ; arg:ruleKind "defeasible" ;
+ arg:premiseVariables "p" ; arg:subjectVariable "state" ; arg:conclusionPredicate reference:reviewWarranted ; arg:conclusionObject true ;
+ arg:polarity "positive" ; arg:reason "Public option probabilities warrant reviewing the grounds of the choice." ;
+ arg:issue "public_probability" ; arg:audience "task" ; arg:usefulness 0.9 ; arg:socraticAction "ask" ;
+ arg:conventionalMessage "Compare the displayed probabilities." ; arg:socraticMessage "What do the displayed probabilities suggest, and what remains uncertain?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+SELECT ?p ?state WHERE { ?p a arg:Assertion ; arg:predicate arg:preparationPoint ; arg:subject ?state ; arg:scope ?state ; arg:object true . }""" .

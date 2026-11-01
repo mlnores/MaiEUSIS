@@ -27,12 +27,16 @@ function render(){
  const root=el('detail');root.replaceChildren();if(!visible.length){paragraph(root,'No state updates yet.');return;}
  const e=visible[selected],s=e.snapshot,d=s.decision;root.append(node('h2',`Trial ${e.input.index} · ${e.input.kind}`));
  paragraph(root,e.timestamp+' · '+e.id,'muted small');
- if(current.synthetic_profile){
+ if(current.synthetic_run){
+    paragraph(root,'Synthetic agent simulation · choices and intervention responses are generated under explicit assumptions.','notice small');
+    details(root,'Simulation provenance',current.synthetic_run);
+  }else if(current.synthetic_profile){
   paragraph(root,'Synthetic calibration fixture · '+current.synthetic_profile.description,'notice small');
   details(root,'Synthetic profile definition',current.synthetic_profile);
  }else if(current.uses_synthetic_calibration)paragraph(root,'This session uses synthetic calibration profiles. Its subsequent participant choices are recorded separately.','notice small');
  if(d){
   root.append(node('h3','Policy decision · '+d.action));paragraph(root,d.message||'No message generated.');paragraph(root,d.rationale);
+  if(d.intervention)details(root,'Structured intervention and recommendation criterion',d.intervention);
   const exposure=current.events.find(x=>x.input.kind==='delivery'&&x.input.decision_id===d.id);
   paragraph(root,exposure?`Delivered: ${exposure.input.delivered?'yes':'no'} · generation latency ${exposure.input.generation_latency_ms.toFixed(1)} ms · reading exposure ${exposure.input.reading_exposure_ms.toFixed(1)} ms · early attempts ${exposure.input.early_attempts}`:'Delivery acknowledgement not yet recorded.','small muted');
   const responses=current.events.filter(x=>x.input.kind==='response'&&x.input.decision_id===d.id);

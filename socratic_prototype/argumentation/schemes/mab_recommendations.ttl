@@ -1,0 +1,25 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix task: <https://example.org/socratic/task/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+arg:recommendedByCriterion a owl:DatatypeProperty .
+mab:recommendEstimatedReward a arg:Scheme ; arg:version "argumentation-0.3" ; arg:ruleKind "strict" ;
+arg:premiseVariables "p1 p2 p3 p4 p5 p6" ; arg:subjectVariable "option" ; arg:conclusionPredicate arg:recommendedByCriterion ;
+arg:conclusionObject "estimated_reward" ; arg:polarity "positive" ;
+arg:reason "One option has uniquely greatest estimated mean reward under the recorded public-outcome model; ranking is not knowledge of hidden reward probabilities." ;
+arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX mab: <https://example.org/socratic/mab/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+SELECT DISTINCT ?p1 ?p2 ?p3 ?p4 ?p5 ?p6 ?option WHERE {
+{ SELECT ?p1 ?state ?x1 ?a1 WHERE { ?a1 task:label "blue1" . ?e1 a mab:RewardBelief ; task:forOption ?a1 . ?p1 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e1 ; arg:object ?x1 ; arg:polarity "positive" . } }
+{ SELECT ?p2 ?state ?x2 ?a2 WHERE { ?a2 task:label "blue2" . ?e2 a mab:RewardBelief ; task:forOption ?a2 . ?p2 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e2 ; arg:object ?x2 ; arg:polarity "positive" . } }
+{ SELECT ?p3 ?state ?x3 ?a3 WHERE { ?a3 task:label "blue3" . ?e3 a mab:RewardBelief ; task:forOption ?a3 . ?p3 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e3 ; arg:object ?x3 ; arg:polarity "positive" . } }
+{ SELECT ?p4 ?state ?x4 ?a4 WHERE { ?a4 task:label "red1" . ?e4 a mab:RewardBelief ; task:forOption ?a4 . ?p4 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e4 ; arg:object ?x4 ; arg:polarity "positive" . } }
+{ SELECT ?p5 ?state ?x5 ?a5 WHERE { ?a5 task:label "red2" . ?e5 a mab:RewardBelief ; task:forOption ?a5 . ?p5 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e5 ; arg:object ?x5 ; arg:polarity "positive" . } }
+{ SELECT ?p6 ?state ?x6 ?a6 WHERE { ?a6 task:label "red3" . ?e6 a mab:RewardBelief ; task:forOption ?a6 . ?p6 a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?e6 ; arg:object ?x6 ; arg:polarity "positive" . } }
+FILTER(STR(?a1) < STR(?a2) && STR(?a2) < STR(?a3) && STR(?a3) < STR(?a4) && STR(?a4) < STR(?a5) && STR(?a5) < STR(?a6))
+BIND(IF(?x1 > ?x2 && ?x1 > ?x3 && ?x1 > ?x4 && ?x1 > ?x5 && ?x1 > ?x6, ?a1, IF(?x2 > ?x1 && ?x2 > ?x3 && ?x2 > ?x4 && ?x2 > ?x5 && ?x2 > ?x6, ?a2, IF(?x3 > ?x1 && ?x3 > ?x2 && ?x3 > ?x4 && ?x3 > ?x5 && ?x3 > ?x6, ?a3, IF(?x4 > ?x1 && ?x4 > ?x2 && ?x4 > ?x3 && ?x4 > ?x5 && ?x4 > ?x6, ?a4, IF(?x5 > ?x1 && ?x5 > ?x2 && ?x5 > ?x3 && ?x5 > ?x4 && ?x5 > ?x6, ?a5, IF(?x6 > ?x1 && ?x6 > ?x2 && ?x6 > ?x3 && ?x6 > ?x4 && ?x6 > ?x5, ?a6, "")))))) AS ?option)
+FILTER(isIRI(?option))
+}""" .

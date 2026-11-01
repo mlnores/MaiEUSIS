@@ -52,10 +52,8 @@ def make_snapshot(session, event, event_id, timestamp, recorded_language=None):
     ev=event if event['kind']=='evaluation' else next(e['input'] for e in reversed(session['events']) if e['input'].get('kind')=='evaluation')
     module=get_task(task)
     env=module.environment(h,ev,p,event)
-    profile=session.get('calibration_profile') or {}
-    participant=module.participant(h,profile)
-    participant['calibration']=profile or {'status':'unknown','reason':'No calibrated task-specific model in this condition.'}
-    participant['unknown']=['Intent','Subjective confidence','Overconfidence (confidence not elicited)','Hesitation (response time alone is insufficient)']
+    from .participant_model import estimate
+    participant=estimate(session,h)
     hypothesis_records,stats=hypotheses(session,ev,env,h)
     participant['behaviour']=stats
     participant['hypotheses']=hypothesis_records

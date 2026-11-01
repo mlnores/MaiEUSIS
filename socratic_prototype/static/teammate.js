@@ -7,9 +7,10 @@ async function api(path,body){
   const data=await response.json();if(!response.ok)throw Error(data.error||'Server request failed');return data;
 }
 function track(promise){teammate.pending.add(promise);promise.finally(()=>teammate.pending.delete(promise)).catch(()=>{});return promise;}
-function configureProtocol(){
-  const full=by('protocol').value==='full';configs.MAB.stable_trials=full?50:10;configs.MAB.volatile_trials=full?150:30;configs.TBS.blocks=full?24:3;
-}
+function configureProtocol(task){browserTask(task).configureProtocol(protocolFor(task));}
+function calibrationFields(){return browserTaskEntries().map(a=>({task:a.id,select:by(a.calibrationId)}));}
+function requiredCalibrations(task){return windowStudy?.tasks?.[task]?.calibration_tasks||browserTaskEntries().map(a=>a.id);}
+function choiceKeys(){return (activeTrial?.available_options||[]).map(o=>o.key);}
 function syncPseudonymSelection(){
   const participant=by('participantId').value.trim();
   by('knownParticipant').value=knownPseudonyms.has(participant)?participant:'';
@@ -35,7 +36,7 @@ async function refreshPseudonyms(){
 }
 function changeParticipant(){
   syncPseudonymSelection();by('setupError').textContent='';
-  for(const id of ['mabCalibration','tbsCalibration'])by(id).value='';
+  for(const {select} of calibrationFields())select.value='';
   return refreshCalibration();
 }
 async function refreshCalibration(){
@@ -43,58 +44,53 @@ async function refreshCalibration(){
   try{
     const sessions=await api('/api/sessions?participant='+encodeURIComponent(participant));
     if(version!==calibrationRefreshVersion||participant!==by('participantId').value.trim()||protocol!==by('protocol').value)return;
-    for(const task of ['MAB','TBS']){
-      const select=by(task==='MAB'?'mabCalibration':'tbsCalibration');const current=select.value;select.replaceChildren();
+    for(const {task,select} of calibrationFields()){const current=select.value;select.replaceChildren();
       const blank=document.createElement('option');blank.value='';blank.textContent='Choose a completed '+task+' calibration';select.append(blank);
-      for(const s of sessions.filter(x=>x.task===task&&x.phase==='calibration'&&x.completed&&x.protocol===protocol)){
+      for(const s of sessions.filter(x=>x.task===task&&x.phase==='calibration'&&x.completed&&x.protocol===protocolFor(task))){
         const option=document.createElement('option');option.value=s.id;option.textContent=s.trials+' trials · '+new Date(s.created_at).toLocaleString();select.append(option);
       }
       if([...select.options].some(x=>x.value===current)&&current)select.value=current;
       else if(select.options.length>1)select.selectedIndex=1;
     }
-    const calibrated=!!by('mabCalibration').value&&!!by('tbsCalibration').value;
-    by('setupStatus').textContent=calibrated?'Both calibration tasks are ready for comparison sessions.':'Complete unassisted calibration in both tasks before running comparison sessions.';
+    const calibrated=calibrationFields().every(({select})=>!!select.value);
+    by('setupStatus').textContent=calibrated?'The study calibrations are ready for comparison sessions.':'Complete the required study calibrations before running comparison sessions.';
   }catch(e){if(version===calibrationRefreshVersion&&participant===by('participantId').value.trim()&&protocol===by('protocol').value)by('setupError').textContent='Start the local Python server to connect: '+e.message;}
 }
 function updateSetup(){
   const calibration=by('sessionPhase').value==='calibration';by('condition').disabled=calibration;if(calibration)by('condition').value='A';
-  by('startMab').textContent='Start MAB '+(calibration?'calibration':'comparison');by('startTbs').textContent='Start TBS '+(calibration?'calibration':'comparison');
+  const allowed=windowStudy?.conditions;
+  if(allowed){
+    for(const option of by('condition').options)option.disabled=!calibration&&!allowed.includes(option.value);
+    if(!calibration&&!allowed.includes(by('condition').value))by('condition').value=allowed[0];
+  }
+  for(const adapter of browserTaskEntries())by(adapter.startId).textContent='Start '+adapter.id+' '+(calibration?'calibration':'comparison');
   void refreshCalibration();
 }
 async function connectTeammate(task){
   const participant=by('participantId').value.trim();
-  const calibrationIds={MAB:by('mabCalibration').value,TBS:by('tbsCalibration').value};
+  const calibrationIds=Object.fromEntries(calibrationFields().filter(({task:id})=>requiredCalibrations(task).includes(id)).map(({task:id,select})=>[id,select.value]));
   if(by('sessionPhase').value==='assisted'){
     const missing=Object.keys(calibrationIds).filter(task=>!calibrationIds[task]);
-    if(missing.length)throw Error('Comparison sessions require completed MAB and TBS calibrations. Missing: '+missing.join(' and ')+'. Complete and select them using the same participant pseudonym and protocol.');
+    if(missing.length)throw Error('Comparison sessions require completed study calibrations. Missing: '+missing.join(' and ')+'. Complete and select them using the same participant pseudonym and protocol.');
   }
   const response=await api('/api/sessions',{
     id:session.id,participant_id:participant,task,condition:by('condition').value,
-    phase:by('sessionPhase').value,protocol:by('protocol').value,preference:by('promptFrequency').value,
+    phase:by('sessionPhase').value,protocol:protocolFor(task),preference:by('promptFrequency').value,
     calibration_ids:calibrationIds,seed:session.random_seed});
   teammate.id=response.id;teammate.preparing=false;teammate.pending.clear();teammate.deliveryPending=Promise.resolve();
   teammate.presentation=null;teammate.visibleMessage=null;teammate.replies.clear();teammate.replyTarget=null;
   session.teammate_configuration=response;session.teammate_events=[];
   knownPseudonyms.add(participant);renderPseudonyms();
 }
-function publicEvaluation(t){
-  const base={kind:'evaluation',trial_id:t.trial_uid,index:t.global_trial};
-  if(session.task==='MAB')return {...base,score:t.score_before,options:t.available_options.map(o=>({id:o.id,key:o.key,outcomes:o.outcomes}))};
-  return {...base,points:t.points_before,target:t.target,remaining:t.remaining_trials_including_current,block:t.block,multiplier:t.multiplier,
-    options:t.available_options.map(o=>({id:o.option_id,key:o.key,amount:o.amount,probability:o.probability}))};
-}
-function publicFeedback(t){
-  const base={kind:'feedback',trial_id:t.trial_uid,index:t.global_trial,timed_out:(t.selected_option||t.chosen_option)==='NO_RESPONSE',response_ms:t.response_time_ms};
-  if(session.task==='MAB')return {...base,choice:t.selected_option,outcome:t.outcome,score_after:t.score_after};
-  return {...base,choice:t.chosen_option,outcome:t.earned_points,points_after:t.points_after};
-}
+function publicEvaluation(t){return browserTask(session.task).evaluation(t,{kind:'evaluation',trial_id:t.trial_uid,index:t.global_trial});}
+function publicFeedback(t){return browserTask(session.task).feedback(t,{kind:'feedback',trial_id:t.trial_uid,index:t.global_trial,response_ms:t.response_time_ms});}
 function sendEvent(event,sid=teammate.id,owner=session){return track(api('/api/sessions/'+sid+'/events',event).then(response=>{owner.teammate_events.push(response.record);return response;}));}
 function recordEarlyAttempt(key){
-  if(!['1','2','3','7','8','9'].includes(key))return;
+  if(!choiceKeys().includes(key))return;
   teammate.early++;logEvent('PREPARATION_EARLY_RESPONSE_ATTEMPT',{key});
 }
 document.addEventListener('keydown',e=>{
-  if(teammate.preparing&&!['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)&&['1','2','3','7','8','9'].includes(e.key)){
+  if(teammate.preparing&&!['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)&&choiceKeys().includes(e.key)){
     e.preventDefault();recordEarlyAttempt(e.key);
   }
 });
@@ -165,7 +161,7 @@ function submitTeammateReply(){
   const text=entry.text.trim();if(!text&&!entry.feedback){entry.notice='Write a reply or choose feedback before saving.';renderReplies();return Promise.resolve(false);}
   const p=entry.p,decision=entry.decision;
   const payload=entry.payload||{kind:'response',decision_id:decision.id,index:p.trial.global_trial,feedback:entry.feedback||'reply',
-    text,hypothesis:decision.hypothesis,...(p.owner.task==='TBS'?{block:p.trial.block}:{})};
+    text,hypothesis:decision.hypothesis,...browserTask(p.owner.task).responseScope(p.trial)};
   entry.payload=payload;entry.status='saving';entry.notice=p.closed?'Saving response…':'Response queued; saving when this trial ends…';renderReplies();
   entry.submission=track((async()=>{
     try{
@@ -190,7 +186,7 @@ async function teammatePreparation(t,token){
   p.deliveryReady=new Promise((resolve,reject)=>{p.resolveDelivery=resolve;p.rejectDelivery=reject;});
   p.deliveryReady.catch(()=>{});
   teammateState('pending');
-  if(session.task==='MAB')content('<div class="big">+</div>');
+  browserTask(session.task).prepare(t);
   for(const b of by('taskarea').querySelectorAll('button'))b.setAttribute('aria-disabled','true');
   by('timingNote').textContent='Choice input disabled during preparation';
   await nextPaint();if(p.closed||!alive||token!==runId)return;p.startedAt=clock();logEvent('PREPARATION_ONSET',{duration_ms:session.teammate_configuration.policy.preparation_ms,options_visible:false});
@@ -267,5 +263,7 @@ by('knownParticipant').onchange=()=>{
   if(!by('knownParticipant').value)return;
   by('participantId').value=by('knownParticipant').value;return changeParticipant();
 };
+for(const adapter of browserTaskEntries())by(adapter.startId).onclick=()=>start(adapter.id);
+if(windowStudy?.fixed_protocols){const option=document.createElement('option');option.value='study';option.textContent='Study-defined protocols';by('protocol').append(option);by('protocol').value='study';by('protocol').disabled=true;}
 void refreshPseudonyms();
 updateSetup();

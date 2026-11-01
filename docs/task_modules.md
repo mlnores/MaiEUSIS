@@ -9,6 +9,7 @@ URIs; task mechanics have their own vocabularies and executable modules.
 | `task:` | `https://example.org/socratic/task/` | Task definitions, states, options, goals, observations, rules, calculations and estimates |
 | `mab:` | `https://example.org/socratic/mab/` | Bandit arms, reward beliefs, change estimates and reward-learning models |
 | `tbs:` | `https://example.org/socratic/tbs/` | Blocks, targets, displayed gambles, horizons and conditional final-win calculations |
+| `reference:` | `https://example.org/socratic/reference/` | Engineering fixture for testing a third environment |
 | `data:` | `https://example.org/socratic/data/` | Session-specific state, observation and calculation identifiers |
 
 Prefixes are abbreviations: changing `s:` to `core:` does not change identity.
@@ -42,10 +43,20 @@ condition boundaries, policy selection, delivery cooldowns and corrections. Stor
 grounding, analysis and validation delegate task operations through the registry.
 `models.py` keeps the original MAB/TBS imports available as a compatibility facade.
 
-The study's requirement for both MAB and TBS calibration is configured separately
-in [`study.py`](../socratic_prototype/study.py). New tasks default to their own
-calibration until a study specifies another requirement. Participant parameters
-never transfer between tasks automatically.
+The default study's requirement for both MAB and TBS calibration is configured
+separately in [`study.py`](../socratic_prototype/study.py). A study JSON file selects
+environments, their individual protocols, calibration dependencies and comparison
+conditions. Both the server and simulator accept `--study PATH`. New environments
+need no shared study-code changes: dependencies are declared in that file.
+Participant parameters never transfer between tasks automatically.
+
+The execution interfaces in
+[`tasks/execution.py`](../socratic_prototype/tasks/execution.py) separate synthetic
+actors and private task simulation from the assistant's public task models.
+MAB/TBS actor policies, reconsideration heuristics, reward dynamics and metrics
+live in their respective `*_execution.py` files. Browser loops and public-event
+adapters live in `static/task-adapters/`. The shared runner, assistant delivery
+policy and browser bridge dispatch through registered hooks.
 
 ## Meaning of the graph
 
@@ -105,17 +116,61 @@ byte-identical Turtle output.
    retaining units and calculation provenance.
 4. Register the module explicitly through `register_task`. HTTP parameters never
    trigger arbitrary Python imports. Configure study-specific calibration when needed.
-5. Supply a task runner and browser setup integration. Current runners and setup
-   choices support MAB/TBS only. `/api/tasks` exposes registered descriptors and
-   protocol lengths for future interfaces.
-6. Check valid/invalid transitions, numerical RDF values, shapes, evidence
-   boundaries and deterministic replay.
+5. Supply graph schemes with presentation metadata and, for direct conditions,
+   accepted strict-comparison proofs and a `recommendation_message(rec)` renderer.
+   The structured recommendation contains an option ID, key, criterion and a link
+   to the accepted comparison argument. Option IRIs must end in
+   `/option/<public-option-id>` so the shared
+   recommendation validator can check identity. `intervention_focus(issue)` maps
+   the task's issue names to its reconsideration categories. The shared policy
+   continues to decide whether and when to deliver accepted arguments.
+6. For simulation, provide `simulation_adapter()` returning an adapter with:
+   `validate_actor(parameters)`, `baseline(history, parameters, evaluation)`,
+   `reconsider(history, parameters, evaluation, intervention)`,
+   `make_environment(protocol, seed, random_source)`, and `describe()`.
+   Baseline/reconsideration return probabilities for exactly the currently
+   available option IDs. The actor receives public observations only; every run
+   starts with empty experience. Describe the implementation version, source hash
+   and `METRICS`, each with a unit and a `maximize` or `minimize` direction.
+7. The private environment runtime exposes `seed`, boolean `done`,
+   `evaluation(session_id, index)`, `outcome(evaluation, choice)`, `metrics()` and
+   `evaluator_state()`. It must finish exactly at its declared protocol length.
+   Outcome handles `NO_RESPONSE`. Use the injected keyed random source as
+   `random_source(seed, stream, index, option, ...)`; condition and session IDs
+   must not affect it. Evaluation/feedback pass through normal task validation.
+   Numeric declared metrics and optional evaluator details enter the separate
+   researcher report. Private state must never enter public events.
+8. For browser execution, provide `browser_adapter()` metadata: local `script`,
+   `title`, unique `start_id`, unique `calibration_id`, and optional setup `help`.
+   The server generates study-specific setup controls and loads those scripts.
+   Each script calls `registerBrowserTask(ID, adapter)` with `title`, `startId`,
+   `calibrationId`, `run(token)`, `configureProtocol(protocol)`, `prepare(trial)`,
+   `responseScope(trial)`, `evaluation(trial, base)` and `feedback(trial, base)`.
+   Use the existing shared shell, timing, input and logging helpers, illustrated
+   in `static/task-adapters/reference.js`. The two event adapters must allowlist
+   public fields; the task runner can separately log private evaluator details.
+9. Add the environment and its calibration dependencies to a study JSON, and
+   supply environment-keyed synthetic participant parameters if simulating it.
+   Run positive/negative transition, metric, graph, SHACL, boundary and replay
+   checks, then complete browser runs. No shared engine, policy, simulation runner
+   or UI bridge edits should be needed for a new environment.
 
 [`test_task_modules.py`](../tests/test_task_modules.py) includes a different,
 two-step synthetic task registered only during the test. It completes calibration
 and an assisted session, supplies an intervention through the common policy,
 exports RDF, produces a summary and replays without MAB/TBS branches.
 It tests the extension contract; it is not another task in the study interface.
+
+The registered `REFERENCE` environment exercises the **complete execution path**:
+its own ontology, actor, simulator, browser adapter, graph comparison criterion,
+four-trial `mini` protocol, and `decision_errors` metric to minimise. The
+[reference study](simulation/reference-study.json) selects it without MAB/TBS.
+[`test_environment_extension.py`](../tests/test_environment_extension.py) checks
+all five conditions, fresh learning state, matched null-response outcomes,
+private/public separation, calibration selection, SHACL and replay. The browser
+contract script also runs the actual reference adapter through the Python store.
+This is an engineering fixture, not a validated third research task. MAB/TBS
+remain the default study.
 
 See the [executable ontology walkthrough](ontology_examples/README.md) for MAB/TBS
 SPARQL queries. Remaining JSON-only details include candidate ranking/cooldown

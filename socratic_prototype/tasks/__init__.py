@@ -14,7 +14,7 @@ def register_task(module):
     require(identity(module.ID) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',module.ID),'Invalid task identifier')
     require(module.ID not in _TASKS,'Task is already registered')
     require(all(callable(getattr(module,name,None)) for name in _METHODS),'Task does not implement the task contract')
-    for name in ['argumentation_documents','project_argumentation_facts']:
+    for name in ['argumentation_documents','project_argumentation_facts','simulation_adapter','recommendation_message','intervention_focus','browser_adapter']:
         require(not hasattr(module,name) or callable(getattr(module,name)),'Invalid optional task hook: '+name)
     require(bool(module.PROTOCOLS) and all(isinstance(k,str) and type(v) is int and v>0 for k,v in module.PROTOCOLS.items()),'Invalid task protocols')
     _TASKS[module.ID]=module
@@ -23,8 +23,8 @@ def register_task(module):
 def _load():
     global _LOADED
     if not _LOADED:
-        from . import mab,tbs
-        register_task(mab);register_task(tbs);_LOADED=True
+        from . import mab,tbs,reference
+        register_task(mab);register_task(tbs);register_task(reference);_LOADED=True
 
 
 def get_task(identifier):

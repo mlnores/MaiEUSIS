@@ -28,7 +28,7 @@ evidence_observation=common_observation
 
 def argumentation_documents():
     from ..argumentation import ROOT
-    return (ROOT/'schemes/mab.ttl',)
+    return (ROOT/'schemes/mab.ttl',ROOT/'schemes/mab_recommendations.ttl')
 
 def project_argumentation_facts(writer,session,event,state,history):
     from .mab_arguments import project
@@ -235,3 +235,19 @@ def summarize(session,h,valid):
     result.update({'final_score': h[-1]['score_after'] if h else 0, 'sampled_arms': len(set(choices)), 'switch_rate': sum((a != b for a, b in zip(choices, choices[1:]))) / (len(choices) - 1) if len(choices) > 1 else None, 'regret': None, 'regret_reason': 'Needs hidden evaluator probabilities, which are absent from the teammate store.'})
     return result
 
+
+
+def simulation_adapter():
+    from . import mab_execution
+    return mab_execution
+
+
+def recommendation_message(recommendation):
+    require(recommendation['criterion']=='estimated_reward','Unsupported MAB recommendation criterion')
+    return f"I recommend {recommendation['option_id'].upper()} (key {recommendation['key']}) because its estimated mean reward is highest using the observed outcomes. Estimates remain uncertain."
+
+def intervention_focus(issue):
+    return 'exploration' if issue in {'underexploration','unsampled_alternatives'} else 'value_revision'
+
+def browser_adapter():
+    return {'help':'MAB outcome probabilities are hidden during choices and retained in separate evaluator logs.','script':'task-adapters/mab.js','title':'Multi-Armed Bandit (MAB)','start_id':'startMab','calibration_id':'mabCalibration'}

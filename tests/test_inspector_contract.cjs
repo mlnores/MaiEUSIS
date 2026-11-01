@@ -71,5 +71,7 @@ function find(root,predicate){if(predicate(root))return root;for(const child of 
  delete source.synthetic_profile;source.uses_synthetic_calibration=true;
  await elements.get('refresh').click();
  assert.ok(find(root,e=>e.textContent.startsWith('This session uses synthetic calibration profiles.')));
+ source.synthetic_run={version:'fixture-simulation'};await elements.get('refresh').click();
+ assert.ok(find(root,e=>e.textContent.startsWith('Synthetic agent simulation')));
  console.log('Inspector: historical/live proofs, premise provenance, critical questions, decision links, quote review and immutable past decisions passed.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -27,19 +27,3 @@ SELECT DISTINCT ?p ?hypothesis WHERE {
 """ .
 
 arg:preparationPoint a owl:DatatypeProperty .
-arg:generalReflectionWarranted a owl:DatatypeProperty .
-arg:generalReflectionArgument a arg:Scheme ; arg:version "argumentation-0.2" ;
- arg:ruleKind "defeasible" ; arg:premiseVariables "p" ; arg:subjectVariable "state" ;
- arg:conclusionPredicate arg:generalReflectionWarranted ; arg:conclusionObject true ; arg:polarity "positive" ;
- arg:reason "A preparation point permits considering a general reminder about goals, evidence and alternatives." ;
- arg:criticalQuestion "Would a generic reminder add enough value to justify an interruption?" ;
- arg:issue "general_guidance" ; arg:audience "generic" ; arg:schedule "periodic" ; arg:usefulness 0.65 ;
- arg:socraticAction "ask" ;
- arg:conventionalMessage "Consider your goal, the available evidence, and the costs of each alternative." ;
- arg:socraticMessage "What goals and evidence matter for this decision?" ;
- arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
-SELECT DISTINCT ?p ?state WHERE {
- ?p a arg:Assertion ; arg:predicate arg:preparationPoint ; arg:scope ?state ;
-    arg:subject ?state ; arg:object true ; arg:polarity "positive" .
-}
-""" .

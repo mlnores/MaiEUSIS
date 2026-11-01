@@ -31,7 +31,7 @@ def digest(value):return hashlib.sha256(json.dumps(value,sort_keys=True,separato
 
 def configuration_fields(session):
     # Legacy traces remain inspectable/replayable without retroactively adding fields.
-    return CONFIGURATION_FIELDS+([k for k in ['language_configuration','task_module','argumentation_configuration'] if k in session])
+    return CONFIGURATION_FIELDS+([k for k in ['language_configuration','task_module','argumentation_configuration','participant_model_version','synthetic_run','study_configuration'] if k in session])
 
 
 class Store:
@@ -65,9 +65,15 @@ class Store:
             result.append({k:s[k] for k in ['id','participant_id','task','condition','phase','protocol','created_at','finished','completed','total_trials']}|{'trials':len(history(s))})
         return result
 
-    def create(self,data,*,synthetic_profile=None):
+    def create(self,data,*,synthetic_profile=None,synthetic_run=None,study=None):
         fields(data,['participant_id','task','condition','phase','protocol','preference'],['id','calibration_ids','seed'])
         require(identity(data['participant_id']),'Use a pseudonymous participant ID (letters, digits, dash, underscore)')
+        if study is not None:
+            from .study import validate_study
+            study=validate_study(study)
+            require(data['task'] in study['tasks'],'Task is not in the selected study')
+            require(data['protocol']==study['tasks'][data['task']]['protocol'],'Protocol differs from study configuration')
+            require(data['phase']=='calibration' or data['condition'] in study['conditions'],'Condition is not in this study')
         task=get_task(data['task'])
         require(data['condition'] in CONDITIONS,'Unknown condition')
         require(data['phase'] in {'calibration','assisted'},'Unknown phase')
@@ -80,7 +86,7 @@ class Store:
         calibration={}; profile=None
         if data['phase']=='assisted':
             ids=data.get('calibration_ids',{})
-            require(isinstance(ids,dict) and set(ids)==set(required_calibrations(task.ID)),'Comparison sessions require completed unassisted calibration for the configured study tasks')
+            require(isinstance(ids,dict) and set(ids)==set(required_calibrations(task.ID,study)),'Comparison sessions require completed unassisted calibration for the configured study tasks')
             for calibration_task,source_id in ids.items():
                 require(bool(source_id),f'Comparison sessions require a completed {calibration_task} calibration. Complete it with the same participant pseudonym and protocol, then select it.')
                 require(identity(source_id) and len(source_id)<=55,f'Invalid {calibration_task} calibration selection. Choose a completed calibration from the list.')
@@ -88,7 +94,7 @@ class Store:
                 except KeyError:
                     raise ValueError(f'The selected {calibration_task} calibration was not found in this data directory. Refresh the page and select a completed calibration.') from None
                 require(source['task']==calibration_task and source['participant_id']==data['participant_id'] and source['phase']=='calibration' and source['completed'],f'The selected {calibration_task} calibration must be completed and belong to this participant.')
-                require(source['protocol']==data['protocol'],'Calibration and assisted protocol must match')
+                require(source['protocol']==(study['tasks'][calibration_task]['protocol'] if study else data['protocol']),'Calibration and assisted protocol must match')
                 require(source['model_version']==VERSION,'Calibration model version differs')
                 if 'task_module' in source:require(source['task_module']==get_task(source['task']).describe(),'Calibration task module or ontology version differs')
                 calibration[calibration_task]={'session_id':source_id,'profile':source['profile'],'digest':digest(source['events'])}
@@ -103,11 +109,17 @@ class Store:
            'policy':copy.deepcopy(POLICY),'task_rules':task.task_rules(),'network':NETWORK.describe(),
            'model_version':VERSION,'schema_version':SCHEMA_VERSION,'task_module':task.describe(),
            'calibration_sources':calibration,'calibration_profile':profile}
+        if study is not None:s['study_configuration']=copy.deepcopy(study)
         if synthetic_profile is not None:
             fields(synthetic_profile,['name','version','description','notice'])
             require(data['phase']=='calibration' and synthetic_profile['name']==data['participant_id'],'Synthetic profile must identify its calibration participant')
             s['synthetic']=True;s['synthetic_profile']=copy.deepcopy(synthetic_profile)
+        if synthetic_run is not None:
+            fields(synthetic_run,['version','agent_version','response_version'])
+            s['synthetic']=True;s['synthetic_run']=copy.deepcopy(synthetic_run)
         if any(source.get('synthetic') for source in calibration.values()):s['uses_synthetic_calibration']=True
+        from .participant_model import VERSION as PARTICIPANT_MODEL_VERSION
+        s['participant_model_version']=PARTICIPANT_MODEL_VERSION
         s['language_configuration']={**language_configuration(),'grounding_version':GROUNDING_VERSION}
         s['argumentation_configuration']=argumentation_configuration(task)
         s['configuration_digest']=digest({k:s[k] for k in configuration_fields(s)})
@@ -123,6 +135,10 @@ class Store:
             require(s.get('argumentation_configuration',{}).get('mode')=='live','Historical session uses an earlier reasoning policy; export it or start a new session')
             if 'task_module' in s:require(s['task_module']==get_task(s['task']).describe(),'Task module or ontology changed; start a new session with the current version')
             if 'argumentation_configuration' in s:require(s['argumentation_configuration']==argumentation_configuration(get_task(s['task'])),'Argumentation backend or definitions changed; start a new session')
+            require(s['policy']['version']==POLICY['version'],'Intervention policy changed; start a new session')
+            if 'participant_model_version' in s:
+                from .participant_model import VERSION as PARTICIPANT_MODEL_VERSION
+                require(s['participant_model_version']==PARTICIPANT_MODEL_VERSION,'Participant model changed; start a new session')
             # Exact retries are idempotent. Different repeated payloads still fail validation.
             for e in s['events']:
                 if e['input']==data:return e
@@ -151,6 +167,9 @@ class Store:
         expected={'policy':POLICY,'model_version':VERSION,'schema_version':SCHEMA_VERSION if 'task_module' in original else 'ontology-0.1','network':NETWORK.describe()}
         if 'task_module' in original:expected['task_module']=get_task(original['task']).describe()
         if 'argumentation_configuration' in original:expected['argumentation_configuration']=argumentation_configuration(get_task(original['task']))
+        if 'participant_model_version' in original:
+            from .participant_model import VERSION as PARTICIPANT_MODEL_VERSION
+            expected['participant_model_version']=PARTICIPANT_MODEL_VERSION
         # Reject model/policy drift rather than pretending a new model reproduces an old run.
         for key,value in expected.items():
             require(original[key]==value,'Replay requires recorded '+key+' version/backend; current runtime differs')

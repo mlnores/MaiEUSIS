@@ -40,7 +40,7 @@ def load_schemes(contents):
                 ('clarification_objection','clarificationObjection','')]}
             require(not presentation['clarification_message'] or bool(presentation['clarification_objection']),'Clarification requires a named objection scheme')
             presentation['usefulness']=float(one('usefulness',.65))
-            require(presentation['audience'] in {'generic','task','personalised','socratic'},'Invalid intervention audience')
+            require(presentation['audience'] in {'task','personalised','socratic'},'Invalid intervention audience')
             require(presentation['schedule'] in {'event','periodic','fallback'},'Invalid intervention schedule')
             require(presentation['socratic_action'] in {'ask','challenge','support','compare','highlight-dependency','request-evidence'},'Invalid Socratic action')
             require(0<=presentation['usefulness']<=1,'Invalid provisional usefulness')

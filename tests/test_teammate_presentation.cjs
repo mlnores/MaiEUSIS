@@ -29,8 +29,7 @@ function harness(task){
    return {ok:true,json:async()=>data};
   }});
  const html=fs.readFileSync('socratic_prototype/static/index.html','utf8');
- vm.runInContext(html.split('<script>')[1].split('</script>')[0],context);
- vm.runInContext(fs.readFileSync('socratic_prototype/static/teammate.js','utf8'),context);
+ require('./browser_scripts.cjs').loadScripts(html,context);
  const run=code=>vm.runInContext(code,context),flush=async()=>{for(let i=0;i<16;i++)await Promise.resolve();};
  async function advance(ms){const target=now+ms;await flush();while(true){scheduled.sort((a,b)=>a.at-b.at||a.id-b.id);const next=scheduled[0];if(!next||next.at>target)break;scheduled.shift();now=next.at;next.fn();await flush();}now=target;await flush();}
  function trial(index){run(`activeTrial=createTrial({global_trial:${index},trial:${index},block:1,score_before:0,score_after:0,points_before:0,points_after:0,target:595,remaining_trials_including_current:${9-index},multiplier:1.1,selected_option:session.task==='MAB'?'blue1':null,chosen_option:session.task==='TBS'?'safe':null,outcome:0,earned_points:0,response_time_ms:100,available_options:session.task==='MAB'?baseArms.map(([id,color,key,shade,probs,outcomes])=>({id,key,outcomes})):[{option_id:'safe',key:'1',amount:100,probability:.9},{option_id:'risky',key:'9',amount:265,probability:.35}]});`);}

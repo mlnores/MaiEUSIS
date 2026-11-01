@@ -4,7 +4,7 @@ from pathlib import Path
 from ..semantics import CORE,DATA
 
 ARG=CORE+'argumentation/'
-VERSION='argumentation-0.2'
+VERSION='argumentation-0.3'
 ROOT=Path(__file__).parent
 LIMITS={'max_rounds':6,'max_arguments':256,'max_assertions':512,'max_matches':1024}
 

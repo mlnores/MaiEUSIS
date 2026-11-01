@@ -58,12 +58,11 @@ It never forwards a whole session or snapshot.
 | Condition | Evidence supplied |
 | --- | --- |
 | A | No generation or package |
-| B | Generic guidance only; no task identity, state, history or participant profile |
 | C/D | Relevant public observations, environment estimates, unknowns and opposing reasons; no calibrated participant model |
-| E/F | The task evidence plus task-specific calibration and researcher-reviewed self-reports |
+| E/F | The task evidence plus task-specific calibration, interaction estimates and researcher-reviewed self-reports |
 
-Only D/F use the generated-question path. B/C/E keep their conventional reviewed
-messages in generated mode. Their packages remain inspectable for auditing.
+Only D/F use the generated-question path. C/E keep their reviewed specific
+recommendations in generated mode. Their packages remain inspectable for auditing.
 MAB input excludes upcoming options, hidden reward probabilities and actual shift
 times. TBS input includes current published probabilities and constraints, with
 future options and outcomes explicitly unknown. Observations, estimates,
