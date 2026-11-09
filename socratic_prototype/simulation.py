@@ -15,8 +15,9 @@ from .study import CONDITIONS,default_study,validate_study
 from .records import require
 from .tasks import get_task
 from .tasks.execution import simulation_adapter
+from .reconsideration import MECHANISMS, configuration as reconsideration_configuration
 
-VERSION='matched-simulation-0.2'
+VERSION='matched-simulation-0.4'
 
 
 def uniform(seed,*keys):
@@ -41,7 +42,7 @@ def Environment(task,protocol,seed):
     return env
 
 
-def run(store,participants,scenario='null',protocol='short',seed='comparison',repeats=1,max_trials=None,on_progress=None,study=None):
+def run(store,participants,scenario='null',protocol='short',seed='comparison',repeats=1,max_trials=None,on_progress=None,study=None,calibration_only=False,reconsideration='current'):
     require(scenario in SCENARIOS,'Unknown response scenario')
     study=validate_study(study or default_study(protocol),simulation=True)
     tasks=study['tasks']
@@ -49,8 +50,9 @@ def run(store,participants,scenario='null',protocol='short',seed='comparison',re
     require(max_trials is None or type(max_trials) is int and max_trials>0,'max_trials must be positive')
     specs=[validate_participant(p,tasks) for p in participants]
     require(bool(specs) and len({p['id'] for p in specs})==len(specs),'Provide distinct participant pseudonyms')
+    mechanisms={task:reconsideration_configuration(get_task(task),reconsideration) for task in tasks}
     report={'version':VERSION,'agent_version':AGENT_VERSION,'response_version':RESPONSE_VERSION,'scenario':scenario,
-            'seed':seed,'study':study,'participants':specs,'runs':[],
+            'seed':seed,'study':study,'participants':specs,'runs':[],'calibrations':[],'reconsideration':mechanisms,
             'notice':'Synthetic scenario outcomes; not observed human assistance effects. Latent parameters and evaluator truth are excluded from assistant inputs.'}
     for spec in specs:
         calibrations={}
@@ -63,18 +65,23 @@ def run(store,participants,scenario='null',protocol='short',seed='comparison',re
             for index in range(1,s['total_trials']+1):
                 ev=env.evaluation(s['id'],index);record=store.event(s['id'],ev);d=record['snapshot']['decision']
                 store.event(s['id'],dict(kind='delivery',decision_id=d['id'],index=index,delivered=False,generation_latency_ms=0,reading_exposure_ms=0,early_attempts=0))
-                choice=select(actor.baseline(ev),uniform(env.seed,'choice',index));fb=env.outcome(ev,choice)
+                _,probabilities,effect=actor.distribution(ev,None)
+                choice=select(probabilities,uniform(env.seed,'choice',index))
+                if uniform(env.seed,'omission',index)<effect['omission_probability']:choice='NO_RESPONSE'
+                fb=env.outcome(ev,choice)
                 store.event(s['id'],fb);actor.observe(ev,fb)
             require(env.done,'Calibration environment did not finish its protocol')
             store.finish(s['id'],{'completed':True});calibrations[task]=s['id']
+            report['calibrations'].append({'participant':spec['id'],'task':task,'session_id':s['id']})
             if on_progress:on_progress(spec['id'],task,'calibration',0)
+        if calibration_only:continue
         for repeat in range(repeats):
             for task,config in tasks.items():
                 protocol=config['protocol']
                 # No condition or session identifier enters environmental/choice streams.
                 environment_seed=f'{seed}:{spec["id"]}:{repeat}:{task}'
                 for condition in study['conditions']:
-                    actor=Participant(spec,task,scenario);env=Environment(task,protocol,environment_seed)
+                    actor=Participant(spec,task,scenario,reconsideration);env=Environment(task,protocol,environment_seed)
                     s=store.create(dict(participant_id=spec['id'],task=task,condition=condition,phase='assisted',protocol=protocol,
                                         preference='standard',calibration_ids={k:calibrations[k] for k in config['calibration_tasks']},seed=hashlib.sha256(environment_seed.encode()).hexdigest()),
                         synthetic_run={'version':VERSION,'agent_version':AGENT_VERSION,'response_version':RESPONSE_VERSION},study=study)
@@ -119,12 +126,14 @@ def main():
     parser.add_argument('--study',help='JSON study configuration of registered environments, protocols, calibrations and conditions')
     parser.add_argument('--scenario',choices=SCENARIOS,default='null');parser.add_argument('--protocol',default='short')
     parser.add_argument('--seed',default='comparison');parser.add_argument('--repeats',type=int,default=1);parser.add_argument('--max-trials',type=int)
+    parser.add_argument('--calibration-only',action='store_true',help='Generate unassisted calibrations for the known-pseudonym selector without comparison runs')
+    parser.add_argument('--reconsideration',choices=MECHANISMS,default='current',help='Researcher-side Socratic processing assumption; direct assistance is unaffected')
     args=parser.parse_args();os.environ.update(SOCRATIC_LLM='offline',SOCRATIC_LANGUAGE_MODE='bounded',SOCRATIC_INTERPRET_RESPONSES='0')
     from .store import Store
     participants=json.loads(Path(args.participants).read_text())
     study=json.loads(Path(args.study).read_text()) if args.study else None
     result=run(Store(Path(args.data_dir)/'sessions.sqlite3'),participants,args.scenario,args.protocol,args.seed,args.repeats,args.max_trials,
-        lambda participant,task,condition,repeat:print(participant,task,condition,repeat,'ready',flush=True),study=study)
+        lambda participant,task,condition,repeat:print(participant,task,condition,repeat,'ready',flush=True),study=study,calibration_only=args.calibration_only,reconsideration=args.reconsideration)
     path=Path(args.output);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(result,indent=2,allow_nan=False)+'\n')
     print('Wrote conditional simulation results to',path)
 

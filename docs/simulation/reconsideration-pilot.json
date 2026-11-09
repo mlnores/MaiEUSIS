@@ -1,0 +1,33 @@
+{
+  "id": "reconsideration-development16-v1",
+  "participants_file": "../../socratic_prototype/data/empirical_20261105_v2/participants.development.json",
+  "expected_participants": 16,
+  "cohort_split": "development",
+  "expected_profiles": {
+    "MAB-specialised": 4,
+    "TBS-specialised": 4,
+    "Dual-regime": 4,
+    "Low-expression": 4
+  },
+  "study": {
+    "id": "reconsideration-full-protocol",
+    "tasks": {
+      "MAB": {"protocol": "full", "calibration_tasks": ["MAB", "TBS"]},
+      "TBS": {"protocol": "full", "calibration_tasks": ["MAB", "TBS"]}
+    },
+    "conditions": ["A", "C", "E", "D", "F"]
+  },
+  "mechanisms": ["none", "current", "recent"],
+  "response_parameters": {
+    "responsiveness": 0.5,
+    "reactance": 0,
+    "distraction": 0,
+    "omission_probability": 0
+  },
+  "seed": "reconsideration-development16-v1",
+  "repeats": 1,
+  "primary_outcomes": {
+    "MAB": {"metric": "score", "divisor": 1},
+    "TBS": {"metric": "targets_attained", "divisor": 24}
+  }
+}

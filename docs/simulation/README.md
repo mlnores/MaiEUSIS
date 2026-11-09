@@ -7,8 +7,10 @@ Generic means task-aware without a calibrated participant model.
 
 ## Components
 
-- `tasks/mab.py` and `tasks/tbs.py` compute estimates from public task events. The
-  original researchers' fitted models have not yet been supplied or integrated.
+- `tasks/mab.py` and `tasks/tbs.py` compute the assistant's estimates from public
+  task events. The separate [empirical pipeline](../empirical_profiles.md) now
+  imports the original MAB actor fits and fits a provisional TBS state/feedback
+  actor. These researcher-side parameters are not supplied to the assistant.
 - `participant_model.py` represents the assistant's estimates. E/F receive the
   task calibration, explicit self-report history and uncertain interaction
   summaries. C/D do not receive those personalised estimates in their language
@@ -25,14 +27,18 @@ Generic means task-aware without a calibrated participant model.
   hypothesis rather than automatically being interpreted as general distrust.
 - `agents.py` dispatches the synthetic participant's own task policies through
   registered execution adapters. `tasks/mab_execution.py` uses dual-rate reward
-  learning and softmax; `tasks/tbs_execution.py` uses a logistic policy over
-  normalised target pressure. Each condition starts with a new actor and empty
+  learning and softmax; `tasks/tbs_execution.py` supports the illustrative pressure
+  policy and the versioned empirical state/feedback extension. Each condition starts with a new actor and empty
   experience. Fixed characteristics persist; experience does not carry over.
 - `assistance_response.py` models effects on the actor's choice distribution.
   Direct assistance proposes a specific option. A Socratic question invokes a
   public-evidence reconsideration heuristic for the structured issue, without
   receiving a recommended option. Reconsideration can preserve the original
   preference. Reactance, distraction and omission assumptions permit harm.
+- `reconsideration.py` selects the separate `none`, `current` or `recent`
+  Socratic processing assumption. The [reconsideration pilot](reconsideration.md)
+  holds response coefficients fixed while varying this mechanism, with frozen
+  inputs, resumable jobs and matched outcome/control reports.
 - `simulation.py` runs the same individuals through the configured conditions, using
   common per-trial random streams for choices, option outcomes, task transitions,
   option pairs and targets. Condition/session IDs never enter those streams.
@@ -71,6 +77,10 @@ study these are MAB (`alpha_plus`, `alpha_minus`, `beta`) and TBS (`intercept`,
 `slope`). Each registered adapter validates its own parameter schema.
 Optional `original_profile` is a descriptive evaluator
 label; it does not substitute for the task models and is not sent to the assistant.
+Empirical exports additionally carry researcher-side `provenance` and per-task
+`baseline_omission` rates. Their model-specific parameters are described in the
+empirical guide; do not relabel the original points/100 MAB coefficients as an
+illustrative points/200 actor.
 
 Default calibrations are complete short protocols (MAB 40, TBS 24), reused across
 all five conditions for that individual's comparison. `--protocol full` uses
@@ -167,7 +177,7 @@ it is not participant-visible task evidence. Partial TBS scores include complete
 blocks only. Replications are repeated simulations of the same individuals, not
 additional independent human participants.
 
-The report records simulation/agent versions (currently 0.2), response-model
+The report records simulation/agent versions (currently 0.4), response-model
 version, and each execution adapter's version, source SHA-256 and metric
 definitions. This is distinct from a session's frozen task/ontology, graph,
 participant-model and policy descriptors. Replay checks the recorded public
@@ -175,10 +185,11 @@ events and assistant decisions; reproducing synthetic choices also requires the
 evaluator report, seed, participant specifications and the recorded execution
 implementations. A code hash is a drift record, not an archived copy of that code.
 
-Simulation results are conditional on the assumed response mechanisms. Baseline
-prediction on held-out human choices, independent behavioural validation,
-calibration/parameter recovery and human assistance-response data remain research
-work. Sensitivity scenarios do not validate human causal effects or establish a
+Simulation results are conditional on the assumed response mechanisms. The
+empirical pipeline now implements training-only prediction, fresh behaviour and
+internal recovery checks; their results do not automatically establish validated
+reconstructions. Human assistance-response data remain research work.
+Sensitivity scenarios do not validate human causal effects or establish a
 winning assistance style. The supplied sample cannot substantiate empirical
 claims about the 62-person cohort.
 

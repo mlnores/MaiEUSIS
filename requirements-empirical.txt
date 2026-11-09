@@ -1,0 +1,4 @@
+# Empirical cohort import, training and evaluation; runtime actors use stdlib.
+-r requirements-research.txt
+numpy>=1.26,<3
+scipy>=1.13,<2

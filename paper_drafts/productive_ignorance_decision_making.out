@@ -4,17 +4,25 @@
 \BOOKMARK [2][-]{subsection.2.1}{Empirical cohort and multilevel configurations}{section.2}% 4
 \BOOKMARK [1][-]{section.3}{Experimental design: five conditions and staged validation}{}% 5
 \BOOKMARK [2][-]{subsection.3.1}{Factorial comparison and baseline}{section.3}% 6
-\BOOKMARK [2][-]{subsection.3.2}{All 62 as the target; 16 for development}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Imported cohort: 16 for development, 46 for evaluation}{section.3}% 7
 \BOOKMARK [2][-]{subsection.3.3}{Two validation problems before assistance effects}{section.3}% 8
 \BOOKMARK [2][-]{subsection.3.4}{Matched runs, response assumptions and interpretation}{section.3}% 9
-\BOOKMARK [1][-]{section.4}{Architecture: separate epistemic and behavioural responsibilities}{}% 10
-\BOOKMARK [2][-]{subsection.4.1}{Actor, assistance response and assistant model}{section.4}% 11
-\BOOKMARK [2][-]{subsection.4.2}{Knowledge representation and graph reasoning}{section.4}% 12
-\BOOKMARK [3][-]{subsubsection.4.2.1}{Represented knowledge and epistemic status}{subsection.4.2}% 13
-\BOOKMARK [3][-]{subsubsection.4.2.2}{Argument construction and evaluation}{subsection.4.2}% 14
-\BOOKMARK [3][-]{subsubsection.4.2.3}{Two illustrative reasoning traces}{subsection.4.2}% 15
-\BOOKMARK [2][-]{subsection.4.3}{From justified reasons to justified interruption}{section.4}% 16
-\BOOKMARK [2][-]{subsection.4.4}{Timing, exposure and participant contestation}{section.4}% 17
-\BOOKMARK [2][-]{subsection.4.5}{Extensibility and reproducibility}{section.4}% 18
-\BOOKMARK [1][-]{section.5}{Human implications for national security and governance}{}% 19
-\BOOKMARK [1][-]{section.6}{Current limits and next research steps}{}% 20
+\BOOKMARK [1][-]{section.4}{Empirical actors and modelling assumptions}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{MAB: reproduce the original dual-rate learning model}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.2}{TBS: an offer-marginal state and feedback policy}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.3}{Omissions, calibration and provenance}{section.4}% 13
+\BOOKMARK [1][-]{section.5}{Architecture: separate epistemic and behavioural responsibilities}{}% 14
+\BOOKMARK [2][-]{subsection.5.1}{Actor, assistance response and assistant model}{section.5}% 15
+\BOOKMARK [2][-]{subsection.5.2}{Knowledge representation and graph reasoning}{section.5}% 16
+\BOOKMARK [3][-]{subsubsection.5.2.1}{Represented knowledge and epistemic status}{subsection.5.2}% 17
+\BOOKMARK [3][-]{subsubsection.5.2.2}{Argument construction and evaluation}{subsection.5.2}% 18
+\BOOKMARK [3][-]{subsubsection.5.2.3}{Two illustrative reasoning traces}{subsection.5.2}% 19
+\BOOKMARK [2][-]{subsection.5.3}{From justified reasons to justified interruption}{section.5}% 20
+\BOOKMARK [2][-]{subsection.5.4}{Timing, exposure and participant contestation}{section.5}% 21
+\BOOKMARK [2][-]{subsection.5.5}{Extensibility and reproducibility}{section.5}% 22
+\BOOKMARK [1][-]{section.6}{Preliminary computational checks}{}% 23
+\BOOKMARK [2][-]{subsection.6.1}{Source reproduction and held-out choice prediction}{section.6}% 24
+\BOOKMARK [2][-]{subsection.6.2}{Fresh behaviour, offer sensitivity and internal recovery}{section.6}% 25
+\BOOKMARK [2][-]{subsection.6.3}{Assistance integration and remaining experimental work}{section.6}% 26
+\BOOKMARK [1][-]{section.7}{Human implications for national security and governance}{}% 27
+\BOOKMARK [1][-]{section.8}{Current limits and next research steps}{}% 28

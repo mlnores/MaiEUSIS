@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.8.20)  1 NOV 2026 23:29
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.8.20)  6 NOV 2026 16:04
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -907,66 +907,144 @@ LaTeX Font Info:    External font `lmex10' loaded for size
  [1
 
 {/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-LaTeX Font Info:    Try loading font information for OMS+lmr on input line 75.
+LaTeX Font Info:    Try loading font information for OMS+lmr on input line 73.
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/lm/omslmr.fd
 File: omslmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `OMS/lmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 75.
+(Font)              Font shape `OMS/lmsy/m/n' tried instead on input line 73.
  [2] [3] [4]
+
+LaTeX Warning: Citation `handover' on page 5 undefined on input line 143.
+
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 168.
+(Font)              <10.95> on input line 166.
 
-[5] [6] [7] [8]
-LaTeX Font Info:    Try loading font information for T1+lmtt on input line 316.
+LaTeX Warning: Citation `handover' on page 5 undefined on input line 175.
 
- (/usr/local/texlive/2019/texmf-dist/tex/latex/lm/t1lmtt.fd
+[5] [6]
+
+LaTeX Warning: Reference `sec:empirical-actors' on page 7 undefined on input li
+ne 224.
+
+
+LaTeX Warning: Reference `sec:computational-checks' on page 7 undefined on inpu
+t line 224.
+
+[7]
+
+LaTeX Warning: Reference `fig:fit-roles' on page 8 undefined on input line 235.
+
+
+
+LaTeX Warning: Citation `handover' on page 8 undefined on input line 266.
+
+[8]
+
+LaTeX Warning: Citation `handover' on page 9 undefined on input line 277.
+
+[9]
+
+LaTeX Warning: Citation `pipeline' on page 10 undefined on input line 303.
+
+[10] [11]
+
+LaTeX Warning: Reference `sec:empirical-actors' on page 12 undefined on input l
+ine 378.
+
+LaTeX Font Info:    Try loading font information for T1+lmtt on input line 390.
+
+(/usr/local/texlive/2019/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `lmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
+ [12] [13] [14]
+[15] [16] [17]
 
-[9] [10] [11] [12] [13] [14] [15] [16]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 506.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 506.
+LaTeX Warning: Citation `pipeline' on page 18 undefined on input line 525.
 
-(./productive_ignorance_decision_making.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 506.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 506.
-Package rerunfilecheck Info: File `productive_ignorance_decision_making.out' ha
-s not changed.
-(rerunfilecheck)             Checksum: E3E9AF376AEB7867D61607A18536BCEC;1841.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 506.
+
+LaTeX Warning: Reference `tab:heldout' on page 18 undefined on input line 530.
+
+[18] [19] [20] [21]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 625.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 625.
+ (./productive_ignorance_decision_making.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 625.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 625.
+
+
+Package rerunfilecheck Warning: File `productive_ignorance_decision_making.out'
+ has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `productive_ignorance_decision_makin
+g.out':
+(rerunfilecheck)             Before: E3E9AF376AEB7867D61607A18536BCEC;1841
+(rerunfilecheck)             After:  7437D8AD2194E7C7602E3FAA54253DDA;2598.
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 625.
  ) 
 Here is how much of TeX's memory you used:
- 21706 strings out of 492616
- 410330 string characters out of 6129481
- 534984 words of memory out of 5000000
- 25020 multiletter control sequences out of 15000+600000
- 84658 words of font info for 140 fonts, out of 8000000 for 9000
+ 21854 strings out of 492616
+ 412597 string characters out of 6129481
+ 535924 words of memory out of 5000000
+ 25098 multiletter control sequences out of 15000+600000
+ 103859 words of font info for 163 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,10n,76p,1523b,986s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
-texlive/2019/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/20
-19/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2019/texmf-dist/
-fonts/enc/dvips/lm/lm-mathsy.enc}</usr/local/texlive/2019/texmf-dist/fonts/type
-1/public/lm/lmbx10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/l
-m/lmbx12.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/lm/lmbx8.pf
-b></usr/local/texlive/2019/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></usr/lo
-cal/texlive/2019/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></usr/local/texlive
-/2019/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2019/texmf
--dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2019/texmf-dist/fonts
-/type1/public/lm/lmr8.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/publi
-c/lm/lmri10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/lm/lmsy1
-0.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on productive_ignorance_decision_making.pdf (16 pages, 298359 by
+ 55i,13n,76p,1827b,986s stack positions out of 5000i,500n,10000p,200000b,80000s
+pdfTeX warning (dest): name{figure.caption.8} has been referenced but does no
+t exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.5} has been referenced but does not e
+xist, replaced by a fixed one
+
+pdfTeX warning (dest): name{subsection.4.5} has been referenced but does not ex
+ist, replaced by a fixed one
+
+pdfTeX warning (dest): name{subsection.4.4} has been referenced but does not ex
+ist, replaced by a fixed one
+
+pdfTeX warning (dest): name{subsubsection.4.2.3} has been referenced but does n
+ot exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{subsubsection.4.2.2} has been referenced but does n
+ot exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{subsubsection.4.2.1} has been referenced but does n
+ot exist, replaced by a fixed one
+
+{/usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/te
+xlive/2019/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2019/tex
+mf-dist/fonts/enc/dvips/lm/lm-mathex.enc}{/usr/local/texlive/2019/texmf-dist/fo
+nts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2019/texmf-dist/fonts/enc/dv
+ips/lm/lm-mathit.enc}</usr/local/texlive/2019/texmf-dist/fonts/type1/public/lm/
+lmbx10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/lm/lmbx12.pfb
+></usr/local/texlive/2019/texmf-dist/fonts/type1/public/lm/lmbx8.pfb></usr/loca
+l/texlive/2019/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/
+2019/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2019/texmf
+-dist/fonts/type1/public/lm/lmmi8.pfb></usr/local/texlive/2019/texmf-dist/fonts
+/type1/public/lm/lmr10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/publ
+ic/lm/lmr12.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/lm/lmr8.
+pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/
+local/texlive/2019/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texl
+ive/2019/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2019/te
+xmf-dist/fonts/type1/public/lm/lmtt10.pfb>
+Output written on productive_ignorance_decision_making.pdf (21 pages, 338942 by
 tes).
 PDF statistics:
- 284 PDF objects out of 1000 (max. 8388607)
- 252 compressed objects within 3 object streams
- 67 named destinations out of 1000 (max. 500000)
- 24237 words of extra memory for PDF output out of 24883 (max. 10000000)
+ 349 PDF objects out of 1000 (max. 8388607)
+ 309 compressed objects within 4 object streams
+ 98 named destinations out of 1000 (max. 500000)
+ 27309 words of extra memory for PDF output out of 29859 (max. 10000000)
 

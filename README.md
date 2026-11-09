@@ -117,6 +117,17 @@ graph reasoning and intervention policy, with a runnable matched five-condition
 experiment. Its illustrative response scenarios are assumptions, not measured
 human attitudes or evidence that assistance improves decisions.
 
+The [empirical reconstruction guide](docs/empirical_profiles.md) provides the
+Irena handover importer, frozen 62-person registry and 16/46 split, original MAB
+actor, provisional TBS state/feedback actor, held-out prediction and fresh-run
+checks. Missing historical TBS offers remain unknown; offer responsiveness and
+AI-response assumptions are recorded explicitly in each generated cohort bundle.
+
+The [reconsideration sensitivity pilot](docs/simulation/reconsideration.md) now
+compares no strategic revision, the current heuristic and a recent-feedback rule
+under fixed response coefficients. Its development-16 full-protocol specification
+supports frozen inputs, checkpointed jobs, matched controls and paired analysis.
+
 Environment execution is modular too: each registered task owns its synthetic
 actor, private simulator, metrics, graph criterion and browser adapter. A study
 JSON selects environments, protocols, calibrations and conditions for both the
@@ -607,8 +618,11 @@ No model or intervention effect is empirically validated.
 
 ## Deliberate modelling limits
 
-The briefing's fitted participant models and original analysis scripts were not
-supplied. The prototype does not pretend to reproduce them. MAB's change belief
+The supplied empirical handover now supports the original fitted MAB actor and
+a provisional TBS state/feedback reconstruction, documented in the empirical
+guide. Historical TBS offers remain unavailable, so that actor's offer sensitivity
+is an explicit assumption. The assistant retains separate exploratory models.
+MAB's change belief
 compares unknown categorical regimes, not the original-vs-swapped ideal observer
 with known likelihoods. It is bounded by the participant-visible information;
 initial hidden reward probabilities are never supplied as priors. TBS pressure
@@ -617,6 +631,6 @@ not separately identified. Its posteriors do not establish intent or neglect.
 
 `policy.json` and the Bayesian CPTs in `bayes.py` are explicit **provisional**
 parameters. They are frozen into each session, not claimed optimal or preregistered.
-Sensitivity/calibration studies, independent effectiveness evaluation, original
-model integration, and richer statistical analysis (e.g. PyMC) remain research
+Sensitivity/calibration studies, independent effectiveness evaluation and richer
+statistical analysis (e.g. PyMC) remain research
 work. The purpose of this milestone is a runnable, inspectable intervention loop.

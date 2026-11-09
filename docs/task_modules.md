@@ -58,6 +58,12 @@ live in their respective `*_execution.py` files. Browser loops and public-event
 adapters live in `static/task-adapters/`. The shared runner, assistant delivery
 policy and browser bridge dispatch through registered hooks.
 
+The optional `ReconsiderationVariants` contract in `tasks/execution.py` adds a
+task-owned `reconsider_recent(...)` hook and `RECENT_RECONSIDERATION` assumption
+metadata. The original required adapter contract is unchanged. The shared
+researcher-side selector supports no revision, the existing heuristic and this
+optional recent-evidence variant; unsupported variants fail before sessions start.
+
 ## Meaning of the graph
 
 JSON events and snapshots remain canonical. Python computes numeric results;

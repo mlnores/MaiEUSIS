@@ -29,49 +29,71 @@
 \citation{instructions}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Empirical setting and task fidelity}{4}{section.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Empirical cohort and multilevel configurations}{4}{subsection.2.1}\protected@file@percent }
+\citation{handover}
+\citation{handover}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Experimental design: five conditions and staged validation}{5}{section.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Factorial comparison and baseline}{5}{subsection.3.1}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces A no-assistance baseline plus a $2\times 2$ comparison of style and personalisation. All conditions complete the required unassisted calibration; only E/F use its participant estimates to select assistance.\relax }}{5}{table.caption.2}\protected@file@percent }
 \newlabel{tab:conditions}{{1}{5}{A no-assistance baseline plus a $2\times 2$ comparison of style and personalisation. All conditions complete the required unassisted calibration; only E/F use its participant estimates to select assistance.\relax }{table.caption.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}All 62 as the target; 16 for development}{5}{subsection.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Implemented cohort pipeline and matched simulation design. Fidelity checks do not automatically validate an actor: the current TBS policy fails to improve on a simple frequency baseline on average. Assistance runs remain conditional on model and response assumptions. The reset applies to synthetic actors; human participants cannot be assumed to forget previous conditions.\relax }}{6}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:study}{{2}{6}{Implemented cohort pipeline and matched simulation design. Fidelity checks do not automatically validate an actor: the current TBS policy fails to improve on a simple frequency baseline on average. Assistance runs remain conditional on model and response assumptions. The reset applies to synthetic actors; human participants cannot be assumed to forget previous conditions.\relax }{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Imported cohort: 16 for development, 46 for evaluation}{6}{subsection.3.2}\protected@file@percent }
 \citation{wilson}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Proposed empirical development and matched simulation design. Generic conditions remain task-aware. The reset applies to synthetic actors; human participants cannot be assumed to forget previous conditions.\relax }}{6}{figure.caption.3}\protected@file@percent }
-\newlabel{fig:study}{{2}{6}{Proposed empirical development and matched simulation design. Generic conditions remain task-aware. The reset applies to synthetic actors; human participants cannot be assumed to forget previous conditions.\relax }{figure.caption.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Two validation problems before assistance effects}{6}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Matched runs, response assumptions and interpretation}{6}{subsection.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4}Architecture: separate epistemic and behavioural responsibilities}{7}{section.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Architecture separating participant behaviour, epistemic assessment and intervention delivery. Gold boxes contain private simulation components; the public-event interface restricts the evidence available to the assistant. Below that boundary, numerical models inform an annotated knowledge graph, argumentation evaluates reasons and objections, and a separate policy determines whether and how to intervene. Validated expression returns the intervention to the participant, while the trace retains its evidential and delivery history. Solid arrows show operational flow; dashed arrows show evaluator or trace records.\relax }}{8}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:architecture}{{3}{8}{Architecture separating participant behaviour, epistemic assessment and intervention delivery. Gold boxes contain private simulation components; the public-event interface restricts the evidence available to the assistant. Below that boundary, numerical models inform an annotated knowledge graph, argumentation evaluates reasons and objections, and a separate policy determines whether and how to intervene. Validated expression returns the intervention to the participant, while the trace retains its evidential and delivery history. Solid arrows show operational flow; dashed arrows show evaluator or trace records.\relax }{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Two validation problems before assistance effects}{7}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Matched runs, response assumptions and interpretation}{7}{subsection.3.4}\protected@file@percent }
+\citation{handover}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Empirical actors and modelling assumptions}{8}{section.4}\protected@file@percent }
+\newlabel{sec:empirical-actors}{{4}{8}{Empirical actors and modelling assumptions}{section.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Separate roles for reconstruction, held-out prediction and assistant calibration. Full-data fits do not enter test prediction. The assistant receives only permitted calibration observations and public events; original profile metadata, actor coefficients and evaluator diagnostics remain outside its inputs. Historical TBS offers are unknown on both fitting branches.\relax }}{8}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:fit-roles}{{3}{8}{Separate roles for reconstruction, held-out prediction and assistant calibration. Full-data fits do not enter test prediction. The assistant receives only permitted calibration observations and public events; original profile metadata, actor coefficients and evaluator diagnostics remain outside its inputs. Historical TBS offers are unknown on both fitting branches.\relax }{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}MAB: reproduce the original dual-rate learning model}{8}{subsection.4.1}\protected@file@percent }
+\citation{handover}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}TBS: an offer-marginal state and feedback policy}{9}{subsection.4.2}\protected@file@percent }
+\citation{pipeline}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Omissions, calibration and provenance}{10}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Architecture: separate epistemic and behavioural responsibilities}{10}{section.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Architecture separating participant behaviour, epistemic assessment and intervention delivery. Gold boxes contain private simulation components; the public-event interface restricts the evidence available to the assistant. Below that boundary, numerical models inform an annotated knowledge graph, argumentation evaluates reasons and objections, and a separate policy determines whether and how to intervene. Validated expression returns the intervention to the participant, while the trace retains its evidential and delivery history. Solid arrows show operational flow; dashed arrows show evaluator or trace records.\relax }}{11}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:architecture}{{4}{11}{Architecture separating participant behaviour, epistemic assessment and intervention delivery. Gold boxes contain private simulation components; the public-event interface restricts the evidence available to the assistant. Below that boundary, numerical models inform an annotated knowledge graph, argumentation evaluates reasons and objections, and a separate policy determines whether and how to intervene. Validated expression returns the intervention to the participant, while the trace retains its evidential and delivery history. Solid arrows show operational flow; dashed arrows show evaluator or trace records.\relax }{figure.caption.5}{}}
 \citation{rdf}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Actor, assistance response and assistant model}{9}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Knowledge representation and graph reasoning}{9}{subsection.4.2}\protected@file@percent }
-\newlabel{sec:knowledge-reasoning}{{4.2}{9}{Knowledge representation and graph reasoning}{subsection.4.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Represented knowledge and epistemic status}{10}{subsubsection.4.2.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Knowledge represented in the assistant-side graph. Numerical models compute values before projection; the graph preserves their meaning and provenance. Candidate scores, interruption costs and cooldowns remain in the canonical JSON policy records.\relax }}{10}{table.caption.5}\protected@file@percent }
-\newlabel{tab:knowledge}{{2}{10}{Knowledge represented in the assistant-side graph. Numerical models compute values before projection; the graph preserves their meaning and provenance. Candidate scores, interruption costs and cooldowns remain in the canonical JSON policy records.\relax }{table.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Actor, assistance response and assistant model}{12}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Knowledge representation and graph reasoning}{12}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:knowledge-reasoning}{{5.2}{12}{Knowledge representation and graph reasoning}{subsection.5.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Represented knowledge and epistemic status}{13}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Knowledge represented in the assistant-side graph. Numerical models compute values before projection; the graph preserves their meaning and provenance. Candidate scores, interruption costs and cooldowns remain in the canonical JSON policy records.\relax }}{13}{table.caption.6}\protected@file@percent }
+\newlabel{tab:knowledge}{{2}{13}{Knowledge represented in the assistant-side graph. Numerical models compute values before projection; the graph preserves their meaning and provenance. Candidate scores, interruption costs and cooldowns remain in the canonical JSON policy records.\relax }{table.caption.6}{}}
 \citation{sparql}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}Argument construction and evaluation}{14}{subsubsection.5.2.2}\protected@file@percent }
 \citation{dung}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Argument construction and evaluation}{11}{subsubsection.4.2.2}\protected@file@percent }
 \citation{shacl}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Two illustrative reasoning traces}{12}{subsubsection.4.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{MAB: limited coverage does not settle the value of exploration.}{12}{section*.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{TBS: compatible calculations can favour different choices.}{12}{section*.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}From justified reasons to justified interruption}{13}{subsection.4.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Acceptance of an argument does not compel an intervention. Direct advice requires a separate comparison proof. Socratic clarification of unresolved conflict is permitted only by an explicit authored scheme. Incomplete or unavailable reasoning produces no live intervention candidate.\relax }}{13}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:policy}{{4}{13}{Acceptance of an argument does not compel an intervention. Direct advice requires a separate comparison proof. Socratic clarification of unresolved conflict is permitted only by an explicit authored scheme. Incomplete or unavailable reasoning produces no live intervention candidate.\relax }{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Timing, exposure and participant contestation}{14}{subsection.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Extensibility and reproducibility}{14}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}Two illustrative reasoning traces}{15}{subsubsection.5.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{MAB: limited coverage does not settle the value of exploration.}{15}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{TBS: compatible calculations can favour different choices.}{15}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}From justified reasons to justified interruption}{16}{subsection.5.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Acceptance of an argument does not compel an intervention. Direct advice requires a separate comparison proof. Socratic clarification of unresolved conflict is permitted only by an explicit authored scheme. Incomplete or unavailable reasoning produces no live intervention candidate.\relax }}{16}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:policy}{{5}{16}{Acceptance of an argument does not compel an intervention. Direct advice requires a separate comparison proof. Socratic clarification of unresolved conflict is permitted only by an explicit authored scheme. Incomplete or unavailable reasoning produces no live intervention candidate.\relax }{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Timing, exposure and participant contestation}{17}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Extensibility and reproducibility}{17}{subsection.5.5}\protected@file@percent }
+\citation{pipeline}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Preliminary computational checks}{18}{section.6}\protected@file@percent }
+\newlabel{sec:computational-checks}{{6}{18}{Preliminary computational checks}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Source reproduction and held-out choice prediction}{18}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Held-out next-choice prediction. Loss and Brier columns are equal-weight means of participant scores; ``Frequency'' is training-only smoothed choice-frequency log loss. Lower is better. Uniform log loss is 1.7918 for MAB and 0.6931 for TBS. Timeouts and unknown choices are excluded from choice scoring and counted separately. Binary and six-option Brier definitions differ.\relax }}{18}{table.caption.10}\protected@file@percent }
+\newlabel{tab:heldout}{{3}{18}{Held-out next-choice prediction. Loss and Brier columns are equal-weight means of participant scores; ``Frequency'' is training-only smoothed choice-frequency log loss. Lower is better. Uniform log loss is 1.7918 for MAB and 0.6931 for TBS. Timeouts and unknown choices are excluded from choice scoring and counted separately. Binary and six-option Brier definitions differ.\relax }{table.caption.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Fresh behaviour, offer sensitivity and internal recovery}{18}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Assistance integration and remaining experimental work}{19}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Human implications for national security and governance}{19}{section.7}\protected@file@percent }
 \bibcite{stanford}{1}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Human implications for national security and governance}{15}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Current limits and next research steps}{15}{section.6}\protected@file@percent }
 \bibcite{daw}{2}
 \bibcite{kolling}{3}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Current limits and next research steps}{20}{section.8}\protected@file@percent }
 \bibcite{essay}{4}
 \bibcite{briefing}{5}
 \bibcite{instructions}{6}
-\bibcite{bucinca}{7}
-\bibcite{wilson}{8}
-\bibcite{shacl}{9}
-\bibcite{rdf}{10}
-\bibcite{sparql}{11}
-\bibcite{dung}{12}
+\bibcite{handover}{7}
+\bibcite{pipeline}{8}
+\bibcite{bucinca}{9}
+\bibcite{wilson}{10}
+\bibcite{shacl}{11}
+\bibcite{rdf}{12}
+\bibcite{sparql}{13}
+\bibcite{dung}{14}

@@ -25,6 +25,12 @@ class EnvironmentRuntime(Protocol):
     def evaluator_state(self): ...
 
 
+class ReconsiderationVariants(Protocol):
+    """Optional researcher-side sensitivity extension; legacy adapters stay valid."""
+    RECENT_RECONSIDERATION: dict
+    def reconsider_recent(history, parameters, evaluation, intervention): ...
+
+
 def simulation_adapter(module):
     hook=getattr(module,'simulation_adapter',None)
     require(callable(hook),'Environment '+module.ID+' has no simulation adapter')
