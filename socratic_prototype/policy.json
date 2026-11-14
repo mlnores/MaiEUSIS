@@ -1,5 +1,5 @@
 {
-  "version": "policy-0.4",
+  "version": "policy-0.5",
   "window_trials": 12,
   "min_evidence": 6,
   "threshold": 0.38,

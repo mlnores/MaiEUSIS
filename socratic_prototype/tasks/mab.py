@@ -28,7 +28,7 @@ evidence_observation=common_observation
 
 def argumentation_documents():
     from ..argumentation import ROOT
-    return (ROOT/'schemes/mab.ttl',ROOT/'schemes/mab_recommendations.ttl')
+    return (ROOT/'schemes/mab.ttl',ROOT/'schemes/mab_recommendations.ttl',ROOT/'schemes/mab_comparisons.ttl')
 
 def project_argumentation_facts(writer,session,event,state,history):
     from .mab_arguments import project
@@ -248,6 +248,40 @@ def recommendation_message(recommendation):
 
 def intervention_focus(issue):
     return 'exploration' if issue in {'underexploration','unsampled_alternatives'} else 'value_revision'
+
+
+def select_comparisons(candidates, env, evaluation):
+    """Rank accepted comparison opportunities, without inventing a warrant."""
+    arms={a['arm']:a for a in env['arms']}
+    # Keep an observed reward anchor when supported, then informative alternatives.
+    sampled=sorted((c for c in candidates if 'plausible_reward' in c['criteria']),
+                   key=lambda c:(-arms[c['option_id']]['estimated_value'],c['option_id']))
+    chosen=sampled[:1]
+    best=max(a['estimated_value'] for a in env['arms'])
+    others=sorted((c for c in candidates if c not in chosen),key=lambda c:(
+        -max(0,arms[c['option_id']]['approximate_95_interval'][1]-best)/(1+arms[c['option_id']]['samples']),
+        -arms[c['option_id']]['estimated_value'],c['option_id']))
+    for c in (chosen+others)[:3]:
+        a=arms[c['option_id']]
+        c['details']={k:copy.deepcopy(a[k]) for k in ['samples','estimated_value','approximate_95_interval']}
+    return (chosen+others)[:3]
+
+
+def comparison_context(comparisons, evaluation):
+    parts=[]
+    for c in comparisons:
+        d=c['details'];n=d['samples'];lo,hi=d['approximate_95_interval']
+        if n==0:
+            evidence=f'no observed outcomes; prior-based uncertainty [{lo:g}, {hi:g}], not demonstrated reward'
+        else:
+            evidence=f'{n} observed outcomes, estimated mean {d["estimated_value"]:g}, approximate interval [{lo:g}, {hi:g}]'
+        purpose='potential information as well as plausible reward' if 'informative_uncertainty' in c['criteria'] else 'plausible reward under the estimate'
+        parts.append(f'{c["option_id"].upper()} (key {c["key"]}): {evidence}; worth examining for {purpose}')
+    return 'Alternatives to examine:\n'+ '\n'.join(parts)+'.\nReward estimates remain uncertain.'
+
+
+def comparison_evaluation(env):
+    return {'options':[{'id':a['arm'],'key':KEYS[a['arm']]} for a in env['arms']]}
 
 def browser_adapter():
     return {'help':'MAB outcome probabilities are hidden during choices and retained in separate evaluator logs.','script':'task-adapters/mab.js','title':'Multi-Armed Bandit (MAB)','start_id':'startMab','calibration_id':'mabCalibration'}

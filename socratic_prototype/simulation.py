@@ -17,7 +17,7 @@ from .tasks import get_task
 from .tasks.execution import simulation_adapter
 from .reconsideration import MECHANISMS, configuration as reconsideration_configuration
 
-VERSION='matched-simulation-0.4'
+VERSION='matched-simulation-0.5'
 
 
 def uniform(seed,*keys):

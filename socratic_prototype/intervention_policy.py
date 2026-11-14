@@ -29,7 +29,9 @@ def candidates(session,event,snapshot):
     from .participant_model import selection_cost
     cost=selection_cost(session['policy']['interruption_cost'],snapshot['participant'])
     from .recommendations import from_graph,message as recommendation_message
+    from .comparisons import from_graph as comparison_set,context as comparison_context
     recommendation=from_graph(session['task'],event,report) if not socratic and condition!='A' else None
+    comparisons=comparison_set(session['task'],event,snapshot) if socratic else []
     facts={a['id']:a for a in report['assertions']}
     nodes={a['id']:a for a in report['arguments']}
     hypotheses={CORE+h['claim_id']:h for h in snapshot['participant']['hypotheses'] if h.get('claim_id')}
@@ -71,10 +73,14 @@ def candidates(session,event,snapshot):
             action='advise';message_text=recommendation_message(session['task'],recommendation)
         else:message_text=message
         supports=[argument['id']]+([recommendation['argument_id']] if not socratic and recommendation else [])
+        comparison=[] if clarification else comparisons
+        supports+=sorted({a for c in comparison for a in c['argument_ids']})
+        opposition=sorted({a['attacker'] for a in report['attacks'] if a['target'] in supports or set(a['affected'])&set(supports)})
         result.append({'id':argument['id']+'/intervention','name':name,'action':action,'messages':[message_text],'claim_ids':evidence,
             'usefulness':usefulness,'score':round(usefulness-cost,6),
             'supporting_arguments':supports,'recommendation':recommendation if not socratic else None,'interruption_cost':cost,'opposing_arguments':opposition,
             'argument_evaluation':'unresolved-clarification' if clarification else 'accepted',
+            'comparisons':comparison,'comparison_context':comparison_context(session['task'],comparison,event),
             'hypothesis':hypothesis['name'] if hypothesis else None,'schedule':presentation['schedule'],
             'graph_scope':report['scope']})
     # Support is a communication fallback, not an inference from missing evidence.
@@ -103,7 +109,8 @@ def decide(session,event,snapshot,event_id):
         rationale=f'{selected["name"]}: graph warrant {selected["argument_evaluation"]}; provisional usefulness {selected["usefulness"]:.3f} minus interruption cost {selected['interruption_cost']:.3f}; score {selected["score"]:.3f} meets threshold {p["threshold"]:.3f}.'
     neutral=[next(c['id'] for c in snapshot['claims'] if c['id'].endswith('_'+name)) for name in ['context','unknown']]
     from .recommendations import structured
-    return {'intervention':structured(session['task'],session['condition'],selected) if active else None,'id':event_id+'_decision','action':selected['action'] if active else 'silence','rationale':rationale,
+    return {'task':session['task'],'intervention':structured(session['task'],session['condition'],selected) if active else None,'id':event_id+'_decision','action':selected['action'] if active else 'silence','rationale':rationale,
+        'comparison_context':selected['comparison_context'] if active else '',
         'claim_ids':selected['claim_ids'] if active else neutral,'message':None,'candidates':opportunities,
         'threshold':p['threshold'],'interruption_cost':selected['interruption_cost'] if selected else p['interruption_cost'],'cooldown':cooldown,
         'frequency_preference':session['preference'],'eligible_point':get_task(session['task']).ELIGIBLE_POINT,
@@ -122,9 +129,26 @@ def validate_decision(snapshot):
         require(report['status']=='complete' and candidate['graph_scope']==report['scope'],'Candidate uses an incomplete or stale graph')
         supports=candidate['supporting_arguments'];opponents=candidate['opposing_arguments']
         require(bool(supports) and set(supports+opponents)<=arguments.keys(),'Candidate lacks graph provenance')
+        comparison=candidate.get('comparisons',[])
+        comparison_ids={identifier for c in comparison for identifier in c['argument_ids']}
+        require(not comparison or (len(comparison)>=2 and candidate['recommendation'] is None),
+                'Socratic comparisons require multiple alternatives and no recommendation')
+        require(comparison_ids<=set(supports),'Comparison lacks selected graph proofs')
+        if comparison:
+            from .comparisons import from_graph,context
+            module=get_task(d['task'])
+            evaluation=module.comparison_evaluation(snapshot['environment'])
+            require(comparison==from_graph(d['task'],evaluation,snapshot),'Comparison differs from graph evidence')
+            require(candidate['comparison_context']==context(d['task'],comparison,evaluation),'Comparison text differs from evidence')
         for identifier in supports:
             argument=arguments[identifier];metadata=argument.get('intervention')
             if not metadata:
+                if identifier in comparison_ids:
+                    from .argumentation import ARG
+                    proposition=next(a for a in report['assertions'] if a['id']==argument['conclusion'])['proposition']
+                    require(argument['label']=='accepted' and proposition['predicate']==ARG+'worthComparingFor',
+                            'Comparison uses a rejected or unsupported warrant')
+                    continue
                 rec=candidate.get('recommendation')
                 require(rec is not None and identifier==rec['argument_id'] and argument['label']=='accepted',
                         'Candidate is not warranted by an intervention scheme or recommendation proof')
@@ -156,5 +180,8 @@ def validate_decision(snapshot):
             require(d['intervention']['recommendation']==selected.get('recommendation') and
                     d['intervention']['supporting_arguments']==selected['supporting_arguments'],
                     'Structured intervention differs from its selected proof')
+            require(d['intervention'].get('comparisons',[])==selected.get('comparisons',[]) and
+                    d.get('comparison_context','')==selected.get('comparison_context',''),
+                    'Delivered comparison differs from its selected proof')
         require(d['action']==selected['action'] and d['claim_ids']==selected['claim_ids'] and
                 d['hypothesis']==selected['hypothesis'],'Decision differs from selected graph candidate')

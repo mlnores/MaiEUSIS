@@ -111,6 +111,15 @@ specific option with a graph-supported comparison criterion and explanation;
 Socratic messages invite examination without prescribing an action. Both retain
 uncertainty and the participant's final choice. No personalisation bonus is used.
 
+Socratic D/F now provide [evidence-backed comparison guidance](docs/socratic_guidance.md):
+MAB identifies two or three supported alternatives with observed rewards and
+uncertainty; TBS compares SAFE/RISKY tradeoffs and final-trial attainment when
+applicable. Each alternative has accepted graph reasons. Comparison details stay
+visible alongside the question, with TBS offer details revealed only when its task
+choices appear. The synthetic response model reassesses these alternatives rather
+than directing exploration solely toward the least-sampled arms. These are new
+processing assumptions; the completed earlier pilot remains a historical baseline.
+
 The [personalisation and simulation guide](docs/simulation/README.md) describes
 the separate task actor, assistance-response model, assistant's participant model,
 graph reasoning and intervention policy, with a runnable matched five-condition
@@ -127,6 +136,44 @@ The [reconsideration sensitivity pilot](docs/simulation/reconsideration.md) now
 compares no strategic revision, the current heuristic and a recent-feedback rule
 under fixed response coefficients. Its development-16 full-protocol specification
 supports frozen inputs, checkpointed jobs, matched controls and paired analysis.
+
+### Current experimental status
+
+Status checked on **10 November 2026**: the first development-16 pilot is complete,
+with **48/48 jobs, 480 comparison sessions and 96 calibration sessions**. All 96
+cross-mechanism control checks and 64 no-revision checks passed. There is one
+repetition per individual, with responsiveness 0.5 and no added reactance,
+distraction or omission; individual baseline omission rates remain in force.
+
+Direct recommendations produced larger mean gains in this simulation. Socratic
+effects depended on the processing assumption: personalised MAB questions changed
+from +81.25 points under `current` to −156.25 under `recent`, relative to A.
+TBS produced identical personalised/non-personalised choice trajectories within
+each style. These are conditional synthetic outcomes, not established human
+effects. See the [completed pilot results](docs/simulation/reconsideration.md#completed-development-pilot)
+for the full comparison and limitations.
+
+The TBS personalisation audit has begun, but its full report remains pending.
+A [new guided pilot](docs/simulation/guidance-pilot.md) was launched on
+**11 November 2026** and completed on **13 November 2026**, retaining all three
+mechanisms and three matched repetitions per development individual: 144 jobs,
+1,440 comparisons and 288 calibrations. All 480 matched controls passed. A
+[separate final heatmap report](docs/simulation/guidance-pilot.md#final-heatmap-report)
+shows group/individual effects and personalisation contrasts. A separate
+[parallel process scheduler](docs/simulation/guidance-pilot.md#parallel-execution)
+can reuse the frozen run's completed jobs, execute four jobs concurrently, and
+prioritize a first matched repetition across all profiles. The
+[paper draft](paper_drafts/README.md) still reflects its 6 November cutoff and
+has not yet incorporated the completed full-pilot results.
+
+A [MAB-only receptiveness sensitivity experiment](docs/simulation/mab-receptiveness.md)
+completed on **14 November 2026** at 0.25/0.5/0.75, using one eight-worker
+process pool. It retains the development 16, three repetitions and all mechanisms;
+all 291 new jobs and 1,008 matched controls passed, including full-protocol bridge
+checks for the reused 0.5 MAB reference. Its report has heatmaps per receptiveness
+value and trends by archetype and overall, separate from the completed pilots.
+
+### Environment and interface integration
 
 Environment execution is modular too: each registered task owns its synthetic
 actor, private simulator, metrics, graph criterion and browser adapter. A study
@@ -600,6 +647,12 @@ short-horizon clarification, rejected warrants, actual objections in language
 packages, condition-filtered proof closure and unavailable/incomplete reasoning.
 RDF-dependent checks skip explicitly without RDFLib; a socket check can skip
 where binding is forbidden.
+
+Empirical checks cover source joins and missingness, the original MAB forward
+calculations, training/evaluation separation, frozen provenance, provisional TBS
+fits and actor exports. Reconsideration checks cover distinct processing targets,
+matched controls, private evaluator fields, deterministic replay, interrupted
+attempt preservation and exclusion of capped runs from full-protocol estimates.
 
 MAB/TBS task and inspector JavaScript contract tests passed, including fixed
 preparation timing and interpretation review. Complete short generated-mode

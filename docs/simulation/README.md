@@ -39,9 +39,39 @@ Generic means task-aware without a calibrated participant model.
   Socratic processing assumption. The [reconsideration pilot](reconsideration.md)
   holds response coefficients fixed while varying this mechanism, with frozen
   inputs, resumable jobs and matched outcome/control reports.
+- [Socratic comparison guidance](../socratic_guidance.md) supplies a graph-backed
+  set of alternatives to the human and to the separate synthetic processing
+  mechanism. Current actor/simulation versions are 0.5; execution adapters are
+  0.4. Earlier pilot results describe the preceding processing rules.
 - `simulation.py` runs the same individuals through the configured conditions, using
   common per-trial random streams for choices, option outcomes, task transitions,
   option pairs and targets. Condition/session IDs never enter those streams.
+
+The initial development-16 reconsideration pilot has completed all 48 jobs and
+480 comparison sessions, with all matched control checks passing. See the
+[completed results and follow-up status](reconsideration.md#completed-development-pilot)
+for the numerical comparison and missing TBS personalisation contrast. A
+[new guided pilot](guidance-pilot.md) completed all 144 jobs on 13 November 2026,
+with three matched repetitions, all three mechanisms and all 480 controls passing.
+The [final heatmap report](guidance-pilot.md#final-heatmap-report) contains group,
+individual and personalisation comparisons. The paper's
+6 November draft has not yet been
+updated with these full-protocol results.
+
+The [earlier pilot's original-profile analysis](reconsideration-profile-analysis.md)
+reports gains, harms, individual variation and personalisation contrasts for the
+four selected actors in each of the colleague's four groups. These remain
+one-repetition, conditional simulation results.
+
+The [parallel scheduler](guidance-pilot.md#parallel-execution) can run independent
+jobs in separate processes while preserving the frozen manifest and completed
+results. It reports a separate first-repetition preview without changing the
+primary requirement for all configured repetitions and mechanisms.
+
+The [MAB receptiveness sensitivity experiment](mab-receptiveness.md) compares
+0.25/0.5/0.75 using the same development actors, seeds and three mechanisms.
+It uses one eight-worker pool, MAB-only calibration, and a verified reuse of the
+completed 0.5 MAB reference. Its new results remain separate from both earlier pilots.
 
 The agent's latent task and response parameters are researcher/evaluator inputs.
 They are **not** supplied to the assistant. The assistant instead fits its ordinary
@@ -177,7 +207,7 @@ it is not participant-visible task evidence. Partial TBS scores include complete
 blocks only. Replications are repeated simulations of the same individuals, not
 additional independent human participants.
 
-The report records simulation/agent versions (currently 0.4), response-model
+The report records simulation/agent versions (currently 0.5), response-model
 version, and each execution adapter's version, source SHA-256 and metric
 definitions. This is distinct from a session's frozen task/ontology, graph,
 participant-model and policy descriptors. Replay checks the recorded public
@@ -193,7 +223,7 @@ Sensitivity scenarios do not validate human causal effects or establish a
 winning assistance style. The supplied sample cannot substantiate empirical
 claims about the 62-person cohort.
 
-Policy 0.4 and argumentation 0.3 change runtime semantics. Restart the server and
+Policy 0.5 and argumentation 0.4 change runtime semantics. Restart the server and
 create new comparison sessions. Completed calibrations can still be selected when
 their numerical model and task-module versions match. Existing traces, including
 condition B, remain readable/exportable; deterministic replay of an earlier configuration requires

@@ -2,7 +2,7 @@
 // Execute the real UI scripts with a controllable clock and delayed API responses.
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 function harness(task){
- let now=0,timer=0,scheduled=[],late=null,nextAction='ask',failResponses=0;const requests=[],listeners=new Map(),elements=new Map();
+ let now=0,timer=0,scheduled=[],late=null,nextAction='ask',failResponses=0,comparison='';const requests=[],listeners=new Map(),elements=new Map();
  class Element{
   constructor(){this.value='';this.textContent='';this.dataset={};this.children=[];this.options=[];this.html='';
    const classes=new Set();this.classList={add:(...xs)=>xs.forEach(x=>classes.add(x)),remove:(...xs)=>xs.forEach(x=>classes.delete(x)),contains:x=>classes.has(x),toggle:(x,on)=>{if(on===undefined)on=!classes.has(x);on?classes.add(x):classes.delete(x);}};}
@@ -22,7 +22,8 @@ function harness(task){
    if(body?.kind==='response'&&failResponses>0){failResponses--;return {ok:false,json:async()=>({error:'Simulated network failure'})};}
    let data=[];
    if(body?.kind==='evaluation'){
-    const action=nextAction,decision={id:body.trial_id+'_decision',action,message:action==='silence'?null:'What supports this choice?',hypothesis:null,language:{generation_ms:5}};
+    const action=nextAction,decision={id:body.trial_id+'_decision',action,message:action==='silence'?null:'What supports this choice?',hypothesis:null,language:{generation_ms:5},comparison_context:comparison,
+      intervention:{comparisons:[{option_id:'safe'},{option_id:'risky'}]}};
     if(late)await late;
     data={record:{id:body.trial_id+'_event',snapshot:{decision}}};
    }else if(body)data={record:{input:body}};
@@ -34,9 +35,21 @@ function harness(task){
  async function advance(ms){const target=now+ms;await flush();while(true){scheduled.sort((a,b)=>a.at-b.at||a.id-b.id);const next=scheduled[0];if(!next||next.at>target)break;scheduled.shift();now=next.at;next.fn();await flush();}now=target;await flush();}
  function trial(index){run(`activeTrial=createTrial({global_trial:${index},trial:${index},block:1,score_before:0,score_after:0,points_before:0,points_after:0,target:595,remaining_trials_including_current:${9-index},multiplier:1.1,selected_option:session.task==='MAB'?'blue1':null,chosen_option:session.task==='TBS'?'safe':null,outcome:0,earned_points:0,response_time_ms:100,available_options:session.task==='MAB'?baseArms.map(([id,color,key,shade,probs,outcomes])=>({id,key,outcomes})):[{option_id:'safe',key:'1',amount:100,probability:.9},{option_id:'risky',key:'9',amount:265,probability:.35}]});`);}
  run(`newSession('${task}');alive=true;runId=1;session.teammate_configuration={policy:{preparation_ms:4000}};session.teammate_events=[];teammate.id=session.id;`);trial(1);
- return {run,by,advance,trial,requests,failNextResponse:()=>failResponses++,setAction:a=>nextAction=a,delay:()=>{let release;late=new Promise(r=>release=r);return ()=>{release();late=null;};},key:(key,tag='BODY')=>document.dispatchEvent({type:'keydown',key,target:{tagName:tag},preventDefault(){}})};
+ return {run,by,advance,trial,requests,setComparison:text=>comparison=text,failNextResponse:()=>failResponses++,setAction:a=>nextAction=a,delay:()=>{let release;late=new Promise(r=>release=r);return ()=>{release();late=null;};},key:(key,tag='BODY')=>document.dispatchEvent({type:'keydown',key,target:{tagName:tag},preventDefault(){}})};
 }
 (async()=>{
+ for(const task of ['MAB','TBS']){
+  const h=harness(task);h.setComparison('SAFE: 145 points at 75%; RISKY: 245 points at 35%.');
+  const preparation=h.run('teammatePreparation(activeTrial,runId)');await h.advance(2000);
+  assert.equal(h.by('teammateComparison').classList.contains('hidden'),task==='TBS');
+  if(task==='TBS')assert.equal(h.by('teammateComparison').textContent,'','Upcoming offers must not leak during preparation');
+  await h.advance(2032);await preparation;
+  h.run("phase('eval')");
+  assert.match(h.by('teammateComparison').textContent,/145 points/);
+  assert.equal(h.by('teammateComparison').classList.contains('hidden'),false);
+  await h.run('teammateFeedback(activeTrial)');
+  assert.match(h.by('teammateComparison').textContent,/145 points/,'The dimmed comparison remains readable');
+ }
  for(const task of ['MAB','TBS']){
   const h=harness(task),panel=h.by('teammatePanel');
   h.run('renderReplies()');

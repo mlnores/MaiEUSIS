@@ -107,12 +107,28 @@ function teammateState(state,decision=null){
   by('teammateContext').textContent=state==='active'?'Current intervention · trial '+p.trial.global_trial:
     teammate.visibleMessage?'Previous intervention · trial '+teammate.visibleMessage.trial.global_trial+' · no active intervention.':
     state==='pending'?'Choices open after preparation.':'No active intervention.';
+  renderComparisons();
   renderReplies();
+}
+function renderComparisons(){
+  const message=teammate.visibleMessage,element=by('teammateComparison');
+  const visible=!!message?.comparisonContext&&(browserTask(message.task).comparisonDuringPreparation===true||message.p.optionsVisible);
+  element.classList.toggle('hidden',!visible);element.textContent=visible?message.comparisonContext:'';
+  if(visible&&message.comparisonShownAt===null){
+    message.comparisonShownAt=clock();
+    logEvent('INTERVENTION_COMPARISON_DISPLAY',{...presentationContext(message),decision_id:message.decision_id,
+      option_ids:message.optionIds,presentation:'graph-grounded-comparison'});
+  }
+}
+function teammateChoicesVisible(){
+  if(teammate.presentation)teammate.presentation.optionsVisible=true;
+  renderComparisons();
 }
 function endMessageVisibility(reason){
   const message=teammate.visibleMessage;if(!message)return;
   logEvent('INTERVENTION_VISIBILITY_END',{...presentationContext(message),decision_id:message.decision_id,
-    visible_ms:clock()-message.shownAt,active_exposure_ms:(message.activeEndedAt??clock())-message.shownAt,reason});
+    visible_ms:clock()-message.shownAt,active_exposure_ms:(message.activeEndedAt??clock())-message.shownAt,
+    comparison_visible_ms:message.comparisonShownAt===null?0:clock()-message.comparisonShownAt,reason});
   teammate.visibleMessage=null;
 }
 function currentReply(){return teammate.replies.get(teammate.replyTarget);}
@@ -197,7 +213,9 @@ async function teammatePreparation(t,token){
       if(d.action==='silence')teammateState('silent');
       else{
         endMessageVisibility('replaced');p.shownAt=clock();
-        teammate.visibleMessage={trial:t,decision_id:d.id,message:d.message,shownAt:p.shownAt,activeEndedAt:null};
+        teammate.visibleMessage={trial:t,decision_id:d.id,message:d.message,shownAt:p.shownAt,activeEndedAt:null,
+          task:session.task,p,comparisonContext:d.comparison_context||'',comparisonShownAt:null,
+          optionIds:(d.intervention?.comparisons||[]).map(c=>c.option_id)};
         addReply(p,d);teammateState('active',d);logEvent('INTERVENTION_DISPLAY',{decision_id:d.id,action:d.action,presentation:'persistent-trial'});
       }
     }else if(!p.closed){

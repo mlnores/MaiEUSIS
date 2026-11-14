@@ -36,6 +36,11 @@ function render(){
  }else if(current.uses_synthetic_calibration)paragraph(root,'This session uses synthetic calibration profiles. Its subsequent participant choices are recorded separately.','notice small');
  if(d){
   root.append(node('h3','Policy decision · '+d.action));paragraph(root,d.message||'No message generated.');paragraph(root,d.rationale);
+  if(d.comparison_context){
+   root.append(node('h3','Alternatives shown for comparison'),node('pre',d.comparison_context));
+   if(d.intervention?.comparisons?.length)table(root,['Option','Key','Comparison grounds','Graph proofs'],
+    d.intervention.comparisons.map(c=>[c.option_id,c.key,c.criteria.join(', '),c.argument_ids.length]));
+  }
   if(d.intervention)details(root,'Structured intervention and recommendation criterion',d.intervention);
   const exposure=current.events.find(x=>x.input.kind==='delivery'&&x.input.decision_id===d.id);
   paragraph(root,exposure?`Delivered: ${exposure.input.delivered?'yes':'no'} · generation latency ${exposure.input.generation_latency_ms.toFixed(1)} ms · reading exposure ${exposure.input.reading_exposure_ms.toFixed(1)} ms · early attempts ${exposure.input.early_attempts}`:'Delivery acknowledgement not yet recorded.','small muted');

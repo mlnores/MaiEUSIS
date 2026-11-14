@@ -48,6 +48,13 @@ class ArgumentationFacts(Protocol):
     def project_argumentation_facts(self,writer,session,event,state,history): ...
 
 
+class ComparisonGuidance(Protocol):
+    """Optional deliberation guidance, separate from recommendations and actors."""
+    def select_comparisons(self,candidates,environment,evaluation): ...
+    def comparison_context(self,comparisons,evaluation): ...
+    def comparison_evaluation(self,environment): ...
+
+
 class ExecutionExtensions(Protocol):
     """Optional full execution hooks; independent of the public-record contract."""
     def simulation_adapter(self): ...  # tasks.execution.SimulationAdapter

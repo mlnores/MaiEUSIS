@@ -1,13 +1,14 @@
 """MAB actor and simulator implementation, owned by the MAB task module."""
 import copy
+import math
 import hashlib
 from pathlib import Path
 from ..records import fields,require,number
 from .mab import ARMS,KEYS,PROTOCOLS,rl,softmax,mab_environment
 from .execution import normalise,describe_adapter
 
-VERSION='mab-execution-0.3'
-RECENT_RECONSIDERATION={'window_elapsed_trials':6,'rule':'Apply the existing issue-specific heuristic to only the last six elapsed trials. Misses consume memory positions but supply no outcome evidence.'}
+VERSION='mab-execution-0.4'
+RECENT_RECONSIDERATION={'window_elapsed_trials':6,'rule':'Reassess the delivered graph-grounded comparison set using only the last six elapsed trials. Misses consume memory positions but supply no outcome evidence. Legacy interventions without comparison fields retain the earlier heuristic.'}
 METRICS={'score':{'direction':'maximize','unit':'reward-points'}}
 INITIAL=[[.7,.2,.1],[.5,.3,.2],[.34,.33,.33],[.5,.3,.2],[.34,.33,.33],[.7,.2,.1]]
 
@@ -30,6 +31,21 @@ def baseline(history,p,ev):
 
 def reconsider(history,p,ev,intervention):
     env=mab_environment(history,.15)
+    if 'comparisons' in intervention:
+        alternatives=intervention['comparisons']
+        if len(alternatives)<2:return baseline(history,p,ev)
+        ids={c['option_id'] for c in alternatives}
+        require(len(ids)==len(alternatives) and ids<=set(ARMS),'Invalid MAB comparison alternatives')
+        selected=[a for a in env['arms'] if a['arm'] in ids]
+        if intervention['focus']=='exploration':
+            floor=max(a['approximate_95_interval'][0] for a in env['arms'])
+            values={a['arm']:max(0,a['estimated_value']-floor)+
+                    (a['approximate_95_interval'][1]-a['approximate_95_interval'][0])/(1+a['samples'])+1e-9 for a in selected}
+        else:
+            logits={a['arm']:p['beta']*a['estimated_value']/p.get('reward_scale',200) for a in selected}
+            top=max(logits.values());values={a:math.exp(v-top) for a,v in logits.items()}
+        probabilities=normalise(values)
+        return {a:probabilities.get(a,0.) for a in ARMS}
     if intervention['focus']=='exploration':return normalise({a['arm']:1/(1+a['samples']) for a in env['arms']})
     return softmax({a['arm']:a['estimated_value']/p.get('reward_scale',200) for a in env['arms']},p['beta'])
 

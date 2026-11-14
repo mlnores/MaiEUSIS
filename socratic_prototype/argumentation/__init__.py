@@ -4,7 +4,7 @@ from pathlib import Path
 from ..semantics import CORE,DATA
 
 ARG=CORE+'argumentation/'
-VERSION='argumentation-0.3'
+VERSION='argumentation-0.4'
 ROOT=Path(__file__).parent
 LIMITS={'max_rounds':6,'max_arguments':256,'max_assertions':512,'max_matches':1024}
 
@@ -15,6 +15,7 @@ def documents(module):
 
 
 def configuration(module):
+    from ..comparisons import configuration as comparison_configuration
     try:
         import rdflib
         backend='rdflib-sparql';backend_version=rdflib.__version__
@@ -22,7 +23,8 @@ def configuration(module):
         backend='unavailable';backend_version=None
     return {'version':VERSION,'mode':'live','semantics':'grounded','backend':backend,
             'backend_version':backend_version,'limits':dict(LIMITS),
-            'documents':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in documents(module)}}
+            'documents':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in documents(module)},
+            'comparison_guidance':comparison_configuration(module)}
 
 
 def analyse(session,event):

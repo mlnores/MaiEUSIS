@@ -1,0 +1,31 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix tbs: <https://example.org/socratic/tbs/> .
+
+tbs:displayComparison a arg:Scheme ; arg:version "argumentation-0.4" ; arg:ruleKind "strict" ;
+ arg:premiseVariables "p1 p2 p3" ; arg:subjectVariable "option" ;
+ arg:conclusionPredicate arg:worthComparingFor ; arg:conclusionObject "displayed_tradeoff" ; arg:polarity "positive" ;
+ arg:reason "The displayed gain, win probability and calculated immediate expected gain permit comparing this option. Expected gain does not determine future target attainment." ;
+ arg:criticalQuestion "How does the gain/probability tradeoff fit the target gap and remaining choices?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+SELECT DISTINCT ?p1 ?p2 ?p3 ?option WHERE {
+ ?calculation a tbs:ExpectedGainCalculation ; task:forOption ?option .
+ { SELECT ?p1 ?state ?option ?gain WHERE { ?p1 a arg:Assertion ; arg:scope ?state ; arg:subject ?option ; arg:predicate tbs:displayedGain ; arg:object ?gain ; arg:polarity "positive" . } }
+ { SELECT ?p2 ?state ?option ?probability WHERE { ?p2 a arg:Assertion ; arg:scope ?state ; arg:subject ?option ; arg:predicate tbs:displayedWinProbability ; arg:object ?probability ; arg:polarity "positive" . } }
+ { SELECT ?p3 ?state ?calculation ?expected WHERE { ?p3 a arg:Assertion ; arg:scope ?state ; arg:subject ?calculation ; arg:predicate task:value ; arg:object ?expected ; arg:polarity "positive" . } }
+}
+""" .
+
+tbs:finalComparison a arg:Scheme ; arg:version "argumentation-0.4" ; arg:ruleKind "strict" ;
+ arg:premiseVariables "p" ; arg:subjectVariable "option" ;
+ arg:conclusionPredicate arg:worthComparingFor ; arg:conclusionObject "final_attainment" ; arg:polarity "positive" ;
+ arg:reason "The final-choice attainment calculation permits comparing reaching the target after a win or no gain, including the conditional multiplier. A zero chance remains relevant evidence, not a reason to invent feasibility." ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX tbs: <https://example.org/socratic/tbs/>
+SELECT DISTINCT ?p ?option WHERE {
+ ?calculation a tbs:AttainmentCalculation ; task:forOption ?option .
+ { SELECT ?p ?state ?calculation ?chance WHERE { ?p a arg:Assertion ; arg:scope ?state ; arg:subject ?calculation ; arg:predicate task:value ; arg:object ?chance ; arg:polarity "positive" . } }
+}
+""" .

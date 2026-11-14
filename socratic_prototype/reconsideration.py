@@ -2,7 +2,7 @@
 from .records import require
 from .tasks.execution import simulation_adapter, validate_distribution
 
-VERSION = 'reconsideration-0.1'
+VERSION = 'reconsideration-0.2'
 MECHANISMS = ('none', 'current', 'recent')
 
 
@@ -25,7 +25,7 @@ def configuration(module, mechanism):
 
 def target(module, mechanism, history, parameters, evaluation, intervention, baseline):
     configuration(module, mechanism)
-    if mechanism == 'none':
+    if mechanism == 'none' or ('comparisons' in intervention and len(intervention['comparisons']) < 2):
         result = dict(baseline)
     else:
         adapter = simulation_adapter(module)

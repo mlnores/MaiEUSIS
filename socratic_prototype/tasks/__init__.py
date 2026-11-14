@@ -16,6 +16,9 @@ def register_task(module):
     require(all(callable(getattr(module,name,None)) for name in _METHODS),'Task does not implement the task contract')
     for name in ['argumentation_documents','project_argumentation_facts','simulation_adapter','recommendation_message','intervention_focus','browser_adapter']:
         require(not hasattr(module,name) or callable(getattr(module,name)),'Invalid optional task hook: '+name)
+    comparison_hooks=('select_comparisons','comparison_context','comparison_evaluation')
+    if any(hasattr(module,name) for name in comparison_hooks):
+        require(all(callable(getattr(module,name,None)) for name in comparison_hooks),'Incomplete comparison guidance hooks')
     require(bool(module.PROTOCOLS) and all(isinstance(k,str) and type(v) is int and v>0 for k,v in module.PROTOCOLS.items()),'Invalid task protocols')
     _TASKS[module.ID]=module
 

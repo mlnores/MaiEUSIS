@@ -7,7 +7,7 @@ from ..records import fields,require,number
 from .tbs import RULES,PROTOCOLS
 from .execution import normalise,describe_adapter
 
-VERSION='tbs-execution-0.3'
+VERSION='tbs-execution-0.4'
 RECENT_RECONSIDERATION={'window_elapsed_trials':6,'displayed_probability_pseudocount':4,
     'rule':'Perceived chance=(4*displayed chance+recent wins)/(4+recent known responses of that option). Use only the current block and last six elapsed trials, transferring safe/risky feedback across changing offers. Apply the existing goal/horizon heuristic to perceived chances.'}
 METRICS={'score':{'direction':'maximize','unit':'multiplied-points'},'targets_attained':{'direction':'maximize','unit':'blocks'}}
@@ -30,6 +30,12 @@ def baseline(history,p,ev):
     z=max(-50,min(50,p['intercept']+p['slope']*x));r=1/(1+math.exp(-z));return {'safe':1-r,'risky':r}
 
 def reconsider(history,p,ev,intervention):
+    if 'comparisons' in intervention:
+        ids={c['option_id'] for c in intervention['comparisons']}
+        if len(ids)<2:return baseline(history,p,ev)
+        require(ids=={o['id'] for o in ev['options']},'Invalid TBS comparison alternatives')
+        if intervention.get('issue')=='expected_value_limit' and ev['remaining']>1:
+            return normalise({o['id']:o['probability']*o['amount'] for o in ev['options']})
     if ev['remaining']==1:
         values={o['id']:o['probability']*float((ev['points']+o['amount'])*ev['multiplier']>=ev['target'])+
             (1-o['probability'])*float(ev['points']>=ev['target']) for o in ev['options']}

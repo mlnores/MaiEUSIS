@@ -6,15 +6,23 @@ These mechanisms are authored assumptions. The actor processes a structured issu
 not the natural-language meaning of the displayed question. No mechanism is chosen
 because it improves scores or makes Socratic assistance look better.
 
+**11 November implementation update:** new interventions use
+[evidence-backed comparison sets](../socratic_guidance.md), with execution
+adapters 0.4. `current` and `recent` now reassess those delivered alternatives;
+MAB exploration combines reward plausibility and uncertainty. The completed
+initial pilot below used adapters 0.3 and the earlier rules documented in this
+section. Its frozen results are unchanged and do not evaluate the new guidance.
+An additional run must use a new output directory and recorded configuration.
+
 ## Three retained mechanisms
 
 | CLI name | Processing assumption |
 | --- | --- |
 | `none` | Retain the baseline preference. Baseline learning continues. There is no strategic revision or directional reactance; distraction and omission costs still apply. |
-| `current` | Use the existing task-owned reconsideration heuristic, unchanged. This remains the ordinary simulator default. |
+| `current` | Use the task-owned reconsideration heuristic; new interventions reassess the graph-backed comparison set. This remains the ordinary simulator default. |
 | `recent` | Emphasise a fixed recent window of six **elapsed** trials. Missed trials consume window positions but do not become outcome evidence. |
 
-In MAB, `current` weights exploration towards less-sampled arms for exploration
+In the initial pilot's MAB implementation, `current` weighted exploration towards less-sampled arms for exploration
 questions, and otherwise uses the existing public-outcome value heuristic.
 `recent` applies the same issue-specific rule to just the six-trial window.
 It changes the evidence considered rather than multiplying responsiveness.
@@ -84,6 +92,97 @@ one participant, mechanism and repetition. Calibration is regenerated within a
 job using matching streams, so its numerical trajectories match across mechanisms.
 The repeated stored calibrations are not additional people. A new repetition
 draws a new calibration and comparison history; experience resets between conditions.
+
+## Completed development pilot
+
+Status verified on **10 November 2026**. The initial full-protocol run completed
+all **48 jobs, 480 comparison sessions and 96 calibration sessions** for the 16
+development individuals, four per original profile. All 96 A/C/E cross-mechanism
+trajectory/distribution checks and 64 `none` D/F-versus-A checks passed. Completed
+job summaries and full evaluator reports passed their recorded integrity checks;
+all 120 overall/profile aggregate means and worse-than-A counts were independently
+checked against the job summaries. The interrupted job's completed second attempt
+enters analysis; its preserved partial first attempt does not.
+
+Mean unassisted performance was 8,687.5 MAB points and 66.67% of TBS targets
+attained. The following are mean paired changes from A. TBS changes are
+**percentage points**, not relative percentages; MAB and TBS units are not pooled.
+
+| Condition | MAB `current` (points) | MAB `recent` (points) | TBS `current` (percentage points) | TBS `recent` (percentage points) |
+| --- | ---: | ---: | ---: | ---: |
+| C: task-aware direct recommendations | +956.25 | +956.25 | +4.43 | +4.43 |
+| E: personalised direct recommendations | +1,275.00 | +1,275.00 | +4.43 | +4.43 |
+| D: task-aware Socratic questions | +350.00 | +231.25 | +0.52 | +0.52 |
+| F: personalised Socratic questions | +81.25 | −156.25 | +0.52 | +0.52 |
+
+With `none`, D/F matched A exactly in both tasks. C/E were invariant across all
+three mechanisms. Holding response coefficients equal therefore did not force
+the two assistance styles to have the same results.
+
+Individual differences and the mechanism contrast matter:
+
+- Personalised direct recommendations increased MAB scores for 14 individuals
+  and reduced them for two. Personalised Socratic questions reduced MAB scores
+  for nine individuals under `current`, and eight under `recent`.
+- Switching between `current` and `recent` reversed the sign of the MAB effect
+  for five individuals in D and five in F. The F cohort mean also changed sign.
+- In TBS, C/E had identical intervention timings, issues, choice distributions
+  and choice/outcome trajectories for all 16 individuals; the same held for D/F
+  within each mechanism. This run does not provide an effective behavioural
+  contrast for TBS personalisation.
+- Equal TBS cohort means under `current` and `recent` conceal differences:
+  Socratic choice distributions differed for all 16 individuals, trajectories
+  differed for nine, and target-attainment totals differed for four in each of
+  D/F. The differences cancelled in the cohort mean.
+
+These results are descriptive simulations under authored response assumptions.
+There is only one repetition per individual, so Monte Carlo standard errors are
+unavailable. The development set is deliberately selected and profile-balanced;
+480 sessions are not 480 independent participants. Historical TBS offers remain
+unknown, and the provisional TBS actor's held-out prediction was worse than the
+simple choice-frequency baseline on average. This pilot does not validate human
+assistance effects or identify a winning communication style.
+
+The [original-profile breakdown](reconsideration-profile-analysis.md), checked on
+12 November, separates the four profile groups and reports individual harms,
+personalisation contrasts and processing sensitivity. Each group has four
+selected actors and one repetition. In MAB, E improved all MAB-specialised and
+Dual-regime actors, whereas D/recent had the largest Low-expression group mean
+and improved all four there. The same recent Socratic variants harmed three of
+four MAB-specialised actors. These are exploratory conditional patterns, not
+validated human profile effects or a basis for selecting a favourable mechanism.
+
+The local frozen outputs are in
+`socratic_prototype/data/reconsideration_pilot_20261106/`: `manifest.json`,
+`participants.json`, `status.json`, `analysis.json`, `analysis.md` and per-job
+evaluator reports/session databases. Generated private data are ignored by Git;
+the tracked configuration and this summary remain available in a repository clone.
+Reproduction requires the actor export, its source/provenance and the frozen
+software/dependency versions.
+
+### Follow-up status
+
+The requested TBS personalisation audit is in progress. Initial trace inspection
+found accepted personalised `constraint_neglect` candidates that lost selection
+to higher-scoring task-level candidates. For example, a trial with two choices
+remaining scored `shrinking_horizon` at 0.660 and `constraint_neglect` at 0.554.
+This is a diagnostic observation, not a completed audit of every decision or a
+reason to force personalised interventions to win. The simulator also generates
+no explicit participant replies, leaving reported-burden adaptation without new
+self-report evidence.
+
+The full audit and additional matched repetitions are **pending**; no follow-up
+runner has been launched as of the status check above. All three mechanisms
+(`none`, `current`, `recent`) are retained. The completed pilot and its manifest
+remain unchanged. Any revised experimental configuration must use a separate
+output directory; additional repetitions must not be presented as new people.
+
+**11 November update:** the [new guided pilot](guidance-pilot.md) has now launched
+in `guidance_pilot_20261111`, with three matched repetitions and all three
+mechanisms. It evaluates the updated guidance rather than appending new results
+to the original manifest. The full TBS personalisation audit remains pending.
+
+## Starting or resuming a pilot
 
 Freeze and inspect the specification without starting the long run:
 

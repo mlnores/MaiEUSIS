@@ -65,6 +65,14 @@ function find(root,predicate){if(predicate(root))return root;for(const child of 
  await elements.get('refresh').click();
  assert.ok(find(root,e=>e.textContent==='Graph argumentation · intervention source'));
  assert.ok(find(root,e=>e.tagName==='SUMMARY'&&e.textContent==='Selected proof and objection links'));
+ source.events[0].snapshot.decision.comparison_context='BLUE1: observed reward; RED2: prior-based uncertainty.';
+ source.events[0].snapshot.decision.intervention={comparisons:[
+  {option_id:'blue1',key:'8',criteria:['plausible_reward'],argument_ids:['argument1']},
+  {option_id:'red2',key:'7',criteria:['informative_uncertainty'],argument_ids:['argument2']}]};
+ await elements.get('refresh').click();
+ assert.ok(find(root,e=>e.textContent==='Alternatives shown for comparison'));
+ assert.ok(find(root,e=>e.tagName==='PRE'&&e.textContent.includes('prior-based uncertainty')));
+ assert.ok(find(root,e=>e.tagName==='TD'&&e.textContent==='informative_uncertainty'));
  source.synthetic_profile={description:'Scripted broad sampling.',version:'fixture'};
  await elements.get('refresh').click();
  assert.ok(find(root,e=>e.textContent==='Synthetic calibration fixture · Scripted broad sampling.'));

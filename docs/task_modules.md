@@ -130,6 +130,14 @@ byte-identical Turtle output.
    recommendation validator can check identity. `intervention_focus(issue)` maps
    the task's issue names to its reconsideration categories. The shared policy
    continues to decide whether and when to deliver accepted arguments.
+   Optional Socratic comparison guidance adds accepted `arg:worthComparingFor`
+   propositions and all three `ComparisonGuidance` hooks: `select_comparisons`,
+   `comparison_context`, and `comparison_evaluation`. Task-owned hooks rank and
+   describe at least two supported alternatives; shared delivery validation
+   reconstructs them from current graph evidence. See the
+   [guidance contract and processing rules](socratic_guidance.md). Browser adapters
+   can set `comparisonDuringPreparation: true` for evidence already available
+   before choices; otherwise details are revealed at evaluation onset.
 6. For simulation, provide `simulation_adapter()` returning an adapter with:
    `validate_actor(parameters)`, `baseline(history, parameters, evaluation)`,
    `reconsider(history, parameters, evaluation, intervention)`,

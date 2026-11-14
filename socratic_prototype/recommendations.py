@@ -2,7 +2,7 @@
 from .argumentation import ARG
 from .tasks import get_task
 
-VERSION='structured-intervention-0.1'
+VERSION='structured-intervention-0.2'
 
 
 def from_graph(task,evaluation,report):
@@ -29,8 +29,11 @@ def structured(task,condition,candidate):
     issue=candidate['name']
     hook=getattr(get_task(task),'intervention_focus',None)
     focus=hook(issue) if hook else 'evidence_review'
-    return {'version':VERSION,'task':task,'style':style,'personalised':CONDITIONS[condition]['personalised'],
+    result={'version':VERSION,'task':task,'style':style,'personalised':CONDITIONS[condition]['personalised'],
             'issue':issue,'focus':focus,'recommendation':candidate.get('recommendation'),
             'supporting_arguments':list(candidate['supporting_arguments']),
             'opposing_arguments':list(candidate['opposing_arguments']),
             'limits':['Interpretations remain provisional.','The participant retains the final choice.']}
+    if callable(getattr(get_task(task),'select_comparisons',None)):
+        result['comparisons']=candidate.get('comparisons',[])
+    return result

@@ -14,6 +14,7 @@ if(!alive||token!==runId)return;content('<div class="big">+</div>');await nextPa
 registerBrowserTask('MAB',{
  title:'Multi-Armed Bandit (MAB)',startId:'startMab',calibrationId:'mabCalibration',run:runMAB,
  configureProtocol:protocol=>{configs.MAB.stable_trials=protocol==='full'?50:10;configs.MAB.volatile_trials=protocol==='full'?150:30;},
+ comparisonDuringPreparation:true,
  prepare:()=>content('<div class="big">+</div>'),responseScope:()=>({}),
  evaluation:(t,base)=>({...base,score:t.score_before,options:t.available_options.map(o=>({id:o.id,key:o.key,outcomes:o.outcomes}))}),
  feedback:(t,base)=>({...base,timed_out:t.selected_option==='NO_RESPONSE',choice:t.selected_option,outcome:t.outcome,score_after:t.score_after})

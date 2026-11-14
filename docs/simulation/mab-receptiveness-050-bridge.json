@@ -1,0 +1,49 @@
+{
+  "id": "mab-receptiveness-050-bridge-v1",
+  "participants_file": "../../socratic_prototype/data/empirical_20261105_v2/participants.development.json",
+  "expected_participants": 1,
+  "cohort_split": "development",
+  "expected_profiles": {
+    "TBS-specialised": 1
+  },
+  "source_ids": [
+    "E004"
+  ],
+  "study": {
+    "id": "mab-receptiveness-full",
+    "tasks": {
+      "MAB": {
+        "protocol": "full",
+        "calibration_tasks": [
+          "MAB"
+        ]
+      }
+    },
+    "conditions": [
+      "A",
+      "C",
+      "E",
+      "D",
+      "F"
+    ]
+  },
+  "mechanisms": [
+    "none",
+    "current",
+    "recent"
+  ],
+  "response_parameters": {
+    "responsiveness": 0.5,
+    "reactance": 0,
+    "distraction": 0,
+    "omission_probability": 0
+  },
+  "seed": "reconsideration-development16-v1",
+  "repeats": 1,
+  "primary_outcomes": {
+    "MAB": {
+      "metric": "score",
+      "divisor": 1
+    }
+  }
+}

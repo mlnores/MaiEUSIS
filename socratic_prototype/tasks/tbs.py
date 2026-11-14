@@ -28,7 +28,7 @@ evidence_observation=common_observation
 
 def argumentation_documents():
     from ..argumentation import ROOT
-    return (ROOT/'schemes/tbs.ttl',ROOT/'schemes/tbs_recommendations.ttl')
+    return (ROOT/'schemes/tbs.ttl',ROOT/'schemes/tbs_recommendations.ttl',ROOT/'schemes/tbs_comparisons.ttl')
 
 def project_argumentation_facts(w,session,event,state,history):
     if history and history[-1].get('block')==event['input']['block']:
@@ -232,6 +232,31 @@ def recommendation_message(recommendation):
 
 def intervention_focus(issue):
     return 'target_attainment' if issue in {'final_multiplier','criteria_divergence'} else 'target_pressure'
+
+
+def select_comparisons(candidates, env, evaluation):
+    options={o['id']:o for o in env['options']}
+    for c in candidates:
+        c['details']={k:copy.deepcopy(options[c['option_id']][k]) for k in
+                      ['amount','probability','expected_value','final_trial_target_probability']}
+    return sorted(candidates,key=lambda c:c['option_id']!='safe')
+
+
+def comparison_context(comparisons, evaluation):
+    parts=[]
+    for c in comparisons:
+        d=c['details']
+        text=f'{c["option_id"].upper()} (key {c["key"]}): {d["amount"]:g} points at {100*d["probability"]:g}%, immediate expected gain {d["expected_value"]:g}'
+        if d['final_trial_target_probability'] is not None:
+            text+=f', final target-attainment chance {100*d["final_trial_target_probability"]:g}%'
+        parts.append(text)
+    return 'Compare:\n'+ '\n'.join(parts)+f'.\nTarget gap {evaluation["target"]-evaluation["points"]:g}; {evaluation["remaining"]} choices remain. '+(
+        'Final attainment includes the multiplier only after a win.' if evaluation['remaining']==1 else
+        'Immediate expected gain does not determine success over the remaining choices.')
+
+
+def comparison_evaluation(env):
+    return {'options':env['options'],'target':env['target_gap'],'points':0,'remaining':env['remaining']}
 
 def browser_adapter():
     return {'help':'TBS probabilities and possible gains are displayed. The final multiplier applies only after a final-trial win.','script':'task-adapters/tbs.js','title':'Target-Based Sequential (TBS)','start_id':'startTbs','calibration_id':'tbsCalibration'}

@@ -1,6 +1,6 @@
 # Graph argumentation and intervention policy
 
-New sessions use `argumentation-0.3` in live mode with `policy-0.4`. Graph
+New sessions use `argumentation-0.4` in live mode with `policy-0.5`. Graph
 argumentation is the single source of substantive reasons and objections. There
 is no independent Python candidate-trigger mechanism. The engine computes models
 and annotated claims, discovers and validates the graph, maps proof-backed
@@ -110,6 +110,14 @@ recreate behavioural triggers.
   questions. C additionally requires an accepted option-comparison proof and recommends a specific action.
 - **E/F:** task warrants plus personalised model-challenge warrants. E recommends a specific action with an accepted option-comparison proof;
   F asks/challenges. Calibrated task profiles retain their existing boundaries.
+
+D/F additionally carry [evidence-backed comparison sets](socratic_guidance.md).
+Separate schemes derive `arg:worthComparingFor` for each alternative; the selected
+question retains its original warrant while these additional accepted proofs
+justify the alternatives and their public quantities. The panel displays the
+comparison beside the question. These sets carry no recommended option and no
+prescribed human choice distribution. Rejected/undecided comparison arguments
+cannot create an alternative. If fewer than two are supported, no set is invented.
 
 Accepted warrants may form candidates. Rejected warrants are excluded regardless
 of their usefulness. An undecided warrant can form a clarification candidate only

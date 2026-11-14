@@ -1,0 +1,42 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+arg:worthComparingFor a owl:DatatypeProperty .
+mab:ComparisonBenchmark a owl:Class .
+
+mab:rewardComparison a arg:Scheme ; arg:version "argumentation-0.4" ; arg:ruleKind "defeasible" ;
+ arg:premiseVariables "p1 p2 p3" ; arg:subjectVariable "option" ;
+ arg:conclusionPredicate arg:worthComparingFor ; arg:conclusionObject "plausible_reward" ; arg:polarity "positive" ;
+ arg:reason "At least three observed outcomes support a reward estimate whose approximate upper bound reaches the greatest current estimated mean. This permits comparison, not a claim that this option is best." ;
+ arg:criticalQuestion "Do the approximate interval, reward noise and remaining horizon justify further comparison?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX mab: <https://example.org/socratic/mab/>
+SELECT DISTINCT ?p1 ?p2 ?p3 ?option WHERE {
+ ?estimate a mab:RewardBelief ; task:forOption ?option .
+ ?benchmark a mab:ComparisonBenchmark .
+ { SELECT ?p1 ?state ?estimate ?n WHERE { ?p1 a arg:Assertion ; arg:scope ?state ; arg:subject ?estimate ; arg:predicate task:samples ; arg:object ?n ; arg:polarity "positive" . } }
+ { SELECT ?p2 ?state ?estimate ?upper WHERE { ?p2 a arg:Assertion ; arg:scope ?state ; arg:subject ?estimate ; arg:predicate task:upperBound ; arg:object ?upper ; arg:polarity "positive" . } }
+ { SELECT ?p3 ?state ?benchmark ?best WHERE { ?p3 a arg:Assertion ; arg:scope ?state ; arg:subject ?benchmark ; arg:predicate task:value ; arg:object ?best ; arg:polarity "positive" . } }
+ FILTER(?n >= 3 && ?upper >= ?best)
+}
+""" .
+
+mab:informationComparison a arg:Scheme ; arg:version "argumentation-0.4" ; arg:ruleKind "defeasible" ;
+ arg:premiseVariables "p1 p2 p3 p4" ; arg:subjectVariable "option" ;
+ arg:conclusionPredicate arg:worthComparingFor ; arg:conclusionObject "informative_uncertainty" ; arg:polarity "positive" ;
+ arg:reason "Fewer than six observed outcomes leave uncertainty, its approximate upper bound reaches the greatest estimated mean, and more than two choices remain. Sampling could be informative; an unsampled option has prior uncertainty, not demonstrated good rewards." ;
+ arg:criticalQuestion "Is the possible information worth the opportunity cost, given the approximate prior-based bounds?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX mab: <https://example.org/socratic/mab/>
+SELECT DISTINCT ?p1 ?p2 ?p3 ?p4 ?option WHERE {
+ ?estimate a mab:RewardBelief ; task:forOption ?option .
+ ?benchmark a mab:ComparisonBenchmark .
+ { SELECT ?p1 ?state ?estimate ?n WHERE { ?p1 a arg:Assertion ; arg:scope ?state ; arg:subject ?estimate ; arg:predicate task:samples ; arg:object ?n ; arg:polarity "positive" . } }
+ { SELECT ?p2 ?state ?estimate ?upper WHERE { ?p2 a arg:Assertion ; arg:scope ?state ; arg:subject ?estimate ; arg:predicate task:upperBound ; arg:object ?upper ; arg:polarity "positive" . } }
+ { SELECT ?p3 ?state ?benchmark ?best WHERE { ?p3 a arg:Assertion ; arg:scope ?state ; arg:subject ?benchmark ; arg:predicate task:value ; arg:object ?best ; arg:polarity "positive" . } }
+ { SELECT ?p4 ?state ?remaining WHERE { ?p4 a arg:Assertion ; arg:scope ?state ; arg:predicate mab:remainingDecisions ; arg:object ?remaining ; arg:polarity "positive" . } }
+ FILTER(?n < 6 && ?upper >= ?best && ?remaining > 2)
+}
+""" .

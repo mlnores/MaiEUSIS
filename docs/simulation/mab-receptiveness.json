@@ -1,0 +1,9 @@
+{
+  "id": "mab-receptiveness-development16-r3-v1",
+  "reference_dir": "../../socratic_prototype/data/guidance_pilot_20261111",
+  "levels": {
+    "0.25": "mab-receptiveness-025.json",
+    "0.75": "mab-receptiveness-075.json"
+  },
+  "bridge": "mab-receptiveness-050-bridge.json"
+}

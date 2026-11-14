@@ -7,9 +7,15 @@ training-only prediction, fresh unassisted simulations, internal recovery checks
 and actor exports for the existing five-condition simulator. It does not infer
 responses to AI from the original unassisted experiment.
 
-The next experiment layer is the [reconsideration sensitivity pilot](simulation/reconsideration.md).
+The [reconsideration sensitivity pilot](simulation/reconsideration.md) is the
+experiment layer built on these reconstructions.
 It uses the existing frozen actor exports and varies three Socratic processing
 assumptions under identical response coefficients, retaining the development 16.
+Its initial full-protocol run is complete; the
+[results and follow-up status](simulation/reconsideration.md#completed-development-pilot)
+distinguish the completed simulations from the pending TBS personalisation audit
+and the [new guided pilot](simulation/guidance-pilot.md), launched with three
+matched repetitions and all three mechanisms.
 
 The supplied files in `git_Irena/` remain unchanged. Generated bundles belong in
 the ignored local data directory or a researcher-selected directory. They contain
@@ -34,6 +40,12 @@ It retains the supplied 16 development participants, four per original profile;
 the complement contains 46 evaluation participants. Original labels and continuous
 **core** profile scores are preserved, not recomputed from simulated performance.
 Full L1-L6 scores and raw neural/dispositional variables are not actor features.
+
+The [complete archetype grouping](simulation/archetype-groups.md) preserves all
+62 original assignments: 21 MAB-specialised, 24 TBS-specialised, 10 Dual-regime
+and 7 Low-expression. Separate actor exports retain individual parameters and
+the original development/evaluation split; the original classification rules
+are reproduced without fitting new clusters.
 
 The procedure, source-file SHA-256 values, relevant implementation hashes and
 Python/NumPy/SciPy versions are saved before fitting or scoring. Development

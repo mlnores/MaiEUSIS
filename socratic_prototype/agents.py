@@ -6,7 +6,7 @@ from .tasks.execution import simulation_adapter,validate_distribution
 from .assistance_response import apply,validate,SCENARIOS
 from .reconsideration import configuration as reconsideration_configuration, target as reconsideration_target
 
-VERSION='synthetic-agent-0.4'
+VERSION='synthetic-agent-0.5'
 
 
 def validate_participant(spec,tasks=None):

@@ -26,9 +26,22 @@ single authored reconsideration rule could determine an apparent style effect.
 It specifies no revision, the current heuristic and recent-feedback processing;
 the fixed-coefficient development-16 pilot; matched controls; resumption and
 analysis. The completed 30-session short integration check is distinguished from
-the full-protocol pilot, which is running with aggregate results still pending.
+the full-protocol pilot, which was running with aggregate results pending at the
+manuscript's 6 November cutoff.
 The paper retains every mechanism rather than choosing the one with favourable
 assistance outcomes, and separates these assumptions from human comprehension.
+
+**Project status checked on 10 November 2026:** the full-protocol pilot has since
+completed all 48 jobs and 480 comparison sessions. Its
+[results and follow-up status](../docs/simulation/reconsideration.md#completed-development-pilot)
+are documented in the simulation guide. They have not yet been incorporated into
+the manuscript or its PDF. The TBS personalisation audit and additional matched
+repetitions are pending.
+
+On 11 November, a [new guided pilot](../docs/simulation/guidance-pilot.md) was
+launched with three matched repetitions and all three reconsideration mechanisms.
+It assesses the updated comparison guidance; its full-protocol results are
+pending and have not been added to the manuscript.
 
 The `.tex` is the canonical source and the PDF is its compiled reading copy.
 The existing `.docx` is an earlier export and is not synchronised with this update.
@@ -72,7 +85,8 @@ current architecture/simulation guides. The read-only empirical handover is in
 The reconsideration rationale and pilot specification are in
 `../docs/simulation/reconsideration.md` and `reconsideration-pilot.json` in that
 same directory. The short integration outputs and full-protocol pilot occupy
-separate ignored data directories; pending full-pilot outcomes are not inferred
-from the short check.
+separate ignored data directories. The 6 November manuscript does not infer
+full-pilot outcomes from the short check. The completed full-pilot results are
+reported separately in the simulation guide linked above.
 The meeting notes describe earlier alternatives; the manuscript uses the
 subsequently agreed five-condition design.

@@ -5,6 +5,8 @@ input,select{width:100%;padding:10px;border:1px solid #536f90;border-radius:8px;
 .teammate.is-silent{background:#111c2c;border-color:#40516a;box-shadow:none}
 .teammate.is-silent #teammateHeading,.teammate.is-silent #teammateMessage{color:#9fafc4}
 #teammateMessage{overflow-wrap:anywhere}
+#teammateComparison{white-space:pre-line;overflow-wrap:anywhere;padding:10px;border:1px solid #536f90;border-radius:8px;background:#0b1726}
+.teammate.is-silent #teammateComparison{color:#9fafc4;border-color:#40516a;background:#111c2c}
 #teammateContext{margin:8px 0 0}
 #responseText{width:100%;resize:vertical;min-height:88px;padding:10px;border:1px solid #536f90;border-radius:8px;background:#0b1726;color:#f0f5fc;font:inherit}
 #responseText:focus-visible{outline:3px solid #ffdb86;outline-offset:3px}
