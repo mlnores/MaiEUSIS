@@ -1,0 +1,32 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# A scheduling warrant, deliberately not a participant-facing reason or objection.
+arg:forecastScheduling a arg:Scheme ; arg:version "observed-personalisation-0.1" ;
+ arg:ruleKind "defeasible" ; arg:premiseVariables "forecast" ; arg:subjectVariable "state" ;
+ arg:conclusionPredicate arg:mayPersonaliseDelivery ; arg:conclusionObject true ; arg:polarity "positive" ;
+ arg:reason "A versioned public-behaviour forecast permits cautious delivery adaptation, conditional on its model assumptions." ;
+ arg:criticalQuestion "Is the task observer well specified and is there enough unaided and exposed-choice evidence?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+SELECT DISTINCT ?forecast ?state WHERE {
+ ?forecast a arg:Assertion ; arg:predicate arg:hasBehaviouralForecast ;
+   arg:subject ?state ; arg:scope ?state ; arg:object true ; arg:polarity "positive" .
+}
+""" .
+
+arg:BehaviouralForecast a owl:Class .
+arg:ChoiceForecast a owl:Class .
+arg:UptakeEstimate a owl:Class .
+arg:hasBehaviouralForecast a owl:DatatypeProperty .
+arg:mayPersonaliseDelivery a owl:DatatypeProperty .
+arg:unaidedChoiceUpdates a owl:DatatypeProperty .
+arg:informativeExposures a owl:DatatypeProperty .
+arg:probabilityMean a owl:DatatypeProperty .
+arg:probabilityLower a owl:DatatypeProperty .
+arg:probabilityUpper a owl:DatatypeProperty .
+arg:optionID a owl:DatatypeProperty .
+arg:style a owl:DatatypeProperty .
+arg:observerVersion a owl:DatatypeProperty .
+arg:modelDigest a owl:DatatypeProperty .
+arg:evidenceEvent a owl:ObjectProperty .
+arg:calibrationTrial a owl:ObjectProperty .

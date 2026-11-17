@@ -111,14 +111,35 @@ specific option with a graph-supported comparison criterion and explanation;
 Socratic messages invite examination without prescribing an action. Both retain
 uncertainty and the participant's final choice. No personalisation bonus is used.
 
+E/F now [learn from observed task behaviour and reactions to assistance](docs/observed_personalisation.md).
+They maintain uncertain task-choice forecasts and separate direct/Socratic uptake
+estimates, then use them to reduce redundant prompts and adjust delivery timing.
+“Fewer prompts” acts immediately; dismissal and silence are not automatically
+treated as rejection. C/D retain common delivery defaults. The assistant never
+receives synthetic actors' true response parameters. This update requires fresh
+calibrations/sessions; completed pilot reports describe their recorded older policy.
+
 Socratic D/F now provide [evidence-backed comparison guidance](docs/socratic_guidance.md):
-MAB identifies two or three supported alternatives with observed rewards and
-uncertainty; TBS compares SAFE/RISKY tradeoffs and final-trial attainment when
+MAB now uses a [shared ranking and performance gate](docs/simulation/mab-shared-ranking.md):
+C/E recommend the first-ranked option, while D/F compare the first two. All four
+conditions require evidence of poor recent performance and estimated improvement
+headroom before intervening. Successful persistence alone remains silent.
+TBS compares SAFE/RISKY tradeoffs and final-trial attainment when
 applicable. Each alternative has accepted graph reasons. Comparison details stay
 visible alongside the question, with TBS offer details revealed only when its task
-choices appear. The synthetic response model reassesses these alternatives rather
-than directing exploration solely toward the least-sampled arms. These are new
-processing assumptions; the completed earlier pilot remains a historical baseline.
+choices appear. For MAB, the synthetic participant weights the pair using its own
+learned preferences, then blends it with baseline preferences according to
+receptiveness. These are new processing assumptions; completed pilots remain
+historical baselines and do not measure this update.
+
+New synthetic experiments use [one participant-response rule](docs/simulation/single-response.md).
+The `none` and `recent` variants are retired. MAB uses the same profile-based
+conditioning and receptiveness calculation for direct and Socratic support,
+with one versus two offered options. A new
+[MAB pilot template](docs/simulation/profile-response-pilot.json) plans 48 jobs
+for 16 actors and three repetitions. The completed fair sweep below used the
+preceding delivery policy. The experiment with observed-behaviour
+personalisation is now [complete at all three receptiveness levels](docs/simulation/observed-mab-receptiveness.md).
 
 The [personalisation and simulation guide](docs/simulation/README.md) describes
 the separate task actor, assistance-response model, assistant's participant model,
@@ -132,10 +153,10 @@ actor, provisional TBS state/feedback actor, held-out prediction and fresh-run
 checks. Missing historical TBS offers remain unknown; offer responsiveness and
 AI-response assumptions are recorded explicitly in each generated cohort bundle.
 
-The [reconsideration sensitivity pilot](docs/simulation/reconsideration.md) now
-compares no strategic revision, the current heuristic and a recent-feedback rule
+The historical [reconsideration sensitivity pilot](docs/simulation/reconsideration.md)
+compared no strategic revision, the current heuristic and a recent-feedback rule
 under fixed response coefficients. Its development-16 full-protocol specification
-supports frozen inputs, checkpointed jobs, matched controls and paired analysis.
+supported frozen inputs, checkpointed jobs, matched controls and paired analysis.
 
 ### Current experimental status
 
@@ -172,6 +193,34 @@ process pool. It retains the development 16, three repetitions and all mechanism
 all 291 new jobs and 1,008 matched controls passed, including full-protocol bridge
 checks for the reused 0.5 MAB reference. Its report has heatmaps per receptiveness
 value and trends by archetype and overall, separate from the completed pilots.
+
+A [fresh matched MAB comparison](docs/simulation/fair-mab-receptiveness.md)
+completed on **15 November 2026** at 0.25/0.5/0.75 under the shared-ranking,
+performance-gated, single-response design. All 144 jobs finished: 576 fresh
+assisted sessions, 144 fresh A checks and 144 calibrations. All 144 baseline
+checks and 96 cross-level calibration checks passed. Its separate report has
+heatmaps, receptiveness trends and paired style comparisons. C/E and D/F have
+identical trajectories in this configuration, explicitly labelled in the report.
+Historical assisted outcomes are excluded from the new estimates.
+
+A [MAB experiment with observed-behaviour personalisation](docs/simulation/observed-mab-receptiveness.md)
+completed all 144 jobs on 16 November 2026. It uses the same 16 actors, three repetitions,
+0.25/0.5/0.75 receptiveness and five conditions, with fresh 200-trial calibrations
+and comparison sessions. Its [report](socratic_prototype/data/observed_mab_receptiveness_20261115/receptiveness_report.html)
+contains cluster and individual heatmaps, receptiveness trends and paired
+personalisation contrasts, keeping C/E/D/F separate. All 144,000 comparison
+trials were numerically audited; previous reports remain separate historical results.
+
+The corresponding [TBS receptiveness pilot](docs/simulation/observed-tbs-receptiveness.md)
+completed on 17 November 2026 on the 64-worker VM: all 144 jobs, 16 development
+actors, three repetitions, receptiveness 0.25/0.50/0.75 and fresh A/C/E/D/F sessions.
+The [interactive TBS report](socratic_prototype/data/tbs_vm_report_20261117/receptiveness_report.html)
+has group/individual heatmaps, receptiveness trends and paired contrasts. Its
+primary outcome is target-attainment change in percentage points; multiplied
+score is kept separate. All 138,240 comparison trials were numerically checked.
+Generic direct support has the largest overall mean gain at all three levels in
+this simulation. Report tie counts use integer target totals, correcting 13
+floating-point near-zero classifications while preserving the frozen analysis.
 
 ### Environment and interface integration
 

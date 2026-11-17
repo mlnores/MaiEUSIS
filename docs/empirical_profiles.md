@@ -7,7 +7,10 @@ training-only prediction, fresh unassisted simulations, internal recovery checks
 and actor exports for the existing five-condition simulator. It does not infer
 responses to AI from the original unassisted experiment.
 
-The [reconsideration sensitivity pilot](simulation/reconsideration.md) is the
+New experiments now use the [single-response design](simulation/single-response.md).
+The memory variants below are historical.
+
+The [reconsideration sensitivity pilot](simulation/reconsideration.md) was the
 experiment layer built on these reconstructions.
 It uses the existing frozen actor exports and varies three Socratic processing
 assumptions under identical response coefficients, retaining the development 16.

@@ -1,5 +1,8 @@
 # Full-protocol pilot of guided Socratic comparisons
 
+> Historical experiment: new runs use the [single-response design](single-response.md).
+> The former `none`/`recent` configurations require their recorded runtime.
+
 The [configuration](guidance-pilot.json) assesses the
 [new comparison guidance](../socratic_guidance.md) on the development 16. Its
 separate output directory is

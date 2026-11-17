@@ -8,7 +8,7 @@ from pathlib import Path
 from .argumentation import ARG
 from .tasks import get_task
 
-VERSION = 'comparison-guidance-0.1'
+VERSION = 'comparison-guidance-0.2'
 
 
 def configuration(module):

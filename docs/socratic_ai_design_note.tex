@@ -4,17 +4,20 @@
 \usepackage{lmodern}
 \usepackage[margin=23mm]{geometry}
 \usepackage{microtype}
+\usepackage{amsmath,amssymb}
 \usepackage{enumitem}
 \usepackage{xcolor}
+\usepackage{booktabs,tabularx,array}
 \usepackage{listings}
 \usepackage{tikz}
-\usepackage{float}
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric}
 \usepackage{hyperref}
-\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue!45!black,pdftitle={Design Note for a Socratic AI Teammate in Controlled Decision Environments}}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue!45!black,
+ pdftitle={Design Note for a Socratic AI Teammate in Controlled Decision Environments},
+ pdfsubject={Implemented architecture and experimental design, revised 16 November 2026}}
 \usepackage{titlesec}
 \titleformat{\section}{\large\bfseries}{\thesection}{0.7em}{}
-\titlespacing*{\section}{0pt}{1.3ex plus .5ex minus .2ex}{.7ex}
+\titlespacing*{\section}{0pt}{1.5ex plus .5ex minus .2ex}{.8ex}
 \setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=4pt}
 \setlist[enumerate]{leftmargin=1.6em,itemsep=3pt,topsep=4pt}
 \setlength{\parindent}{0pt}
@@ -22,243 +25,395 @@
 \setlength{\emergencystretch}{1.5em}
 \widowpenalty=10000
 \clubpenalty=10000
-\lstset{basicstyle=\ttfamily\footnotesize,columns=fullflexible,keepspaces=true,breaklines=true,frame=single,rulecolor=\color{black!25},backgroundcolor=\color{black!3},xleftmargin=5pt,xrightmargin=5pt,aboveskip=7pt,belowskip=7pt,showstringspaces=false}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\lstset{basicstyle=\ttfamily\footnotesize,columns=fullflexible,keepspaces=true,
+ breaklines=true,frame=single,rulecolor=\color{black!25},
+ backgroundcolor=\color{black!3},xleftmargin=5pt,xrightmargin=5pt,
+ aboveskip=7pt,belowskip=7pt,showstringspaces=false}
 \title{\textbf{Design note for a Socratic AI teammate\\in controlled decision environments}}
 \author{}
-\date{11 October 2026}
+\date{Revised 16 November 2026\\{\small Original design: 11 October 2026}}
 \begin{document}
 \maketitle
 \vspace{-2em}
 
-\section{Research motivation}
-We propose a first prototype of a Socratic AI teammate that improves human judgment by making uncertainty usable. The system would jointly model a changing decision environment and a participant's context-specific decision patterns, while preserving missing evidence, competing interpretations and the limits of its own inferences. Two controlled tasks---a volatile Multi-Armed Bandit task and a Target-Based Sequential Decision task---provide the experimental foundation. An inspectable knowledge base, explicit epistemic annotations and an adaptive intervention policy determine whether the teammate should question, challenge, support or remain silent. The prototype tests productive ignorance as an operational design principle rather than as a conversational style, with evaluation against unassisted and conventional AI-supported decision-making.
+\section{Motivation and current scope}
+The prototype operationalises the idea in \emph{The Sophist Machine Needs Productive Ignorance}: assistance should make uncertainty usable rather than conceal it behind fluent advice. A teammate should distinguish observation from interpretation, preserve plausible objections, and justify its right to interrupt. The participant retains the final choice. Higher task scores and agreement with advice are therefore insufficient, by themselves, to establish better judgment or appropriate reliance.
 
-Our central research question is:
-\begin{quote}
-``How can an AI teammate represent uncertainty about both a decision-maker and a changing decision environment, and use that uncertainty to decide when to question, challenge, support or remain silent so as to improve human judgment without replacing it?''
-\end{quote}
+The original design has become a runnable local system. It executes controlled Multi-Armed Bandit (MAB) and Target-Based Sequential (TBS) sessions, maintains uncertain models, discovers arguments over ontology records, schedules assistance through a separate policy, and records evidence and silence decisions for inspection and replay. Task modules permit additional environments without embedding their mechanics in the shared reasoning engine. This note describes the implementation through 16 November 2026; it does not claim that the prototype or its participant models have been validated for human assistance.
 
-The Socratic teammate must help a person examine the grounds of a decision: which assumptions matter, what evidence supports them, which alternatives remain plausible, and what would change the person's judgment. The person retains responsibility for selecting and acting. Success therefore includes better reasoning and appropriate reliance, rather than merely following an AI recommendation or obtaining a higher score.
+The research questions, refined through the empirical collaborator's proposal, are:
+\begin{enumerate}
+\item Can assistance compensate for limitations in a participant's weaker decision regime without undermining effective strategies in another regime?
+\item Which combination of direct or Socratic assistance and personalisation helps whom, under which task and response assumptions, and when does it have no benefit or cause interference?
+\end{enumerate}
+The wider question remains how uncertainty about both person and environment can determine when to question, compare, challenge, explain or stay silent. Success ultimately requires evidence about reasoning, burden, autonomy and reliance, alongside performance. Synthetic experiments currently test narrower, explicitly model-dependent consequences.
 
-\emph{Productive ignorance} is the disciplined representation of what is not known and how that absence should guide inquiry. Today's AIs may be described as ``sophist'', due to its tendency towards fluent, agreeable completion that can flatten uncertainty and reconcile contradictions prematurely. Retrieval improves access to evidence, but does not by itself establish whether evidence is sufficient, conflicting or relevant. The proposed design turns those epistemic conditions into explicit objects that can trigger a useful question, a qualified explanation or deliberate silence.
+\section{Controlled tasks and information boundaries}
+\textbf{MAB.} The full protocol has 200 decisions among six options, with hidden reward probabilities and stable followed by volatile contingencies. Choices generate noisy rewards; poor feedback may reflect ordinary variability or changed contingencies. The teammate estimates reward values and possible change from observed outcomes. It never receives actual reward probabilities, shift flags, unobserved counterfactual outcomes or future rewards.
 
-The system must also reason about its own \emph{right to intervene}. A suspected behavioral pattern is not automatically a defect, and detecting uncertainty does not automatically justify interruption. Intervention needs an evidential basis, relevance to the person's goal, an appropriate moment and a plausible benefit relative to its cognitive cost. The teammate should acknowledge alternative interpretations and allow the participant to reject or correct its account.
+\textbf{TBS.} The full protocol has 192 decisions in 24 eight-trial blocks. SAFE and RISKY display possible gains and win probabilities. Progress changes the target gap, the horizon shrinks, and a final-choice win multiplies the \emph{whole accumulated score}; a final loss does not apply that multiplier. Displayed probabilities and published arithmetic are available to the teammate, but future offers and outcomes are not. Immediate expected gain is not the probability of reaching the target over several unknown future offers.
 
-\section{Empirical starting point}
-The decision-making briefing supplies two complementary experimental environments, organised around Evaluation, Commitment and Feedback:
+Short engineering protocols contain 40 MAB and 24 TBS trials. Task modules own legal transitions, scoring, timeouts and protocol lengths. Browser trials retain Evaluation, Commitment and Feedback stages and their keyboard controls. Missed choices remain distinct from observed outcomes. A MAB timeout affects score but supplies no sampled arm reward to the learning model.
+
+There are three distinct information holders:
 \begin{itemize}
-\item \textbf{Multi-Armed Bandit (MAB).} The reported task uses 200 choices among six options with hidden reward probabilities. After an initially stable phase, reward contingencies become volatile. Participants must infer values from noisy feedback, detect possible changes and balance exploration against exploitation. A disappointing outcome may reflect ordinary reward variability or a changing environment; these explanations should remain distinguishable.
-\item \textbf{Target-Based Sequential Decision (TBS).} The reported task uses 192 choices in 24 eight-trial blocks, with explicit probabilities and potential gains. Outcomes change the target gap while remaining opportunities diminish. A final-trial multiplier adds a constraint on target attainment. Participants must adjust choices to evolving goal progress and a shrinking horizon, rather than evaluate each gamble in isolation.
+\item \textbf{Task runtime/evaluator:} may know the outcome generator and counterfactual evaluation quantities, retained in separate researcher records.
+\item \textbf{Human or synthetic participant:} chooses using public task information and its own experience. A synthetic actor also has private generative parameters.
+\item \textbf{Assistant:} receives allowlisted public evaluation, delivery, choice, outcome and response events, plus permitted calibration estimates. It receives neither evaluator truth nor the actor's true task or response coefficients.
 \end{itemize}
-The briefing reports environment-specific associations among psychological, neural, computational and behavioral measures. Its integrated predictive analyses used the same cohort for selection and evaluation and remain exploratory; they neither establish causal mechanisms nor validate fixed participant types. They motivate joint person--environment modelling.
+These boundaries apply to models, graph premises and language evidence packages. Effectiveness obtained through privileged information would not test the intended research claim.
 
-\section{First prototype goal}
-The first milestone is be to create a Socratic intervention engine for the two controlled decision environments described above, backed by an inspectable knowledge base and a participant model, that can personalize when and how it intervenes and explain why it intervened or stayed silent. Its support should help participants examine evidence, reconsider assumptions and adapt their strategy while retaining responsibility for the decision.
+\section{Five assistance conditions}
+The implemented design is a $2\times2$ comparison plus an unassisted baseline. \emph{Generic} means task-aware, using common delivery defaults; it does not mean task-unaware advice.
 
-In MAB, the prototype should support exploration and interpretation of noisy feedback. If a participant persists with one option after evidence of a possible volatility shift, it might ask: ``Recent feedback differs from earlier feedback. What evidence would justify checking another option?'' If the participant switches after one poor outcome, it could invite a distinction between changing reward contingencies and ordinary reward noise. When only two options have been sampled, it might ask what remains uncertain about the others and how much further exploration is worthwhile. These interventions aim to make the grounds for persistence or switching explicit, rather than prescribe a particular choice.
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lYY@{}}
+\toprule
+Condition & Assistance style & Participant-specific inputs\\
+\midrule
+A & No assistance; matched neutral preparation & None used for assistance\\
+C & Direct recommendation with reasons & Common task-aware delivery defaults\\
+E & Direct recommendation with reasons & Calibration, online task estimates and interaction evidence\\
+D & Evidence-backed Socratic guidance & Common task-aware delivery defaults\\
+F & Evidence-backed Socratic guidance & Calibration, online task estimates and interaction evidence\\
+\bottomrule
+\end{tabularx}
+\end{center}
 
-In TBS, support should help participants relate each choice to the target gap, remaining opportunities and changing constraints. With two choices left, the teammate might ask: ``Can your current approach still close the target gap?'' After a gain reduces the gap, it could question whether the same level of risk still serves the target. Even when displayed probabilities remain unchanged, it should help the participant consider how a shorter horizon and the final-trial multiplier affect target attainment. The aim is to encourage adjustment to the evolving decision context.
+Condition B has been removed from session creation, study configuration and live intervention schemes. Historical traces retain their original labels; they are not migrated into the new design.
 
-The prototype should also recognise when support or silence is warranted. It might acknowledge that persistence is reasonable given uncertain feedback and ask what would warrant revision. If the evidence does not distinguish underexploration from justified persistence, it may remain silent and record that reason. Questions should be grounded in current evidence without revealing hidden task state; the examples illustrate candidate interventions whose usefulness must be tested. Support and silence are substantive policy outcomes.
+A direct intervention prescribes a current option under an explicit criterion, for example: \emph{I recommend this option because it ranks first by estimated reward from observed outcomes; those estimates remain uncertain.} A Socratic intervention asks the participant to examine evidence or a revision condition, for example: \emph{What evidence supports continuing with the same option?} It supplies the two ranked alternatives, their recorded observations and uncertainty, guiding deliberation without requiring a switch.
 
-A working prototype should run complete sessions, maintain a traceable state after each trial, generate short grounded interventions and record silence decisions. It should replay a session to recover the evidence, model revision and policy decision at each eligible intervention point. This makes the milestone concrete without requiring an open-domain ontology or a comprehensive theory of human decision-making.
+For humans, the distinction concerns prescription with reasons versus supported inquiry. It is not defined merely by the number of options shown. The current synthetic model operationalises only part of that distinction through structured offered sets and processing targets; it does not understand the question's wording.
 
-\section{Architecture and workflow}
-Figure~\ref{fig:architecture} shows a possible architecture and information flows. The environment and participant models inform an inspectable knowledge base, epistemic annotations preserve uncertainty, and the reasoning layer identifies issues for the intervention policy to assess. When support is warranted, the LLM expresses the selected intervention; decision records and validated updates support subsequent review and model revision. 
+All comparison conditions require the same completed study-specific calibration. Only E/F supply participant-specific estimates to personalised delivery and language. Human-interface condition assignment remains manual; randomisation, counterbalancing and a preregistered human protocol are not implemented.
 
-\begin{figure}[H]
+\section{Implemented architecture and event loop}
+The system separates task execution, numerical estimation, argument acceptance, communication policy and language realisation (Figure~\ref{fig:architecture}). Neither a high model posterior nor an accepted argument automatically requires an interruption.
+
+\begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
  box/.style={draw=black!55,rounded corners=2pt,fill=black!3,
-   align=center,font=\footnotesize,minimum height=13mm,text width=40mm},
+  align=center,font=\footnotesize,minimum height=14mm,text width=47mm},
  arr/.style={-{Latex[length=2mm]},thick,draw=black!65},
- record/.style={arr,dashed},
- label/.style={font=\scriptsize,align=center,fill=white,inner sep=2pt}]
-\node[box] (experiment) at (0,0)
-  {\textbf{1. Experiment layer}\\MAB / TBS trial events};
-\node[box] (environment) at (-5.2,-2.2)
-  {\textbf{2. Decision\\environment model}\\Task state and uncertainty};
-\node[box] (participant) at (5.2,-2.2)
-  {\textbf{3. Participant model}\\Contextual hypotheses};
-\node[box] (kb) at (-0.7,-4.4)
-  {\textbf{4. Knowledge base layer}\\Static schema\\Dynamic instances};
-\node[box] (epistemic) at (5.2,-4.4)
-  {\textbf{5. Epistemic\\annotation layer}\\Status and provenance};
-\node[box] (reason) at (-5.2,-6.8)
-  {\textbf{6. Reasoning layer}\\Checks and alternatives};
-\node[box] (policy) at (0,-6.8)
-  {\textbf{8. Intervention policy}\\Intervene or stay silent};
-\node[box] (llm) at (5.2,-6.8)
-  {\textbf{7. LLM layer}\\Prose and\\structured outputs};
-\draw[arr] (experiment.south west) -- (environment.north east);
-\draw[arr] (experiment.south east) -- (participant.north west);
-\draw[arr] (environment.south east) -- (kb.north west);
-\draw[arr] (participant.south west) -- (kb.north east);
-\draw[record] (kb.west) --
-  node[label,above]{Evidence for\\model revision} (-5.2,-4.4) -- (environment.south);
-\draw[record] (kb.north) -- (-0.7,-2.2) --
-  node[label,above]{Evidence for\\model revision} (participant.west);
-\draw[thick,draw=black!65,{Latex[length=2mm]}-{Latex[length=2mm]}] (kb.east) -- (epistemic.west);
-\draw[arr] (kb.south west) -- (reason.north east);
-\draw[arr] (reason.east) -- (policy.west);
-\draw[arr] (policy.east) -- (llm.west);
-\draw[record] (policy.north) -- node[label,right]{Decision\\record} (kb.south);
-\draw[record] (llm.north west) --
-  node[label,above]{Validated updates} (kb.south east);
-\draw[arr] (llm.east) -- (7.7,-6.8) -- (7.7,0) --
-  node[label,above]{Interaction / response} (experiment.east);
+ trace/.style={arr,dashed},
+ tag/.style={font=\scriptsize,align=center,fill=white,inner sep=2pt}]
+\node[box,text width=78mm] (events) at (0,0)
+ {\textbf{Task runtimes and public adapters}\\MAB / TBS / registered environments\\Allowlisted events; evaluator truth excluded};
+\node[box] (environment) at (-4.7,-2.2)
+ {\textbf{Environment estimates}\\Observed rewards, current goals,\\uncertainty and named calculations};
+\node[box] (person) at (4.7,-2.2)
+ {\textbf{Assistant participant model}\\Task-choice forecasts and\\style-specific uptake in E/F};
+\node[box,text width=71mm] (records) at (0,-4.4)
+ {\textbf{Inspectable records and epistemic status}\\Core + task + domain + argumentation layers\\Evidence, scope, versions and uncertainty};
+\node[box] (graph) at (-4.7,-6.7)
+ {\textbf{Graph argumentation}\\SPARQL schemes, proof chains,\\attacks and grounded labels};
+\node[box] (policy) at (4.7,-6.7)
+ {\textbf{Delivery policy}\\Condition, gate, relevance, cost,\\cooldown and explicit silence};
+\node[box] (audit) at (-4.7,-8.9)
+ {\textbf{Durable audit and replay}\\Canonical JSON / SQLite, RDF,\\proofs, exposure and responses};
+\node[box] (wording) at (4.7,-8.9)
+ {\textbf{Validated presentation}\\Reviewed wording or bounded\\local Ollama question generation};
+\draw[arr] (events.south west) -- (environment.north);
+\draw[arr] (events.south east) -- (person.north);
+\draw[arr] (environment.south) -- (records.north west);
+\draw[arr] (person.south) -- (records.north east);
+\draw[arr] (records.south west) -- (graph.north);
+\draw[arr] (records.south east) -- node[tag,right]{Permitted\\model inputs} (policy.north);
+\draw[arr] (graph.east) -- node[tag,above]{Evaluated\\proofs} (policy.west);
+\draw[arr] (policy.south) -- (wording.north);
+\draw[trace] (graph.south) -- (audit.north);
+\draw[trace] (policy.south west) -- (audit.north east);
+\draw[trace] (wording.west) -- node[tag,above]{Recorded output} (audit.east);
+\draw[trace] (audit.west) -- (-7.6,-8.9) -- (-7.6,-4.4) -- (records.west);
+\draw[arr] (wording.east) -- (7.6,-8.9) --
+ node[tag,rotate=90,above]{Display, choices and attributed feedback}
+ (7.6,0) -- (events.east);
 \end{tikzpicture}
-\caption{Solid arrows show the intervention loop and annotation access; dashed arrows show evidence for model revision, decision records and validated LLM updates. Numbers identify components, not execution order.}
+\caption{Implemented public-evidence loop. Dashed arrows denote audit records and replay inputs. Private actor coefficients and hidden task state have no route into the assistant. Numerical estimates inform both proofs and scheduling; the language layer does not select reasons or update beliefs from its own assertions.}
 \label{fig:architecture}
 \end{figure}
 
+The execution order is:
 \begin{enumerate}
-\item \textbf{Experiment layer.} Runs MAB and TBS, recording trial identifiers, available options, displayed information, choices, response times, outcomes and intervention exposure. Events are aligned with Evaluation, Commitment and Feedback so that support can be offered at predefined moments.
-\item \textbf{Decision environment model.} Represents current task state, constraints, estimated volatility, feedback reliability, target gap, remaining trials and uncertainty about the environment. In MAB it maintains uncertain reward-value estimates and evidence of change. In TBS it represents explicit probabilities and gains together with horizon and multiplier rules. Random outcomes are distinguished from unreliable or missing feedback.
-\item \textbf{Participant model.} Maintains contextual hypotheses about exploration tendency, switching or persistence, sensitivity to feedback, risk adjustment, response to losses and gains, possible overconfidence, hesitation, constraint neglect and intervention preferences. Each hypothesis has an evidence window, confidence and revision conditions. Slow responses alone do not establish hesitation, nor does persistence establish overconfidence.
-\item \textbf{Knowledge base layer.} Provides a human-understandable ontology with a mostly static conceptual schema for the two tasks, and dynamic instances for participants, sessions, trials, claims, uncertainties and interventions. Later prototypes may extend the schema to open-ended domains, but the first milestone should remain bounded.
-Queries connect a proposed intervention to its supporting observations and task context.
-\item \textbf{Epistemic annotation layer.} Marks claims as known, unknown, assumed, inferred, contested, probable, low-confidence, source-dependent or requiring verification. Annotations also record provenance, time, scope and dependencies. These labels need not be mutually exclusive: an inference can be probable, source-dependent and contested.
-\item \textbf{Reasoning layer.} Uses explicit uncertainty modelling, simple probabilistic reasoning and rule-based checks to identify candidate issues and alternatives. Later experiments may evaluate argumentation, fuzzy, paraconsistent or nonmonotonic reasoning where they solve a demonstrated need.
-\item \textbf{LLM layer.} Produces conversational interaction, free prose explanations and Socratic questions from the inspected state. Structured outputs or function calls propose machine-checkable updates alongside prose. The backend validates these proposals before committing them; the LLM cannot silently promote its interpretation to an observed fact.
-\item \textbf{Intervention policy.} Chooses whether to ask, challenge, warn, explain, compare alternatives, highlight dependencies, request evidence or stay silent. It considers uncertainty in both models, evidence strength, expected usefulness, participant preferences, timing and recent intervention burden. Every decision includes an inspectable rationale.
+\item Validate the incoming public event, its order and task arithmetic on a candidate copy.
+\item Reconstruct permitted history; update environment estimates, participant forecasts and provisional hypotheses without future-event access.
+\item Project typed task records and scoped assertions with epistemic annotations.
+\item Discover proof chains from locally authored schemes; evaluate attacks, propagated defeats and grounded labels. An unavailable or incomplete graph cannot authorise assistance.
+\item Map permitted conclusions to communication candidates. Apply condition boundaries, the task gate, usefulness/cost threshold, personalised delivery assessment where allowed, and cooldown.
+\item If active, realise the selected intervention and validate its structure and evidence references. Otherwise record silence without calling a language model.
+\item Validate candidate records and graph constraints before commitment. Persist snapshots, proof links, rationale, wording and validation reports.
+\item Record delivery/exposure, subsequent choice/outcome, and optional attributed feedback. These inform later snapshots; there is no automatic conversational reply.
 \end{enumerate}
+The implementation is in \path{socratic_prototype/engine.py}, task modules, \path{argumentation/}, \path{intervention_policy.py}, \path{participant_model.py}, \path{personalisation.py} and \path{grounding.py}. SQLite-backed JSON events and snapshots are canonical. RDF is their semantic projection, not a separate authoritative event store.
 
-\textbf{Information boundary.} The experiment runner knows the generative reward schedule, but the MAB teammate must infer volatility from the same feedback available to the participant. Hidden probabilities and actual shift times belong in a separate evaluator store. TBS assistance can use displayed probabilities and published rules, but not future outcomes. This prevents apparent effectiveness from being an artefact of privileged information.
+\section{Layered ontology and extensibility}
+The schema is closed and versioned within a run, while dynamic instances describe participants, trials, states, claims, estimates, arguments and interventions. Shared layers do not hard-code MAB or TBS mechanics.
 
-\begin{minipage}{\linewidth}
-\textbf{A minimal policy loop.} At each eligible intervention point, the system follows the steps below. The numbers link the flow diagram to the corresponding explanations.
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lY@{}}
+\toprule
+Layer / namespace & Responsibility\\
+\midrule
+\texttt{core:} & Participants, sessions, trials, claims, epistemic statuses and interventions\\
+\texttt{task:} & Definitions, states, options, goals, observations, rules, calculations and estimates\\
+\texttt{mab:}, \texttt{tbs:} & Separate mechanics, quantities, models, constraints and domain schemes\\
+\texttt{arg:} & Assertions, propositions, schemes, proofs, attacks, labels and scheduling estimates\\
+\texttt{data:} & Session-specific identifiers for states, observations and calculations\\
+\bottomrule
+\end{tabularx}
+\end{center}
+These prefixes abbreviate local \texttt{https://example.org/socratic/} namespaces, not a deployed public ontology endpoint. Shared concepts retain stable identifiers. Domain ontologies import the task layer; MAB sessions do not load TBS domain classes or shapes.
 
-\vspace{4pt}
-\begin{minipage}[t]{0.35\linewidth}
-\vspace{0pt}
+A calculation identifies its input state, named implementation rule, version, value, units and relevant option. Estimates retain uncertainty and observation provenance. An estimated arm reward in points, an assistant learned value in reward/200, and an actor's internal value are distinct. A posterior mean learned value averages the observer's hypotheses; it is not a replay at mean parameter values.
+
+Claims can simultaneously be inferred, source-dependent, probable and contested. Unknown does not mean false; missing evidence does not become a negative observation. Confidence is interpreted under the model that produced it. Neither a status nor an argument acceptance label establishes psychological truth. Intent, unelicited confidence and comprehension remain unknown; slow responses alone do not establish hesitation or overconfidence.
+
+A registered task supplies public schemas, transition/scoring checks, protocols, models, calibration, hypotheses, RDF projection and scheme packs. Optional adapters supply browser execution, private simulation, comparison guidance and eligibility. Optional \texttt{participant\_observer} and \texttt{assistance\_target} hooks provide public-observation learning without exposing the actor. Tasks without them remain usable with unknown behavioural uptake and common task-delivery defaults; explicit feedback still applies.
+
+A study configuration selects tasks, calibration dependencies and conditions. The default interface requires MAB and TBS calibration; the current MAB-only study declares only MAB calibration. A registered four-trial \texttt{REFERENCE} task exercises the complete extension path without MAB/TBS models. It is an engineering fixture, not another validated research environment.
+
+\section{Graph argumentation as the source of reasons}
+The earlier independent candidate-trigger mechanism has been removed. Graph argumentation supplies all substantive live reasons and objections. Numerical Python routines supply quantities; locally authored SPARQL schemes specify how scoped premises support conclusions.
+
+An assertion records subject, predicate, typed object, polarity and current-state scope, with source, kind and epistemic status. Rules match assertion identifiers in that scope. A match creates an argument with premises, subarguments, scheme, inference kind, priority and critical questions. Bounded forward chaining permits derived conclusions to support further arguments. Sorted matches and content-derived identifiers support deterministic replay; circular proofs are excluded. Participant text and LLM output cannot become executable rules.
+
+Strict arithmetic comparisons and defeasible interpretations remain distinct. The engine evaluates undermining of premises, rebuttal of conclusions and undercutting of rule applications, propagating defeats through dependent proofs. Grounded labels are \emph{accepted}, \emph{rejected} or \emph{undecided}. This is a small structured argumentation implementation, not a general-purpose logic or complete ASPIC+ implementation.
+
+An accepted argument is justified under the declared premises and rules, not certified true. An undecided argument normally cannot support advice. A clarification question requires explicit scheme permission to communicate that unresolved conflict and its actual objection. Opposing reasons are not fabricated to create a balanced-looking explanation.
+
+Shared schemes cover provisional model challenges, attributed contestation and forecast-based scheduling. Domain schemes cover observed coverage, change evidence, horizon limits, gains, attainment, rankings and comparisons. The MAB coverage calculation can establish that options remain unsampled without establishing that exploration is worthwhile; the performance gate prevents coverage alone from triggering assistance.
+
+Proof acceptance and delivery remain separate. Interruption burden can count against delivering a valid argument without rebutting its conclusion. A \texttt{forecastScheduling} warrant permits use of a versioned observer for timing; it is not a new reason that an option is preferable.
+
+\section{Task-aware guidance and delivery policy}
+\subsection{MAB: one ranking and a performance gate}
+All assisted conditions use the same public ranking at the same observable state. The reward model uses a Dirichlet$(1,1,1)$ prior and the last 24 completed outcomes per arm. Options are ordered by recorded estimated mean reward, then by option ID for ties. Ties are disclosed: fixed order is not evidence of superiority. Unsampled options retain prior-based uncertainty, not demonstrated reward.
+
+C/E recommend rank~1. D/F present exactly ranks~1 and~2 with keys, sample counts, estimated rewards, approximate intervals and ties. Both entries need accepted proofs from the same rank calculations. Missing pair proofs cause silence rather than invention of an alternative. The participant's favourite may already be in the pair; questioning need not imply that switching is correct.
+
+Limited exploration alone does not authorise intervention. The gate examines the last 12 \emph{elapsed} trials, counting misses as elapsed but excluding them from reward means. It requires:
+\begin{itemize}
+\item at least six completed outcomes in the window;
+\item at least three decisions remaining, including the pending choice;
+\item at least 20 points between the first-ranked estimate and recent mean reward;
+\item a poor-performance signal: nonpositive recent mean; a decline of at least 30 points between earlier/later halves, with at least three outcomes in each; or an approximate upper bound on recent mean below the first-ranked arm's approximate lower reward bound.
+\end{itemize}
+The recent upper bound is $\bar r+1.96s/\sqrt n$. These are authored screening rules, not a calibrated significance test, hidden regret or proof that switching helps. Positive returns can qualify as underperformance when supported alternatives appear better. Successful persistence and isolated noisy losses need not prompt exploration. With no completed outcome, mean and gap remain unknown; no numeric calculation is fabricated.
+
+The gate applies equally to C/D/E/F \emph{at the same state}; later states can diverge after different choices. Passing it does not require delivery. Its scoped graph proof is mandatory for every delivered MAB candidate.
+
+\subsection{TBS: gains, goals and conditional attainment}
+TBS uses its own reasoning rather than the MAB performance screen. Before the final choice, direct advice compares immediate expected points $p_i g_i$, acknowledging that this is not multi-step planning. On the final choice, with points $P$, target $T$, gain $g_i$ and multiplier $m$, the calculation is
+\[
+ \Pr(\text{attain }T\mid i)
+ =p_i\,\mathbf{1}\{m(P+g_i)\geq T\}
+ +(1-p_i)\,\mathbf{1}\{P\geq T\}.
+\]
+Direct TBS advice needs a unique winner under its criterion; a tie does not justify an invented preference. Socratic guidance can compare tradeoffs, disagreement between criteria, shrinking opportunity and final-win dependence. Criteria can rank options differently without a logical contradiction.
+
+\subsection{Scheduling and silence}
+The common interruption cost is .12 and the relevance threshold is .38. Delivered-prompt cooldowns are two, four or seven trials for frequent, standard or infrequent preference. Schemes and a small hand-written Bayesian network supply provisional usefulness inputs. These are assumptions, not measured intervention effects.
+
+The policy ranks proof-backed opportunities and records delivery or silence. Personalisation may reduce priority or wait; it cannot bypass the shared MAB gate, create a private ranking or turn a rejected argument into advice. Settings are copied into sessions and versioned, not silently tuned during a running experiment.
+
+\section{Personalisation from task and interaction behaviour}
+Personalisation spans observers, attributed records, graph reasoning, delivery and bounded language. It asks \emph{How is this person deciding here, and how do their choices change after assistance?}, rather than assigning a fixed type.
+
+\subsection{Task calibration and online observation}
+E/F receive a task-specific calibration posterior and learn from the current run. MAB uses 27 combinations of positive/negative learning rates and softmax sensitivity, each maintaining its own values. TBS uses 25 intercept/slope combinations for an exploratory pressure-logistic observer. New calibrations preserve grid weights and uncertainty, not just means.
+
+Task parameter weights are fitted only to demonstrably unaided completed choices: silent trials or acknowledgement that assistance was not delivered. All completed MAB rewards update learned values, assisted or otherwise. Active prompts with missing/zero exposure acknowledgement are ambiguous, not unaided preference observations. Timeouts are neither completed choices nor sampled rewards. The TBS observer omits offer-value and distinct horizon effects, an important limitation.
+
+Parameters transfer within the task; MAB values reset for a new comparison. Estimates remain task-specific. Neither archetypes nor neuroscience/dispositional scores set response estimates. The hand-written Bayesian network (\texttt{bn-0.1}) separately expresses provisional mismatch/usefulness assumptions; it is not a fitted diagnostic model.
+
+\subsection{Separate direct and Socratic uptake estimates}
+For each style the assistant maintains an independent posterior over $\rho\in\{0,.05,\ldots,1\}$, initially uniform. Let $\widehat p_t(a)$ be its unaided forecast and $\widehat q_t(a)$ its assumed processing target, averaged over the task posterior available \emph{before} the choice. The uptake likelihood is
+\[
+ L_t(\rho)=(1-\rho)\widehat p_t(a_t)+\rho\widehat q_t(a_t).
+\]
+It is conditioned on completed choices only after positive acknowledged exposure recorded before feedback. Late delivery acknowledgements cannot explain earlier choices. If predictive distributions differ by less than .05 in total variation, the exposure is recorded as uninformative and does not update $\rho$. Agreement already likely supplies little or no uptake evidence.
+
+Direct support targets its recommended action. MAB Socratic processing conditions each observer hypothesis's preferences on the offered pair; TBS uses an assumed task-evidence/goal response. Reward updates task learning, not a success/failure label for advice.
+
+This is approximate \emph{model-based behavioural uptake}, not measured trust, conscious acceptance, comprehension or causal benefit. Baseline error, reactance and distraction are not separately identified. Parameters are assumed stationary within a run: estimates evolve with evidence, without a latent time-varying receptiveness process.
+
+\begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
- flowbox/.style={draw=black!55,rounded corners=2pt,fill=black!3,
-   text width=32mm,minimum height=13mm,align=center,font=\small},
- decision/.style={diamond,aspect=2,draw=black!55,fill=black!3,
-   text width=27mm,inner sep=1pt,align=center,font=\small},
+ box/.style={draw=black!55,rounded corners=2pt,fill=black!3,
+  align=center,font=\footnotesize,minimum height=18mm,text width=31mm},
  arr/.style={-{Latex[length=2mm]},thick,draw=black!65},
- tag/.style={font=\scriptsize,fill=white,inner sep=1pt}]
-\node[flowbox] (ingest) at (0,0) {\textbf{1. Ingest}\\the event};
-\node[flowbox] (models) at (0,-1.9) {\textbf{2. Update}\\the models};
-\node[flowbox] (records) at (0,-3.8) {\textbf{3. Validate}\\the records};
-\node[flowbox] (checks) at (0,-5.7) {\textbf{4. Run}\\task-specific checks};
-\node[decision] (select) at (0,-7.8) {\textbf{5. Select}\\action or silence};
-\node[flowbox] (generate) at (0,-10) {\textbf{6. Generate}\\grounded\\intervention};
-\node[flowbox] (validate) at (0,-11.9) {\textbf{7. Validate}\\the output};
-\node[flowbox] (record) at (0,-13.8) {\textbf{8. Record}\\decision and response};
-\draw[arr] (ingest) -- (models);
-\draw[arr] (models) -- (records);
-\draw[arr] (records) -- (checks);
-\draw[arr] (checks) -- (select);
-\draw[arr] (select) -- node[tag,right]{Action} (generate);
-\draw[arr] (generate) -- (validate);
-\draw[arr] (validate) -- (record);
-\draw[arr] (select.east) -- (2.65,-7.8) --
-  node[tag,rotate=90,above]{Silence} (2.65,-13.8) -- (record.east);
-\draw[arr,dashed] (record.west) -- (-2.6,-13.8) --
-  node[tag,rotate=90,above]{Next eligible point} (-2.6,0) -- (ingest.west);
+ tag/.style={font=\scriptsize,align=center,fill=white,inner sep=2pt}]
+\node[box] (forecast) at (-5.7,0) {\textbf{1. Forecast}\\Freeze task posterior\\and unaided prediction};
+\node[box] (guidance) at (-1.9,0) {\textbf{2. Select}\\Graph-supported\\guidance and target};
+\node[box] (exposure) at (1.9,0) {\textbf{3. Expose}\\Record delivery and\\positive exposure};
+\node[box] (choice) at (5.7,0) {\textbf{4. Observe}\\Completed choice\\and task outcome};
+\node[box,text width=60mm] (task) at (-3.8,-2.5)
+ {\textbf{Task observation}\\Unaided choices fit parameters\\Completed MAB rewards update values};
+\node[box,text width=60mm] (uptake) at (3.8,-2.5)
+ {\textbf{Interaction observation}\\Exposed choices update uptake\\using earlier forecast and logged exposure};
+\draw[arr] (forecast) -- (guidance);
+\draw[arr] (guidance) -- (exposure);
+\draw[arr] (exposure) -- (choice);
+\draw[thick,draw=black!65] (choice.south) -- (5.7,-1.5) -- (-3.8,-1.5);
+\draw[arr] (-3.8,-1.5) -- (task.north);
+\draw[arr] (3.8,-1.5) -- (uptake.north);
+\fill[black!65] (3.8,-1.5) circle (1pt);
 \end{tikzpicture}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.61\linewidth}
-\vspace{0pt}
-\small\raggedright
-\setlength{\parskip}{1pt}
-\begin{enumerate}[leftmargin=1.4em,itemsep=3pt,topsep=0pt]
-\item \textbf{Ingest the event.} The experiment layer records the current trial event and the information available to the participant.\par\emph{Module: Experiment layer.}
-\item \textbf{Update the models.} Revise environment estimates and contextual participant hypotheses, retaining uncertainty and competing interpretations.\par\emph{Module: Decision environment and participant models.}
-\item \textbf{Validate the records.} Check the proposed knowledge-base updates and their epistemic annotations before committing them.\par\emph{Module: Knowledge base and epistemic annotation layers (backend validator).}
-\item \textbf{Run task-specific checks.} The reasoning layer identifies candidate issues, relevant evidence and plausible alternatives.\par\emph{Module: Reasoning layer.}
-\item \textbf{Select an action or silence.} The intervention policy ranks candidates by evidential support, decision relevance and interruption cost; it selects silence if none clears the current threshold. Initial thresholds and cooldowns should be explicit, preregistered parameters, not implied optimal values. Silence bypasses message generation and output validation but is still recorded.\par\emph{Module: Intervention policy.}
-\item \textbf{Generate a grounded intervention.} If intervention is selected, the LLM expresses the chosen action using the supporting claim and permitted task information.\par\emph{Module: LLM layer.}
-\item \textbf{Validate the output.} Check the proposed message and structured updates for consistency with the selected action, available evidence and output schemas before delivery or commitment. A generated message is delivered only after validation.\par\emph{Module: Backend validator, using reasoning-layer and intervention-policy checks.}
-\item \textbf{Record the decision and response.} Store the policy rationale, including reasons for silence, any delivered message and any subsequent participant response for inspection and replay.\par\emph{Module: Knowledge base and experiment layers.}
-\end{enumerate}
-\end{minipage}
-\end{minipage}
+\caption{Causal order of assistant learning. The observed action never refits the baseline forecast for that same uptake observation. The actor's true coefficients are absent from this loop.}
+\label{fig:learning}
+\end{figure}
 
-\section{A static schema and dynamic instances}
-For the first prototype, the two well-defined experiments permit specifying alternatives, feedback mechanisms, target conditions and decision horizons in advance, so the prototype needs not invent new concepts to interpret each trial. Therefore, we can have \emph{a static schema} and \emph{dynamic instances}:  
+\subsection{What the personalised policy changes}
+After six unaided calibration/current choices, delivery assessment computes a response distance for each task hypothesis $h$,
+\[
+ d_t^{(h)}=\frac12\sum_a\left|\widehat p_t^{(h)}(a)-\widehat q_t^{(h)}(a)\right|,
+\]
+then uses the upper endpoint of its 95\% interval under the task-posterior weights. A prompt is suppressed when that upper bound is at most .15. In MAB, the distance within a hypothesis is one minus its existing probability mass on the offered singleton or pair. TBS uses its actual processing target, not the fact that both options are named. This scheduling calculation is distinct from the posterior-averaged likelihood used to estimate uptake.
+
+Otherwise usefulness can be attenuated when the upper distance is smaller than the same task/style's common uniform-baseline distance. After six informative exposures, low upper uptake can reduce usefulness, capped at 25\%. If it is at most .25, cooldown increases by three trials. Low uptake alone is not a permanent veto; high uptake earns no automatic bonus. These configurable rules are authored choices requiring assessment.
+
+Versioned forecasts, intervals and event/calibration links enter RDF. A digest binds the model and settings to its scheduling warrant. Decisions retain proofs, estimates, score factors, cost, cooldown and rationale. Validation reconstructs the assessment rather than accepting unrelated substituted values.
+
+\subsection{Participant feedback}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}lY@{}}
+\toprule
+Report & Interpretation and implemented consequence\\
+\midrule
+Fewer prompts & Immediately sets infrequent preference; E/F also use 1.5 times common interruption cost. Repeated clicks do not compound it.\\
+Disagree & Can contest the linked interpretation through a scoped, expiring graph undercutter; does not imply general distrust.\\
+Helpful & Records perceived usefulness by style, not proven benefit or lower burden.\\
+Dismiss & Records dismissal without automatically reducing uptake or raising burden.\\
+Reply / no reply & Attributed text, or no report; neither establishes acceptance or rejection.\\
+\bottomrule
+\end{tabularx}
+\end{center}
+Corrections remain attributed evidence rather than unquestionable truth. Traits are not inferred from the assistant's own questions, reading time or missing replies.
+
+\section{Language, presentation and validation}
+\subsection{Local language with bounded authority}
+The default uses reviewed templates and needs no external service. Local Ollama is supported. In bounded mode it selects approved wording without changing action, ordered evidence references or claims. Optional generated mode formulates D/F questions from condition-filtered evidence; C/E retain reviewed direct wording.
+
+Generated questions must preserve action and evidence/uncertainty references, return no belief updates, and satisfy length, interrogative and content checks. The deadline is three seconds, with recorded reviewed-template fallback on failure/timeout. Hard checks establish structure and references, not semantic entailment, usefulness or preservation of every nuance. Live quality and latency require separate evaluation.
+
+Optional E/F response interpretation extracts bounded, attributed proposals from participant text. Strategy/contestation proposals remain pending researcher review; accepted, unexpired, same-scope reviews can inform later records. The LLM cannot directly rewrite numerical beliefs, add ontology classes, promote interpretations to observations or choose accepted arguments.
+
+\subsection{Participant and researcher interfaces}
+A persistent teammate side panel remains visible through stages, highlights active assistance and dims silent/previous content. Text and feedback controls stay visible but are enabled only for an eligible current-trial response. Replies close at trial end; timing continues. A stale displayed question is not an invitation to reply to an earlier trial.
+
+TBS options and current-offer comparison details remain hidden during preparation and appear at evaluation. MAB guidance may concern previously observed rewards. A also receives the configured neutral preparation interval. Browser markers use software clocks, not calibrated physical display/EEG triggers.
+
+The standalone \path{mab_tbs_web_demo/} and assistant \path{socratic_prototype/static/} adapters are separate presentation implementations. Visual changes in one do not establish parity in the other. Harmonising display details, reading opportunities and timing remains necessary before a laboratory study.
+
+The researcher inspector exposes estimates, assertions, proof chains, attacks, delivery and attributed responses. JSON retains nested snapshots and complete events; CSV exports provide task-oriented views. RDF makes semantic relations queryable. The outputs are complementary, not interchangeable summaries.
+
+\subsection{Structural validity and reproducibility}
+Python validates schemas, public-information boundaries, transitions, arithmetic and delivery proofs. RDFLib runs local graph queries; optional pySHACL validates candidate entities with context and supports full-session checks. Forecast shapes check probabilities, ordered bounds, styles, exposure counts and version/digest metadata. Calibration references are distinct from current-run observations. Unavailable SHACL is reported as unavailable, not successful conformance.
+
+Independent checks cover graph completeness, acyclicity, proof links, labels, comparison quantities and policy calculations. Invalid events commit no partial updates. Sessions freeze settings, model/policy/task versions, ontology/scheme digests, backend information and language configuration. Replay reconstructs events and recorded language without new model calls; runtime mismatches are rejected. Historical records stay readable/exportable but require their recorded software for replay/resumption.
+
+\section{Synthetic participants and empirical reconstruction}
+The handover has been imported into a frozen 62-person registry with individual actors. The 16 supplied development participants comprise four per archetype; 46 form the evaluation complement.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Original archetype & Whole cohort & Development & Complement\\
+\midrule
+MAB-specialised & 21 & 4 & 17\\
+TBS-specialised & 24 & 4 & 20\\
+Dual-regime & 10 & 4 & 6\\
+Low-expression & 7 & 4 & 3\\
+\midrule
+Total & 62 & 16 & 46\\
+\bottomrule
+\end{tabular}
+\end{center}
+These exploratory multilevel profiles concern relative patterns, not four averaged agents, diagnoses or AI receptiveness. Low-expression does not mean disengagement. Policy tuning uses the development set; the complement is not independent external validation of the original full-cohort profiles or model selection.
+
+\textbf{MAB actors.} Imported actors reproduce the supplied dual-rate Rescorla--Wagner/softmax forward calculations. They use original points/100 units; illustrative actors and the assistant use declared points/200 conventions. Timeouts do not update values; learning persists within runs. Full-data reconstruction actors remain distinct from training-only actors for chronological held-out prediction.
+
+\textbf{TBS actors.} Historical offer identities and displayed gains/probabilities are missing and remain unknown. The provisional empirical actor is a regularised, offer-marginal logistic policy using pressure, horizon, final-trial requirements, previous known choice and previous gain. It differs from the simpler assistant observer. Additional prospective offer sensitivity is assumed, not identifiable from missing historical offers. Historical prediction does not establish adequate fidelity and can be worse than a simple choice-frequency baseline.
+
+The pipeline distinguishes source reproduction, held-out prediction, autonomous fresh behaviour and parameter recovery. A converged fit or successful replay is not validated independent behaviour. Missing original offers/shifts are not invented. Prospective runs use the declared generator and fresh outcomes; laboratory-equivalence claims require further reconciliation.
+
+\subsection{How synthetic participants process assistance}
+The actor and the assistant's estimate of it are different components. Let $p_t(a)$ be the actor's baseline preferences and $S_t$ its offered set. Current MAB simulations use
+\[
+ q_t(a)=
+ \begin{cases}
+ \displaystyle\frac{p_t(a)}{\sum_{b\in S_t}p_t(b)}, & a\in S_t,\\[4pt]
+ 0, & a\notin S_t,
+ \end{cases}
+ \qquad
+ P_t(a)=(1-\rho_{\rm true})p_t(a)+\rho_{\rm true}q_t(a).
+\]
+Direct support offers the first-ranked singleton; Socratic support offers ranks one and two, weighted by that individual's preferences. A zero-mass set uses equal weights within it. At zero receptiveness and no extra interference, all conditions reproduce baseline choices under matched streams. Ordinary reward learning continues.
+
+Both styles share receptiveness/reactance/distraction/omission definitions. Socratic \texttt{none} and \texttt{recent} variants are retired. The fixed \texttt{current} field remains only for file-format compatibility. TBS retains one task-evidence/goal response: restriction to both SAFE/RISKY would otherwise do nothing. This is an explicit additional TBS assumption, not proof of equivalent processing across tasks.
+
+The actor's $\rho_{\rm true}$ is a private generative setting; the assistant's posterior over $\rho$ is an uncertain, potentially misspecified estimate. Neither is inferred from archetype or SFSS labels. Simulations generate choices, outcomes and delivery, not invented helpfulness, disagreement or burden. They test structured guidance/delivery, not language comprehension or human trust.
+
+\section{Experimental progression and current study}
+Earlier pilots explored multiple processing rules and comparison guidance; their frozen results remain separate. The subsequent shared-ranking, performance-gated, single-response MAB sweep completed 144 jobs. C/E and D/F had identical choice/outcome trajectories within each pair. With matched response settings, offered information and effective delivery, personalised wording alone could not change this actor. That structural finding motivated the new online delivery adaptation; it was not evidence that human personalisation is ineffective.
+
+A new MAB-only experiment launched on 15 November is still running at this note's 16 November revision:
 \begin{itemize}
-  \item \textbf{Static schema.} A fixed ontology defines the types of entities and relationships that can be represented, including environments, events, task-state variables, participant patterns, claims, epistemic statuses and intervention types. Relations such as \texttt{observedIn}, \texttt{supportedBy}, \texttt{dependsOn}, \texttt{contradicts} and \texttt{revises} connect them. A versioned schema can be revised between experiments, while remaining fixed within a study.
-  \item \textbf{Dynamic instances.} Each participant session generates a set of instances that capture the unfolding of the environment, participant behavior and session events. These instances include trial events, inferred patterns, unresolved uncertainties and intervention records.
+\item the same 16 actors, three matched repetitions, receptiveness .25/.5/.75;
+\item all five conditions fresh, with 200 trials per comparison and full MAB calibration;
+\item reset actor experience and assistant interaction history between conditions;
+\item one response rule, zero extra reactance/distraction/omission, offline bounded language;
+\item 144 jobs: 720 comparison sessions plus 144 calibrations, using eight workers.
 \end{itemize}
+No new personalisation outcome is declared here. This tests choice-based adaptation; synthetic feedback reports and language effects are outside its response assumptions.
 
-The closed schema is a deliberate experimental foundation for the longer-term ambition of creating a general AI teammate capable of open-ended modelling across unfamiliar decision situations. In those settings, we may not assume that all relevant goals, actors, constraints, evidence types or relationships have been anticipated. The teammate must recognise when its existing vocabulary is inadequate, propose new concepts or distinctions, and reconsider how earlier observations should be represented. Productive ignorance must then concern both uncertainty \emph{within} a model and uncertainty about the model's \emph{adequacy}: an omitted dependency or an inappropriate category may matter as much as an unknown parameter.% Extending the ontology should preserve provenance and unresolved disagreement, with human-reviewed revisions rather than silent changes to the meaning of existing claims.
+Keyed streams match environments and action-specific outcomes without forcing different actions to receive the same reward. Condition/session identifiers and receptiveness do not enter those streams. Calibration is matched across levels. Before launch, 48 independent unassisted trajectories matched 144 historical A checks; each new job must pass its fresh baseline checks before commitment. Historical assisted sessions are not pooled into new estimates.
 
-\section{Personalization}
-Personalised support lives in the participant model, linked to the environment model and knowledge base. The question is ``How is this person deciding in this situation?'' rather than ``What kind of decision-maker is this person?'' A tendency observed in volatile learning should not transfer automatically to a task with explicit probabilities and changing targets. 
+The primary outcome is score relative to fresh A. Repetitions are averaged within actors before group means: $n=4$ means four individuals, not twelve people. Report C/E and D/F contrasts, prompt counts, harms, individual variation, uncertainty and receptiveness trends separately. A first-repetition preview is descriptive, not a replacement for matched repetitions. No improvement or style separation is enforced.
 
-Personalization is implemented across several components, not confined to a single module. The participant model maintains hypotheses about the person's decision patterns, while the environment model captures the current task state and its uncertainty. The knowledge base and epistemic annotations preserve these hypotheses, their supporting evidence and their uncertainty. The reasoning layer identifies relevant issues, the intervention policy decides whether and how to intervene, and the LLM layer expresses the selected intervention.
+Workers have separate SQLite attempts, progress and evaluator reports. Hash-verified commitments, frozen manifests, leases and preserved interrupted attempts support resumption. Data are under \path{socratic_prototype/data/observed_mab_receptiveness_20261115/}; the specification is \path{docs/simulation/observed-mab-receptiveness.json}. The source package and coordinator stay unchanged while it runs.
 
-The participant model must be \emph{inspectable, revisable and humble}. It must be possible to inspect the observations behind a hypothesis, its uncertainty, competing explanations and what would count against it. Evidence can expire or lose relevance after an environmental change. Participant corrections become attributed evidence rather than unquestionable truth. Overconfidence requires a mismatch between elicited confidence and an appropriate evidential benchmark; behavior alone is insufficient.
+\section{Implemented stack, verification and remaining work}
+The stack is browser JavaScript, Python's local HTTP server, SQLite/JSON, RDF/OWL/SPARQL through RDFLib, optional pySHACL, optional pgmpy with an equivalent exact-enumeration fallback for the hand-written network, and optional local Ollama. NumPy/SciPy support reconstruction. FastAPI, an external graph server and orchestration frameworks are not required. PyMC and broader domain reasoning remain possible research tools, not completed components.
 
-Personalisation should depend jointly on what the teammate learns about the participant and the current decision context. As evidence accumulates about volatility, feedback reliability, target gap and remaining opportunities, it can revise the timing, frequency, phrasing and intensity of support. For example, evidence of a possible volatility shift may justify asking a persistent participant what would warrant renewed exploration; as a target-based horizon contracts, support may focus on whether the current strategy can still reach the target. If the contextual interpretation remains weak or contested, the teammate should use a tentative question or remain silent. Participant preferences should be elicited and updated from feedback, but interpreted alongside these changing demands. A preference for infrequent prompts may favour waiting for a sustained pattern, while evidence that delay would make a question less useful may warrant an earlier, brief intervention. Effectiveness should be assessed independently of satisfaction or compliance.
+The 17 new personalisation checks passed in targeted batches: observers, uptake styles, prior transfer/reset, causal order, exposure/timeouts, private-information isolation, feedback, changed schedules, SHACL, tampering and replay. Regressions cover guidance, module extension and condition boundaries. A serial/parallel engineering run matched 240 trial records and six exact F replays. These are software checks, not human-benefit evidence. A live-socket test was unavailable; in-memory routes passed. Mocked language tests do not establish live Ollama quality/latency, and browser harnesses do not calibrate display timing.
 
-\section{Development roadmap}
-The preceding sections describe the design for Phase~1 of a larger research plan. Phases~2 and~3 extend this foundation towards professional scenarios and, ultimately, an open-ended AI teammate.
-
+Remaining work is:
 \begin{enumerate}
-\item \textbf{Phase 1: Closed ontology, controlled tasks.} Implement the two task environments, fixed schema, trial logging, simple uncertain models and a small library of intervention rules. Deliver replayable traces, schema validation and the four-condition pilot. The bounded ontology is a strength: it makes information access, model errors and intervention consequences experimentally controllable.
-\item \textbf{Phase 2: Semi-open ontology, professional scenarios.} Extend to selected scenarios with domain experts. Retain a stable core but allow reviewed additions for goals, constraints, evidence and conflicting interpretations. Test transfer, workload and whether participant hypotheses remain valid across contexts; do not infer professional effectiveness from game performance.
-\item \textbf{Phase 3: Open Socratic teammate with human-reviewed ontology revision.} Allow proposed concepts and relations from novel situations, with explicit provenance, versioning and human review before adoption. Evaluate semantic drift, unresolved disagreement and the teammate's ability to justify its intervention authority in less structured collaboration.
+\item \textbf{Complete computational evaluation.} Audit the new grid; assess personalisation, observer fit, uptake estimation and harms without forcing differences. Separate development tuning from reserved policy evaluation.
+\item \textbf{Validate participant/response assumptions.} Examine missing TBS offers, coarse grids and parameter uncertainty. Introduce feedback generators only as labelled, matched assumptions. Test time-varying response models explicitly.
+\item \textbf{Prepare the human study.} Harmonise presentations, reading and timing; agree response windows, randomisation/counterbalancing, ethics and preregistration. Assess reasoning, autonomy, burden, reliance and performance.
+\item \textbf{Extend through task modules.} Add mechanics, evidence, schemes, actor/observer adapters and checks. Governance/security scenarios require domain evidence; game scores cannot validate professional effectiveness.
+\item \textbf{Investigate reviewed ontology revision.} Preserve the core while testing proposed concepts, model inadequacy and semantic drift. Human-reviewed schema evolution is future work; LLM-led ontology mutation is not enabled.
 \end{enumerate}
-%Progression should depend on demonstrated grounding, judgment benefits and tolerable intervention cost, rather than conversational fluency alone.
+The design commitment is executable: \emph{represent uncertain evidence, discover revisable reasons, and decide separately whether communication is warranted}. Demonstrating better human judgment remains the objective.
 
-\section{Candidate technology stack}
-The larger research programme calls for a modular stack that can grow from controlled experiments to professional scenarios and an open-ended teammate. Its main capabilities are experimental interaction, inspectable knowledge representation, uncertainty modelling, validation, conversational delivery and coordination of the intervention loop. The following technologies are candidates for these roles; they are alternatives and possible extensions, rather than a single configuration that must be implemented in full.
+\clearpage
+\section*{Implementation pointers}
+Authoritative settings are in \path{socratic_prototype/policy.json} (\texttt{policy-0.7}) and frozen manifests. Companion guides provide details:
 \begin{itemize}
-\item \textbf{Experiments and interaction:} whatever implementation already exists for the MAB and TBS tasks.
-\item \textbf{Backend:} Python/FastAPI for event ingestion, state updates, model services and a versioned intervention API.
-\item \textbf{Ontology and knowledge base:} Prot\'eg\'e/WebProt\'eg\'e for ontology design; RDF/OWL/SPARQL with RDFLib or Owlready2 for implementation. RDFLib provides Python graph handling and SPARQL support.\footnote{\url{https://rdflib.readthedocs.io/en/stable/}} Apache Jena/Fuseki could support a shared graph store or endpoint if later phases require one.
-\item \textbf{Validation:} SHACL/pySHACL for claim shapes, evidence links and required metadata, alongside checks of LLM output schemas and task-rule consistency.
-
-%RDF/OWL supplies structure and relationships; calibrated uncertainty and the treatment of contradictory assertions require explicit modelling and application rules. For Phase~1, contested propositions should remain annotated claim objects, with unknown distinguished from false. SHACL checks record structure, while the model and policy code determine how uncertainty affects intervention. This division makes productive ignorance inspectable and experimentally testable within the bounded prototype.
-
-\item \textbf{Probabilistic modelling:} pgmpy for the initial Bayesian-network runtime model, followed by PyMC for empirical estimation and analysis, with complexity guided by evidence and calibration results.
-\item \textbf{Argumentation:} a simple Python module for supporting and opposing reasons; possible later evaluation of TweetyProject or Carneades as requirements for defeasible reasoning become clearer.
-\item \textbf{Language and orchestration:} an LLM API with structured outputs/function calling; LangGraph or similar orchestration if the workflow grows to require persistent state, multiple reasoning steps and human review checkpoints.\footnote{\url{https://docs.langchain.com/oss/python/langgraph/overview}}
+\item \path{docs/task_modules.md} and \path{docs/graph_argumentation.md}: contracts, layers, proofs and boundaries. Older version statements must be read against current executable configuration.
+\item \path{docs/observed_personalisation.md}: estimates, feedback, delivery calculations and checks (\texttt{participant-model-0.2}).
+\item Guidance, gates and response assumptions: \path{docs/socratic_guidance.md};\newline
+\path{docs/simulation/mab-shared-ranking.md}; and\newline
+\path{docs/simulation/single-response.md}.
+\item \path{docs/empirical_profiles.md}: import, reconstruction/prediction roles, missing information and limits.
+\item \path{docs/simulation/observed-mab-receptiveness.md}: the current study, controls, progress and resumption.
 \end{itemize}
+From the repository root, a fresh reviewed-language session can be served with:
+\begin{lstlisting}
+SOCRATIC_LLM=offline SOCRATIC_LANGUAGE_MODE=bounded \
+  .venv/bin/python -m socratic_prototype.server \
+  --data-dir /tmp/maieusis-design-note-test
+\end{lstlisting}
+The task interface and inspector are at \url{http://127.0.0.1:8765/} and \url{http://127.0.0.1:8765/inspector.html}. Complete required calibrations before comparing assistance. Use fresh sessions for changed runtimes; do not change dependencies or frozen implementation files during the active experiment.
 
-The following subsections the validation, probabilistic modelling and argumentation components, which are central to productive ignorance and the Socratic intervention loop.
-
-\subsection{Knowledge-base validation with SHACL/pySHACL}
-SHACL (Shapes Constraint Language) specifies conditions that an RDF data graph must satisfy.\footnote{\url{https://www.w3.org/TR/shacl/}} Whereas the ontology defines concepts and relationships, SHACL \emph{shapes} specify what constitutes an acceptable record: required properties, permitted values, datatypes, cardinalities and links to entities of the appropriate type. pySHACL is a Python implementation that checks the data against these shapes and returns a conformance result and validation report.\footnote{\url{https://github.com/RDFLib/pySHACL}} It therefore provides an explicit validation layer for the dynamic instances created during a session.
-
-For Phase~1, a small set of hand-written shapes should cover trials, participant hypotheses, epistemic annotations and intervention records. A trial should identify its participant, session and trial index. An inferred participant hypothesis should identify its task context, supporting evidence, epistemic status and model version; a numerical confidence, when present, should lie between zero and one and specify its interpretation. An intervention record should identify the selected action, its rationale and supporting claims, including an explicit rationale when the action is silence. These requirements make missing evidence or metadata visible before the record informs further reasoning.
-
-In the minimal policy loop, pySHACL belongs primarily to step~3, which validates proposed knowledge-base updates before commitment. The backend should validate a candidate graph containing the proposed records and their relevant context, retain the report, and reject or return invalid updates for correction. Structured LLM proposals should first pass their output-schema checks; any resulting RDF updates should then pass the relevant shapes before entering the knowledge base. For example, a hypothesis of premature exploitation without a supporting trial link should fail its shape, even if the LLM's prose sounds plausible.
-
-Conformance establishes that a record meets the declared constraints, not that its claim is true, its probability is calibrated or an intervention is justified. SHACL should permit unknown and contested claims when their epistemic status and provenance are properly recorded. Probabilistic inference, policy checks and output validation remain responsible for evidential interpretation, intervention selection and message consistency. Together, these mechanisms preserve uncertainty while enforcing a traceable, machine-checkable record of what the teammate believes and does.
-
-\subsection{Probabilistic modelling: runtime inference and empirical refinement}
-The first prototype should use pgmpy for a small, transparent Bayesian-network runtime model.\footnote{\url{https://pgmpy.org/examples/Inference_Discrete_BN.html}} This is appropriate because MAB and TBS are controlled, well-defined environments whose task variables and dependencies can be specified in advance. The initial network should be hand-designed from task structure and theory, with explicit, provisional conditional probability tables, rather than blindly learned from a small dataset. Its assumptions should be documented and checked for sensitivity.
-
-The network should use discrete, interpretable states: low/medium/high volatility evidence, low/high switching, and hypotheses such as underexploration, premature exploitation, constraint neglect and feedback overweighting. A further variable can represent likely intervention usefulness, conditional on the task context, participant hypotheses and candidate intervention. During the task, pgmpy should support real-time inference to help the policy decide whether to ask, challenge, warn, explain, highlight a dependency or stay silent. An illustrative runtime query is:
-\begin{quote}\small\ttfamily
-P(premature\_exploitation | volatility\_shift,\\
-\hspace*{1em}low\_switching, declining\_expected\_value)
-\end{quote}
-Here, volatility shift denotes evidence of a suspected change, and declining expected value is inferred from permitted feedback; neither supplies privileged access to hidden task state.
-
-The outputs should remain inspectable and linked to ontology instances and the participant model. Each inferred participant-state hypothesis should retain its input evidence, posterior estimate, model version and relevant assumptions. The policy should separately record how that inference, estimated intervention usefulness and interruption cost led to a chosen or withheld intervention. A posterior supports deliberation by the policy; it does not establish a diagnosis or automatically justify a prompt.
-
-PyMC should be introduced in a second stage, once trial-level data have been collected, for richer statistical modelling and analysis. Hierarchical Bayesian models can represent participant behaviour, individual differences, environment-specific effects and uncertainty around intervention effects.\footnote{\url{https://www.pymc.io/projects/examples/en/2022.01.0/case_studies/multilevel_modeling.html}} A concrete goal is to estimate participant-specific adaptation rates and responsiveness to Socratic intervention, with partial pooling across participants and explicit differences between MAB and TBS. This analytical stage can begin within Phase~1; it is distinct from the roadmap's expansion to professional scenarios in Phase~2.
-
-PyMC need not replace pgmpy. Empirical estimates can refine the runtime model's priors, transition probabilities, policy thresholds and intervention-effect assumptions, with uncertainty retained and revisions evaluated before deployment. The division of labour is: \emph{``pgmpy helps build the first Socratic teammate; PyMC helps learn whether and why it works.''}
-
-
-\subsection{Argumentation: supporting, opposing and revisable reasons}
-An argumentation module should expose the reasons for and against a participant-state hypothesis or candidate intervention. The Bayesian network estimates uncertainty; argumentation records how premises support a conclusion, which objections challenge it, and what would warrant revision. The reasoning is \emph{defeasible}: new evidence or an exception can overturn a previously supported conclusion. Productive ignorance therefore includes preserving unresolved objections alongside the current interpretation.
-
-For Phase~1, a simple Python module should suffice. Each argument should record its conclusion, premises, supporting trial or claim identifiers, scope and epistemic status, with links to opposing reasons or challenged assumptions. Hand-written rules can construct these records from the ontology, participant model and probabilistic outputs. Explicit evaluation rules should distinguish supported, opposed and unresolved candidates and retain their rationale. Posterior estimates may inform premises, but argument strength should not automatically be treated as a calibrated probability. The module contributes to step~4 of the minimal policy loop; step~5 decides whether the resulting case justifies intervention.
-
-In MAB, declining reward estimates and persistent choice after a suspected shift may support asking about renewed exploration. Noisy feedback may challenge the shift interpretation, and a recent prompt may count against intervening now. Preserving these objections can justify a tentative question or silence. In TBS, a large target gap and few remaining choices may support reviewing the strategy, while the final-trial multiplier may undermine the assumption that the target is unreachable. The LLM should express the inspected reasons and unresolved assumptions; the intervention record should retain the arguments used by the policy.
-
-A fuller framework becomes relevant when professional scenarios introduce interacting exceptions, chains of objections or competing standards for accepting claims. TweetyProject offers argumentation and defeasible-reasoning libraries,\footnote{\url{https://tweetyproject.org/}} while Carneades provides tools for argument reconstruction, evaluation and mapping.\footnote{\url{https://carneades.github.io/}} Either should be evaluated against concrete requirements for inspectability, unresolved conflict, runtime integration and reproducibility. The first prototype should test whether explicit supporting and opposing reasons improve intervention decisions before adopting a more elaborate engine.
-
-\section{Closing research claim}
-
-\textbf{The first prototype tests whether productive ignorance can be operationalized in controlled decision environments through a fixed ontology, dynamic epistemic annotations, participant modelling, and adaptive Socratic intervention.}
 \end{document}

@@ -30,11 +30,13 @@ class ComparisonTest(unittest.TestCase):
 
     def mab_case(self):
         s=self.store.create(dict(participant_id='comparison',task='MAB',condition='A',phase='calibration',protocol='short',preference='standard'))
-        for i in range(1,7):
-            ev=evaluation('MAB',s['id'],i,score=(i-1)*100);self.store.event(s['id'],ev)
+        score=0
+        for i in range(1,10):
+            ev=evaluation('MAB',s['id'],i,score=score);self.store.event(s['id'],ev)
+            option,gain=('blue1',100) if i<=3 else ('red1',-200);score+=gain
             self.store.event(s['id'],dict(kind='feedback',trial_id=ev['trial_id'],index=i,
-                choice='blue1',outcome=100,score_after=i*100,timed_out=False,response_ms=500))
-        record=self.store.event(s['id'],evaluation('MAB',s['id'],7,score=600))
+                choice=option,outcome=gain,score_after=score,timed_out=False,response_ms=500))
+        record=self.store.event(s['id'],evaluation('MAB',s['id'],10,score=score))
         return self.store.get(s['id']),record
 
     def decision(self,s,record,condition='D'):
@@ -119,11 +121,9 @@ class ComparisonTest(unittest.TestCase):
                   'comparisons':[{'option_id':'blue1'},{'option_id':'red2'}]}
         p=SPEC['task_models']['MAB']
         current=mab_execution.reconsider(history,p,ev,question)
-        recent=mab_execution.reconsider_recent(history,p,ev,question)
         self.assertGreater(current['blue1'],current['red2'])
-        self.assertNotEqual(current,recent)
         self.assertTrue(all(current[a]==0 for a in mab.ARMS if a not in ('blue1','red2')))
-        for mechanism in ('none','current','recent'):
+        for mechanism in ('current',):
             actor=Participant(SPEC,'MAB','null',mechanism);actor.history=history
             base,assisted,_=actor.distribution(ev,question);self.assertEqual(base,assisted)
             actor=Participant(SPEC,'MAB','responsive',mechanism);actor.history=history

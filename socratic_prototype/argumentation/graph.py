@@ -95,6 +95,8 @@ def build_input(session,event):
             add(subject,predicate,value,kind,subject)
     add(URIRef(state),arg.preparationPoint,Literal(True),'observation',URIRef(state),
         'A preparation point is recorded; no participant intent is implied.')
+    from ..personalisation import project_forecast
+    project_forecast(add,extra,state,session,snap)
     claims={c['id']:c for c in snap['claims']}
     events={e['id']:e for e in session['events']}
     def report_metadata(recorded,quote):

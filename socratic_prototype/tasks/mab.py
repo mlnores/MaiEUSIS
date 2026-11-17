@@ -8,7 +8,7 @@ from .base import MODEL_VERSION as VERSION, validate_envelope, describe_task, co
 
 ID = 'MAB'
 NAMESPACE = 'https://example.org/socratic/mab/'
-MODULE_VERSION = 'mab-0.1'
+MODULE_VERSION = 'mab-0.3'
 ONTOLOGY_VERSION = 'mab-ontology-0.1'
 ELIGIBLE_POINT = 'post-feedback preparation'
 PROTOCOLS={'short':40,'full':200}
@@ -22,13 +22,29 @@ def documents():
     paths=document_paths(ID)
     return paths[:3],paths[3:]
 
-def describe():return describe_task(ID,NAMESPACE,MODULE_VERSION,ONTOLOGY_VERSION,documents())
+def describe():
+    import hashlib
+    from pathlib import Path
+    from . import mab_guidance, mab_arguments, mab_participant, mab_rdf
+    return {**describe_task(ID,NAMESPACE,MODULE_VERSION,ONTOLOGY_VERSION,documents()),
+            'guidance_version':mab_guidance.VERSION,
+            'source_digests':{Path(p).name:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+                              for p in (__file__,mab_guidance.__file__,mab_arguments.__file__,mab_participant.__file__,mab_rdf.__file__)}}
+
+def participant_observer(profile):
+    from .mab_participant import Observer
+    return Observer(profile)
+
+def assistance_target(evaluation,base,intervention):
+    from .mab_participant import assistance_target as target
+    return target(evaluation,base,intervention)
 
 evidence_observation=common_observation
 
 def argumentation_documents():
     from ..argumentation import ROOT
-    return (ROOT/'schemes/mab.ttl',ROOT/'schemes/mab_recommendations.ttl',ROOT/'schemes/mab_comparisons.ttl')
+    return (ROOT/'schemes/mab.ttl',ROOT/'schemes/mab_recommendations.ttl',ROOT/'schemes/mab_comparisons.ttl',
+            ROOT/'schemes/mab_performance.ttl')
 
 def project_argumentation_facts(writer,session,event,state,history):
     from .mab_arguments import project
@@ -45,7 +61,12 @@ def same_scope(event,evaluation):return True
 
 def scope_suffix(evaluation):return ''
 
-def environment(h,ev,policy,event):return mab_environment(h,policy['change_prior'])
+def environment(h,ev,policy,event):
+    from .mab_guidance import assess,settings
+    env=mab_environment(h,policy['change_prior'])
+    # Protocol length is attached by the engine; it is public task information.
+    env['guidance']=assess(h,env,event['remaining_decisions'],settings(policy))
+    return env
 
 def participant(h,profile):
     q,obs=rl(h,profile.get('alpha_plus',.3),profile.get('alpha_minus',.3),profile.get('beta',2))
@@ -58,9 +79,12 @@ def environment_claim(env):
 
 def evidence_environment(env):
     from .base import pick
+    guidance=copy.deepcopy(env.get('guidance',{}))
+    guidance.get('performance',{}).pop('evidence',None)
     return ({'arms':[{**pick(a,['arm','samples','estimated_value','approximate_95_interval']),
                      'change':pick(a['change'],['posterior','log_bayes_factor','samples','evidence'])} for a in env['arms']],
-             **pick(env,['unknown','assumptions'])},'Reward values and possible changes remain uncertain.')
+             **pick(env,['unknown','assumptions']),**({'guidance':guidance} if guidance else {})},
+            'Reward values and possible changes remain uncertain.')
 
 def evidence_participant(person):
     from .base import pick
@@ -156,6 +180,8 @@ def calibrate(history):
                     break
         result[name + '_interval'] = qs
     result['evidence'] = [h['trial_id'] for h in valid]
+    result['choice_posterior']=[{'parameters':dict(alpha_plus=g[0],alpha_minus=g[1],beta=g[2]),'weight':w}
+                                for g,w in zip(grid,weights)]
     return result
 
 def validate_event(event):
@@ -211,6 +237,9 @@ def hypothesis_inputs(session,evaluation,environment,h):
     stay = sum((a == b for a, b in zip(choices, choices[1:]))) / max(1, len(choices) - 1)
     profile = session.get('calibration_profile') or {}
     q, updates = rl(h, profile.get('alpha_plus', 0.3), profile.get('alpha_minus', 0.3), profile.get('beta', 2))
+    learned=session.get('participant_estimate',{}).get('online_task',{})
+    if 'learned_values' in learned:
+        q=learned['learned_values'];updates=[learned['last_update']] if learned['last_update'] else []
     model_mismatch = bool(last and q[last] < max(q.values()) - 0.1)
     choice_compatibility = updates[-1]['choice_probability'] if updates else None
     arm = next((a for a in environment['arms'] if a['arm'] == last), None)
@@ -244,7 +273,7 @@ def simulation_adapter():
 
 def recommendation_message(recommendation):
     require(recommendation['criterion']=='estimated_reward','Unsupported MAB recommendation criterion')
-    return f"I recommend {recommendation['option_id'].upper()} (key {recommendation['key']}) because its estimated mean reward is highest using the observed outcomes. Estimates remain uncertain."
+    return f"I recommend {recommendation['option_id'].upper()} (key {recommendation['key']}) because it ranks first by estimated mean reward using the observed outcomes. Estimates remain uncertain; equal estimates use a fixed option-ID order."
 
 def intervention_focus(issue):
     return 'exploration' if issue in {'underexploration','unsampled_alternatives'} else 'value_revision'
@@ -253,7 +282,21 @@ def intervention_focus(issue):
 def select_comparisons(candidates, env, evaluation):
     """Rank accepted comparison opportunities, without inventing a warrant."""
     arms={a['arm']:a for a in env['arms']}
+    guidance=env.get('guidance',{})
+    if guidance.get('settings',{}).get('comparison_strategy')=='shared_top_two':
+        by_id={c['option_id']:c for c in candidates if 'public_ranked_reward' in c['criteria']}
+        ordered=guidance['ranking'][:2]
+        if len(ordered)!=2 or any(a['option_id'] not in by_id for a in ordered):return []
+        result=[]
+        for a in ordered:
+            c=copy.deepcopy(by_id[a['option_id']])
+            c['details']={k:copy.deepcopy(a[k]) for k in ['rank','samples','estimated_value','approximate_95_interval','tie_count']}
+            result.append(c)
+        return result
     # Keep an observed reward anchor when supported, then informative alternatives.
+    candidates=[c for c in candidates if any(k in c['criteria'] for k in ('plausible_reward','informative_uncertainty'))]
+    candidates=copy.deepcopy(candidates)
+    for c in candidates:c['criteria']=[k for k in c['criteria'] if k!='public_ranked_reward']
     sampled=sorted((c for c in candidates if 'plausible_reward' in c['criteria']),
                    key=lambda c:(-arms[c['option_id']]['estimated_value'],c['option_id']))
     chosen=sampled[:1]
@@ -275,13 +318,38 @@ def comparison_context(comparisons, evaluation):
             evidence=f'no observed outcomes; prior-based uncertainty [{lo:g}, {hi:g}], not demonstrated reward'
         else:
             evidence=f'{n} observed outcomes, estimated mean {d["estimated_value"]:g}, approximate interval [{lo:g}, {hi:g}]'
-        purpose='potential information as well as plausible reward' if 'informative_uncertainty' in c['criteria'] else 'plausible reward under the estimate'
+        if 'public_ranked_reward' in c['criteria']:
+            purpose=f'rank {d["rank"]} in the shared estimated-reward ranking'
+            if d['tie_count']>1:purpose+=f'; tied estimate with {d["tie_count"]-1} other options, ordered by option ID'
+        else:purpose='potential information as well as plausible reward' if 'informative_uncertainty' in c['criteria'] else 'plausible reward under the estimate'
         parts.append(f'{c["option_id"].upper()} (key {c["key"]}): {evidence}; worth examining for {purpose}')
     return 'Alternatives to examine:\n'+ '\n'.join(parts)+'.\nReward estimates remain uncertain.'
 
 
+def assistance_gate(snapshot):
+    from .mab_guidance import ranking
+    guidance=snapshot['environment']['guidance'];performance=guidance['performance']
+    require(guidance['ranking']==ranking(snapshot['environment']),'MAB shared ranking differs from public estimates')
+    enabled=guidance['settings']['performance_gate']
+    report=snapshot['graph_argumentation'];facts={a['id']:a for a in report['assertions']}
+    proofs=[a['id'] for a in report['arguments'] if a['label']=='accepted' and
+            facts[a['conclusion']]['proposition']['scope']==report['scope'] and
+            facts[a['conclusion']]['proposition']['predicate']==NAMESPACE+'performanceReviewWarranted' and
+            facts[a['conclusion']]['proposition']['polarity']=='positive' and
+            facts[a['conclusion']]['proposition']['object']['value'] is True]
+    eligible=bool(proofs) and report['status']=='complete'
+    return {'enabled':enabled,'eligible':eligible if enabled else True,
+            'argument_ids':proofs if enabled else [],
+            'reason':performance['reason'] if not enabled or not performance['eligible'] or eligible else
+                     'The performance assessment lacks an accepted graph warrant.'}
+
+
 def comparison_evaluation(env):
     return {'options':[{'id':a['arm'],'key':KEYS[a['arm']]} for a in env['arms']]}
+
+
+def required_comparison_count(env):
+    return 2 if env['guidance']['settings']['comparison_strategy']=='shared_top_two' else 0
 
 def browser_adapter():
     return {'help':'MAB outcome probabilities are hidden during choices and retained in separate evaluator logs.','script':'task-adapters/mab.js','title':'Multi-Armed Bandit (MAB)','start_id':'startMab','calibration_id':'mabCalibration'}

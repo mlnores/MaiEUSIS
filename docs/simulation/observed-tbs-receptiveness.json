@@ -1,0 +1,5 @@
+{
+  "id": "observed-tbs-development16-r3-v1",
+  "template": "observed-profile-tbs-pilot.json",
+  "levels": ["0.25", "0.5", "0.75"]
+}

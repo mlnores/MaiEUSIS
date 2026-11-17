@@ -4,6 +4,24 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+arg:ForecastProbabilityShape a sh:NodeShape ;
+ sh:targetClass arg:ChoiceForecast ; sh:targetClass arg:UptakeEstimate ;
+ sh:property [ sh:path arg:probabilityMean ; sh:minCount 1 ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 1 ] ;
+ sh:property [ sh:path arg:probabilityLower ; sh:minCount 1 ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 1 ; sh:lessThanOrEquals arg:probabilityUpper ] ;
+ sh:property [ sh:path arg:probabilityUpper ; sh:minCount 1 ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 1 ] .
+arg:BehaviouralForecastShape a sh:NodeShape ; sh:targetClass arg:BehaviouralForecast ;
+ sh:property [ sh:path arg:version ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path arg:modelDigest ; sh:minCount 1 ; sh:maxCount 1 ; sh:pattern "^[0-9a-f]{64}$" ] ;
+ sh:property [ sh:path arg:inState ; sh:minCount 1 ; sh:maxCount 1 ; sh:class task:TaskState ] ;
+ sh:property [ sh:path core:status ; sh:hasValue "inferred" ] .
+arg:ChoiceForecastShape a sh:NodeShape ; sh:targetClass arg:ChoiceForecast ;
+ sh:property [ sh:path arg:optionID ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ] ;
+ sh:property [ sh:path arg:source ; sh:minCount 1 ; sh:maxCount 1 ; sh:class arg:BehaviouralForecast ] .
+arg:UptakeEstimateShape a sh:NodeShape ; sh:targetClass arg:UptakeEstimate ;
+ sh:property [ sh:path arg:style ; sh:minCount 1 ; sh:maxCount 1 ; sh:in ("direct" "socratic") ] ;
+ sh:property [ sh:path arg:informativeExposures ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+ sh:property [ sh:path core:status ; sh:minCount 1 ; sh:in ("assumed" "inferred") ] .
+
 arg:AssertionShape a sh:NodeShape ; sh:targetClass arg:Assertion ;
  sh:property [ sh:path arg:asserts ; sh:minCount 1 ; sh:maxCount 1 ; sh:class arg:Proposition ] ;
  sh:property [ sh:path arg:source ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI ] ;

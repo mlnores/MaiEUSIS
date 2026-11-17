@@ -273,13 +273,13 @@ class CorrectionTest(unittest.TestCase):
             s=store.create({'participant_id':'synthetic_demo','task':'MAB','condition':'F','phase':'assisted','protocol':'short',
                             'preference':'frequent','calibration_ids':ids})
             for index in range(1,8):
-                ev=evaluation('MAB',s['id'],index);r=store.event(s['id'],ev);d=r['snapshot']['decision']
+                ev=evaluation('MAB',s['id'],index,score=-100*(index-1));r=store.event(s['id'],ev);d=r['snapshot']['decision']
                 if index==7:
                     self.assertEqual(d['hypothesis'],'underexploration')
                     store.event(s['id'],{'kind':'delivery','decision_id':d['id'],'index':7,'delivered':True,'generation_latency_ms':1,'reading_exposure_ms':3900,'early_attempts':0})
                     store.event(s['id'],{'kind':'response','decision_id':d['id'],'index':7,'feedback':'disagree','text':'I am deliberately establishing a baseline.','hypothesis':d['hypothesis']})
-                store.event(s['id'],{'kind':'feedback','trial_id':ev['trial_id'],'index':index,'choice':'blue1','outcome':0,'score_after':0,'timed_out':False,'response_ms':1000})
-            result=store.event(s['id'],evaluation('MAB',s['id'],8))
+                store.event(s['id'],{'kind':'feedback','trial_id':ev['trial_id'],'index':index,'choice':'blue1','outcome':-100,'score_after':-100*index,'timed_out':False,'response_ms':1000})
+            result=store.event(s['id'],evaluation('MAB',s['id'],8,score=-700))
             claims=result['snapshot']['claims']
             self.assertIn('contested',next(c for c in claims if c['id'].endswith('_underexploration'))['statuses'])
             report=next(c for c in claims if 'Participant feedback' in c['content'])
@@ -321,7 +321,7 @@ class SummaryTest(unittest.TestCase):
             with self.assertRaises(ValidationError):store.replay(s['id'])
 
     @unittest.skipUnless(HAS_RDF,'Live assistance requires RDFLib')
-    def test_reviewed_support_is_a_reachable_policy_outcome(self):
+    def test_neutral_returns_without_estimated_headroom_do_not_trigger_support(self):
         with tempfile.TemporaryDirectory() as td:
             store=Store(Path(td)/'sessions.sqlite3')
             ids={t:run_scripted(store,t) for t in ['MAB','TBS']}
@@ -330,6 +330,7 @@ class SummaryTest(unittest.TestCase):
                 ev=evaluation('MAB',s['id'],i);store.event(s['id'],ev)
                 store.event(s['id'],{'kind':'feedback','trial_id':ev['trial_id'],'index':i,'choice':arm,'outcome':0,'score_after':0,'timed_out':False,'response_ms':1000})
             r=store.event(s['id'],evaluation('MAB',s['id'],7))
-            self.assertEqual(r['snapshot']['decision']['action'],'support')
+            self.assertEqual(r['snapshot']['decision']['action'],'silence')
+            self.assertIn('Performance gate',r['snapshot']['decision']['rationale'])
 
 if __name__=='__main__':unittest.main()

@@ -1,4 +1,4 @@
-"""Frozen, resumable reconsideration sensitivity pilots; researcher-side only."""
+"""Frozen, resumable profile-response pilots; researcher-side only."""
 import argparse
 import copy
 import fcntl
@@ -21,7 +21,7 @@ from .simulation import run as simulate
 from .study import validate_study
 from .tasks import get_task
 
-VERSION = 'reconsideration-pilot-0.1'
+VERSION = 'profile-response-pilot-0.2'
 
 
 def fingerprint(value):
@@ -59,8 +59,10 @@ def implementation():
 
 def validate_config(config):
     fields(config, ['id', 'participants_file', 'expected_participants', 'cohort_split', 'study',
-                    'mechanisms', 'response_parameters', 'seed', 'repeats', 'primary_outcomes'],
-           ['source_ids', 'expected_profiles', 'max_trials'])
+                    'response_parameters', 'seed', 'repeats', 'primary_outcomes'],
+           ['source_ids', 'expected_profiles', 'max_trials', 'mechanisms'])
+    config=copy.deepcopy(config)
+    config.setdefault('mechanisms',['current'])
     require(identity(config['id']), 'Invalid pilot ID')
     require(isinstance(config['participants_file'], str) and bool(config['participants_file']), 'Pilot needs an actor export')
     require(type(config['expected_participants']) is int and config['expected_participants'] > 0, 'Invalid participant count')
@@ -68,8 +70,7 @@ def validate_config(config):
     require(type(config['repeats']) is int and config['repeats'] > 0, 'Invalid repetition count')
     require(isinstance(config['seed'], str) and 0 < len(config['seed']) <= 100, 'Invalid pilot seed')
     mechanisms = config['mechanisms']
-    require(isinstance(mechanisms, list) and len(mechanisms) == len(set(mechanisms)) and
-            set(mechanisms) == {'none', 'current', 'recent'}, 'Pilot must retain all three reconsideration mechanisms')
+    require(mechanisms == ['current'], 'Memory variants are retired; omit mechanisms or use only ["current"] for a new pilot')
     validate_response(config['response_parameters'])
     study = validate_study(config['study'], simulation=True)
     require(set(study['conditions']) == {'A', 'C', 'E', 'D', 'F'}, 'Pilot must include all five assistance conditions')
@@ -150,12 +151,12 @@ def prepare(directory, config_path=None):
                 'implementation': implementation(),
                 'mechanisms': {task: {m: mechanism_configuration(get_task(task), m) for m in config['mechanisms']} for task in study['tasks']},
                 'assumptions': [
-                    'All three processing mechanisms are retained; no mechanism is selected for favourable outcomes.',
-                    'Configured response coefficients override any actor overrides and are identical across individuals, styles and mechanisms.',
-                    'Fixed actor parameters persist; experience resets. Repetitions include new unassisted calibration; calibration trajectories match across mechanism variants.',
-                    'Mechanism names, condition IDs and job IDs never enter random streams. Direct and baseline trajectories must be invariant across mechanisms.',
-                    'The none mechanism suppresses strategic revision and directional reactance, retaining distraction and omission costs.',
-                    'Recent MAB processing has six elapsed trials of memory. Recent TBS processing transfers same-option outcomes across changing offers, with four displayed-probability pseudo-observations.',
+                    'One task-owned response rule is used. The fixed current label is retained only for historical analysis-format compatibility.',
+                    'Configured response coefficients override any actor overrides and are identical across individuals and styles.',
+                    'Fixed actor parameters persist; experience resets. Repetitions include new unassisted calibration.',
+                    'Condition IDs and job IDs never enter random streams.',
+                    'MAB direct advice conditions preferences on one ranked option; Socratic guidance conditions the same preferences on two. Both share the same receptiveness mixture.',
+                    'TBS retains its existing task-evidence response because its comparison set already includes every available option. It has no memory variants.',
                     'These are structured processing assumptions, not natural-language comprehension or measured human responses.',
                     'Fitted actor point estimates, missing TBS offers, timing and response limitations of the source reconstruction remain applicable.',
                     'Original exported fits are frozen inputs; updated execution code does not refit the source cohort or change its historical validation results.',
@@ -193,7 +194,9 @@ def summarise(report, case, manifest):
                      'distribution_sha256': fingerprint([t['assisted_probabilities'] for t in trials]),
                      'active_interventions': sum(t['effect'].get('applied', False) for t in trials),
                      'omissions': sum(t['choice'] == 'NO_RESPONSE' for t in trials),
-                     'processing_target_changes': sum(t['effect'].get('processing_target', t['baseline_probabilities']) != t['baseline_probabilities'] for t in trials)})
+                     'processing_target_changes': sum(t['effect'].get('processing_target', t['baseline_probabilities']) != t['baseline_probabilities'] for t in trials),
+                     'baseline_control_passed': all(t['baseline_probabilities']==t['assisted_probabilities'] and
+                         not t['effect'].get('applied',False) and t.get('intervention') is None for t in trials) if row['condition']=='A' else None})
     return rows
 
 
@@ -221,7 +224,14 @@ def analyse(directory, manifest, actors):
         groups[(row['participant'], row['repeat'], row['task'], row['condition'])].append(row)
     controls = []
     null_response = not any(config['response_parameters'].values())
+    # With one rule there is no cross-mechanism contrast. Check the actual
+    # unassisted distributions instead of reporting self-comparisons as controls.
+    if len(config['mechanisms'])==1:
+        controls.extend({'participant':r['participant'],'repeat':r['repeat'],'task':r['task'],
+                         'condition':'A','kind':'unassisted_preferences','identical':r['baseline_control_passed']}
+                        for r in rows if r['condition']=='A')
     for key, values in sorted(groups.items()):
+        if len(config['mechanisms'])==1:continue
         if len(values) != len(config['mechanisms']) or key[3] not in {'A', 'C', 'E'} and not null_response:
             continue
         identical = len({(v['trajectory_sha256'], v['distribution_sha256'], v['primary_value']) for v in values}) == 1
@@ -232,7 +242,7 @@ def analyse(directory, manifest, actors):
             for task in manifest['study']['tasks']:
                 values = [r for r in result['rows'] if r['task'] == task]
                 baseline = next(r for r in values if r['condition'] == 'A')
-                targets = values if null_response else [r for r in values if r['mechanism'] == 'none' and r['condition'] in {'D', 'F'}]
+                targets = values if null_response else []
                 for row in targets:
                     null_checks.append({'participant': row['participant'], 'repeat': row['repeat'], 'task': task,
                                         'condition': row['condition'], 'mechanism': row['mechanism'],
@@ -285,7 +295,7 @@ def analyse(directory, manifest, actors):
         if row['condition'] in {'D', 'F'}:
             mechanism_groups[(row['participant'], row['task'], row['condition'])].append(row)
     for (person, task, condition), values in sorted(mechanism_groups.items()):
-        if len(values) == len(config['mechanisms']):
+        if len(config['mechanisms'])>1 and len(values) == len(config['mechanisms']):
             effects = {v['mechanism']: v['mean_improvement_from_A'] for v in values}
             sensitivity.append({'participant': person, 'task': task, 'condition': condition, 'effects': effects,
                                 'range': max(effects.values()) - min(effects.values()),
@@ -294,13 +304,13 @@ def analyse(directory, manifest, actors):
               'completed_jobs': len(results), 'total_jobs': len(actors) * config['repeats'] * len(config['mechanisms']),
               'completed_protocol_sessions': sum(r['completed'] for r in rows), 'recorded_comparison_sessions': len(rows),
               'complete': len(results) == len(actors) * config['repeats'] * len(config['mechanisms']) and all(r['completed'] for r in rows),
-              'controls': controls, 'null_and_no_revision_checks': null_checks,
+              'controls': controls, 'null_response_checks': null_checks,
               'control_checks_passed': all(r['identical'] for r in controls) and all(r['identical_to_A'] for r in null_checks),
               'individual_results': individual, 'aggregates': aggregates, 'mechanism_sensitivity': sensitivity,
               'compute_seconds_completed_jobs': sum(r['elapsed_seconds'] for r in results),
-              'notice': 'Descriptive conditional simulation. Matched completed repetitions are averaged within people. Monte Carlo SE is not human/model uncertainty; no mechanism is selected as a winner.'}
+              'notice': 'Descriptive conditional simulation using one response rule. Matched completed repetitions are averaged within people. Monte Carlo SE is not human/model uncertainty.'}
     write(directory / 'analysis.json', report)
-    lines = ['# Reconsideration pilot', '', report['notice'], '',
+    lines = ['# Profile-response pilot', '', report['notice'], '',
              f"Completed jobs: {report['completed_jobs']}/{report['total_jobs']}. Completed comparison protocols: {report['completed_protocol_sessions']}/{len(rows)}.",
              f"Matched control checks: {'passed so far' if report['control_checks_passed'] else 'FAILED'}. Checks become available as matched cases finish.", '',
              '| Task | Condition | Mechanism | People | Mean improvement from A | Worse than A | Interventions | Omissions |',

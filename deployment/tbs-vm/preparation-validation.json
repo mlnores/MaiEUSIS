@@ -1,0 +1,8 @@
+{
+  "returncode": 0,
+  "notice": "Local fresh-extraction preparation only; no comparison jobs dispatched and no remote execution.",
+  "total_jobs": 144,
+  "completed_jobs": 0,
+  "independent_baseline_trajectories": 48,
+  "control_checks_passed": true
+}

@@ -1,0 +1,35 @@
+@prefix arg: <https://example.org/socratic/argumentation/> .
+@prefix mab: <https://example.org/socratic/mab/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+mab:PerformanceAssessment a owl:Class .
+mab:performanceReviewWarranted a owl:DatatypeProperty .
+mab:tieCount a owl:DatatypeProperty .
+mab:poorPerformanceSignal a owl:DatatypeProperty .
+mab:minObservations a owl:DatatypeProperty .
+mab:minRemaining a owl:DatatypeProperty .
+mab:minGapPoints a owl:DatatypeProperty .
+mab:recentMean a owl:DatatypeProperty .
+mab:recentMeanUpper a owl:DatatypeProperty .
+mab:recentDecline a owl:DatatypeProperty .
+mab:performanceReviewArgument a arg:Scheme ; arg:version "mab-shared-guidance-0.1" ;
+ arg:ruleKind "defeasible" ; arg:premiseVariables "p1 p2 p3 p4 p5 p6 p7" ; arg:subjectVariable "state" ;
+ arg:conclusionPredicate mab:performanceReviewWarranted ; arg:conclusionObject true ; arg:polarity "positive" ;
+ arg:reason "Recent observed performance meets the configured poor-performance screen, with enough completed outcomes, remaining decisions and estimated improvement headroom. This permits review; benefit is uncertain." ;
+ arg:criticalQuestion "Could reward noise, model error or the cost of switching explain or outweigh the apparent opportunity?" ;
+ arg:issue "performance_gap" ; arg:audience "task" ; arg:usefulness 0.60 ; arg:socraticAction "compare" ;
+ arg:conventionalMessage "Recent observed returns leave an estimated opportunity to improve; consider the shared reward ranking." ;
+ arg:socraticMessage "Given your recent returns, which of these two options would you consider, and what evidence supports your choice?" ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX mab: <https://example.org/socratic/mab/>
+SELECT DISTINCT ?p1 ?p2 ?p3 ?p4 ?p5 ?p6 ?p7 ?state WHERE {
+ ?assessment a mab:PerformanceAssessment .
+ { SELECT ?p1 ?state ?assessment ?n WHERE { ?p1 a arg:Assertion ; arg:scope ?state ; arg:subject ?assessment ; arg:predicate mab:completedChoices ; arg:object ?n ; arg:polarity "positive" . } }
+ { SELECT ?p2 ?state ?assessment ?minN WHERE { ?p2 a arg:Assertion ; arg:scope ?state ; arg:subject ?assessment ; arg:predicate mab:minObservations ; arg:object ?minN ; arg:polarity "positive" . } }
+ { SELECT ?p3 ?state ?assessment ?remaining WHERE { ?p3 a arg:Assertion ; arg:scope ?state ; arg:subject ?assessment ; arg:predicate mab:remainingDecisions ; arg:object ?remaining ; arg:polarity "positive" . } }
+ { SELECT ?p4 ?state ?assessment ?minRemaining WHERE { ?p4 a arg:Assertion ; arg:scope ?state ; arg:subject ?assessment ; arg:predicate mab:minRemaining ; arg:object ?minRemaining ; arg:polarity "positive" . } }
+ { SELECT ?p5 ?state ?assessment WHERE { ?p5 a arg:Assertion ; arg:scope ?state ; arg:subject ?assessment ; arg:predicate mab:poorPerformanceSignal ; arg:object true ; arg:polarity "positive" . } }
+ { SELECT ?p6 ?state ?assessment ?gap WHERE { ?p6 a arg:Assertion ; arg:scope ?state ; arg:subject ?assessment ; arg:predicate task:value ; arg:object ?gap ; arg:polarity "positive" . } }
+ { SELECT ?p7 ?state ?assessment ?minGap WHERE { ?p7 a arg:Assertion ; arg:scope ?state ; arg:subject ?assessment ; arg:predicate mab:minGapPoints ; arg:object ?minGap ; arg:polarity "positive" . } }
+ FILTER(?n >= ?minN && ?remaining >= ?minRemaining && ?gap >= ?minGap)
+}""" .

@@ -2,7 +2,7 @@
 from .argumentation import ARG
 from .tasks import get_task
 
-VERSION='structured-intervention-0.2'
+VERSION='structured-intervention-0.3'
 
 
 def from_graph(task,evaluation,report):

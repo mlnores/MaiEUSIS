@@ -63,6 +63,18 @@ class ExecutionExtensions(Protocol):
     def intervention_focus(self,issue): ...
 
 
+class AssistanceEligibility(Protocol):
+    """Optional task-owned gate over accepted public-evidence graph proofs."""
+    def assistance_gate(self,snapshot): ...
+    def required_comparison_count(self,environment): ...
+
+
+class ParticipantLearning(Protocol):
+    """Optional public observer; independent of private synthetic actor hooks."""
+    def participant_observer(self,calibration_profile): ...
+    def assistance_target(self,evaluation,baseline,intervention): ...
+
+
 def document_paths(identifier):
     root=Path(__file__).resolve().parents[1]/'ontology'
     return (root/'schema.ttl',root/'task.ttl',root/(identifier.lower()+'.ttl'),

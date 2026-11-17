@@ -29,8 +29,8 @@ def configuration(directory):
               'cohort_split': 'engineering', 'study': {'id': 'parallel-check',
                   'tasks': {task: {'protocol': 'short', 'calibration_tasks': ['MAB', 'TBS']} for task in ('MAB', 'TBS')},
                   'conditions': ['A', 'C', 'E', 'D', 'F']},
-              'mechanisms': ['none', 'current', 'recent'], 'response_parameters': RESPONSE,
-              'seed': 'parallel-equivalence', 'repeats': 1, 'max_trials': 8,
+              'mechanisms': ['current'], 'response_parameters': RESPONSE,
+              'seed': 'parallel-equivalence', 'repeats': 3, 'max_trials': 8,
               'primary_outcomes': {'MAB': {'metric': 'score', 'divisor': 1},
                                    'TBS': {'metric': 'targets_attained', 'divisor': 3}}}
     pilot.write(directory/'config.json', config)
@@ -41,28 +41,28 @@ class SchedulingTest(unittest.TestCase):
     def test_repetition_first_profile_balance_preserves_every_job_and_seed(self):
         actors = [{'id': f'person{i}', 'original_profile': profile}
                   for i, profile in enumerate(['MAB', 'MAB', 'TBS', 'TBS', 'dual', 'low'])]
-        manifest = {'configuration': {'mechanisms': ['none', 'current', 'recent'], 'repeats': 3}}
+        manifest = {'configuration': {'mechanisms': ['current'], 'repeats': 3}}
         original = list(pilot.jobs(manifest, actors))
         ordered = scheduler.ordered_jobs(manifest, actors)
         self.assertEqual({c['id'] for c, _ in ordered}, {c['id'] for c, _ in original})
         self.assertEqual([c['repeat'] for c, _ in ordered], sorted(c['repeat'] for c, _ in original))
-        self.assertEqual([actor['original_profile'] for _, actor in ordered[:12:3]], ['MAB', 'TBS', 'dual', 'low'])
-        self.assertEqual({c['mechanism'] for c, _ in ordered}, {'none', 'current', 'recent'})
+        self.assertEqual([actor['original_profile'] for _, actor in ordered[:4]], ['MAB', 'TBS', 'dual', 'low'])
+        self.assertEqual({c['mechanism'] for c, _ in ordered}, {'current'})
 
     def test_first_repetition_requires_all_mechanisms_and_full_trials(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
-            manifest = {'sha256': 'fixture', 'configuration': {'mechanisms': ['none', 'current', 'recent']}}
+            manifest = {'sha256': 'fixture', 'configuration': {'mechanisms': ['current']}}
             actors = [{'id': 'person', 'original_profile': 'low'}]
             results = []
-            for mechanism in ('none', 'current', 'recent'):
+            for mechanism in ('current',):
                 results.append({'case': {'participant': 'person', 'repeat': 0, 'mechanism': mechanism},
                                 'rows': [{'participant': 'person', 'task': 'TBS', 'condition': condition,
                                           'mechanism': mechanism, 'completed': True,
                                           'primary_value': value, 'direction': 'maximize'}
                                          for condition, value in [('A', .5), ('D', .75)]]})
-            self.assertFalse(scheduler.first_repetition(directory, manifest, actors, results[:2])['participants'])
-            incomplete = copy.deepcopy(results); incomplete[2]['rows'][0]['completed'] = False
+            self.assertFalse(scheduler.first_repetition(directory, manifest, actors, [])['participants'])
+            incomplete = copy.deepcopy(results); incomplete[0]['rows'][0]['completed'] = False
             self.assertFalse(scheduler.first_repetition(directory, manifest, actors, incomplete)['participants'])
             complete = scheduler.first_repetition(directory, manifest, actors, results)
             self.assertTrue(complete['complete_cohort'])
@@ -133,7 +133,7 @@ class SchedulingTest(unittest.TestCase):
     def test_worker_bound_and_failure_prevent_dispatching_the_rest(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp); config = configuration(directory); out = directory/'run'
-            value = pilot.read(config); value['repeats'] = 2; pilot.write(config, value)
+            value = pilot.read(config); value['repeats'] = 5; pilot.write(config, value)
             class FailedProcess:
                 pid = 12345
                 def poll(self): return 1

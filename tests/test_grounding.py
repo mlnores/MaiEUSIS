@@ -210,7 +210,7 @@ class GeneratedSessionTest(unittest.TestCase):
         s=self.store.create({'participant_id':'synthetic_demo','task':'MAB','condition':'F','phase':'assisted',
             'protocol':'short','preference':'standard','calibration_ids':self.calibrations})
         for i in range(1,8):
-            r=self.store.event(s['id'],evaluation('MAB',s['id'],i));d=r['snapshot']['decision']
+            r=self.store.event(s['id'],evaluation('MAB',s['id'],i,score=-100*(i-1)));d=r['snapshot']['decision']
             self.store.event(s['id'],{'kind':'delivery','decision_id':d['id'],'index':i,'delivered':d['action']!='silence',
                 'generation_latency_ms':0,'reading_exposure_ms':3000 if d['action']!='silence' else 0,'early_attempts':0})
             if i<7:self.store.event(s['id'],self.feedback(s['id'],i))
@@ -228,14 +228,14 @@ class GeneratedSessionTest(unittest.TestCase):
     @staticmethod
     def feedback(sid,index):
         return {'kind':'feedback','trial_id':sid+'_trial_'+str(index),'index':index,
-                'choice':'blue1','outcome':0,'score_after':0,'timed_out':False,'response_ms':1000}
+                'choice':'blue1','outcome':-100,'score_after':-100*index,'timed_out':False,'response_ms':1000}
 
     def test_interpretation_is_pending_until_review_then_scoped_and_replayable(self):
         sid,response=self.session_with_response();before=self.store.get(sid)
         self.assertEqual(response['interpretation']['status'],'pending-review')
         self.assertEqual(reviewed_responses(before,{'index':8}),[])
         review=self.store.event(sid,{'kind':'interpretation-review','response_event_id':response['id'],'accept':True,'reviewer':'researcher'})
-        r=self.store.event(sid,evaluation('MAB',sid,8));snap=r['snapshot']
+        r=self.store.event(sid,evaluation('MAB',sid,8,score=-700));snap=r['snapshot']
         hyp=next(h for h in snap['participant']['hypotheses'] if h['name']=='underexploration')
         self.assertIn(review['id'],hyp['contested_by'])
         quoted=[c for c in snap['claims'] if 'Researcher-reviewed participant' in c['content']]
@@ -258,7 +258,7 @@ class GeneratedSessionTest(unittest.TestCase):
     def test_rejected_interpretation_has_no_policy_effect(self):
         sid,response=self.session_with_response()
         self.store.event(sid,{'kind':'interpretation-review','response_event_id':response['id'],'accept':False,'reviewer':'researcher'})
-        r=self.store.event(sid,evaluation('MAB',sid,8))
+        r=self.store.event(sid,evaluation('MAB',sid,8,score=-700))
         self.assertFalse(any(h['contested_by'] for h in r['snapshot']['participant']['hypotheses']))
         self.assertFalse(any('Researcher-reviewed' in c['content'] for c in r['snapshot']['claims']))
         self.assertTrue(self.store.replay(sid)['matches'])
@@ -271,14 +271,16 @@ class GeneratedSessionTest(unittest.TestCase):
         self.assertTrue(self.store.replay(sid)['matches'])
         with self.assertRaises(ValidationError):self.store.event(sid,evaluation('MAB',sid,8))
 
-    def test_generated_mab_and_tbs_complete_and_replay(self):
+    def test_generated_sessions_complete_and_only_eligible_states_request_language(self):
         for task in ['MAB','TBS']:
             with self.subTest(task=task):
                 sid=run_scripted(self.store,task,'F','assisted',self.calibrations)
                 s=self.store.get(sid);self.assertTrue(s['completed'])
                 active=[e['snapshot']['decision'] for e in s['events']
                         if e.get('snapshot',{}).get('decision',{}).get('action','silence')!='silence']
-                self.assertTrue(active)
+                if task=='TBS':self.assertTrue(active)
+                else:
+                    self.assertTrue(all(d['assistance_gate']['eligible'] for d in active))
                 self.assertTrue(all(d['language']['mode']=='ollama-generated' for d in active))
                 with patch('socratic_prototype.grounding.request_ollama',side_effect=AssertionError('Replay called model')):
                     self.assertTrue(self.store.replay(sid)['matches'])
@@ -296,7 +298,7 @@ class GeneratedSessionTest(unittest.TestCase):
             del s['language_configuration'];s['configuration_digest']=digest({k:s[k] for k in configuration_fields(s)})
             self.store.save(s)
             for i in range(1,8):
-                self.store.event(s['id'],evaluation('MAB',s['id'],i))
+                self.store.event(s['id'],evaluation('MAB',s['id'],i,score=-100*(i-1)))
                 self.store.event(s['id'],self.feedback(s['id'],i))
             last=self.store.get(s['id'])['events'][-2]['snapshot']['decision']
             self.assertNotEqual(last['action'],'silence');self.assertNotIn('evidence_package',last)

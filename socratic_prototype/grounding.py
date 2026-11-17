@@ -97,7 +97,18 @@ def build_evidence_package(session,evaluation,snapshot,selected,history):
     package['environment'],package['display_context']=task.evidence_environment(env)
     if condition in {'E','F'}:
         package['participant']=task.evidence_participant(snapshot['participant'])
-        package['participant']['interaction']=copy.deepcopy(snapshot['participant'].get('interaction',{}))
+        interaction=snapshot['participant'].get('interaction',{})
+        package['participant']['interaction']=pick(interaction,
+            ['status','feedback_counts','reports_by_style','reported_burden','limits'])
+        for style in ['direct','socratic']:
+            if style in interaction:
+                package['participant']['interaction'][style]=pick(interaction[style],
+                    ['status','mean','interval','observations','informative','uninformative','meaning'])
+        package['participant']['online_task']=pick(snapshot['participant'].get('online_task',{}),
+            ['status','version','parameters','prediction','choice_updates','outcome_updates','assumptions'])
+        package['participant']['delivery_estimate']=pick(selected.get('personalisation',{}),
+            ['enabled','reason','task_choice_samples','task_model_sufficient','response_distance',
+             'uptake_sufficient','uptake_mean','uptake_interval','limits'])
         package['participant']['reviewed_self_reports']=[
             {'quote':u['quote'],'kind':u['kind'],'status':'source-dependent; researcher-reviewed self-report, not an observed trait'}
             for reviewed in reviewed_responses(session,evaluation) for u in reviewed['updates']]

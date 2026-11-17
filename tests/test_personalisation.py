@@ -75,7 +75,7 @@ class GraphRecommendationTest(unittest.TestCase):
                 score=points=0
                 for index in range(1,7):
                     ev=evaluation(task,s['id'],index,score=score,points=points);store.event(s['id'],ev)
-                    gain=100 if task=='MAB' else 0;score+=gain;points+=gain
+                    gain=-100 if task=='MAB' else 0;score+=gain;points+=gain
                     store.event(s['id'],dict(kind='feedback',trial_id=ev['trial_id'],index=index,choice='blue1' if task=='MAB' else 'safe',outcome=gain,
                         score_after=score, timed_out=False,response_ms=700) if task=='MAB' else dict(kind='feedback',trial_id=ev['trial_id'],index=index,choice='safe',outcome=0,points_after=points,timed_out=False,response_ms=700))
                 ev=evaluation(task,s['id'],7,score=score,points=points);record=store.event(s['id'],ev);snap=record['snapshot']

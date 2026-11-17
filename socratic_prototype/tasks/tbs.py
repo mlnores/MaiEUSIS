@@ -8,7 +8,7 @@ from .base import MODEL_VERSION as VERSION, validate_envelope, describe_task, co
 
 ID = 'TBS'
 NAMESPACE = 'https://example.org/socratic/tbs/'
-MODULE_VERSION = 'tbs-0.1'
+MODULE_VERSION = 'tbs-0.2'
 ONTOLOGY_VERSION = 'tbs-ontology-0.1'
 ELIGIBLE_POINT = 'options-visible preparation'
 PROTOCOLS={'short':24,'full':192}
@@ -22,7 +22,21 @@ def documents():
     paths=document_paths(ID)
     return paths[:3],paths[3:]
 
-def describe():return describe_task(ID,NAMESPACE,MODULE_VERSION,ONTOLOGY_VERSION,documents())
+def describe():
+    import hashlib
+    from pathlib import Path
+    from . import tbs_participant,tbs_rdf
+    return {**describe_task(ID,NAMESPACE,MODULE_VERSION,ONTOLOGY_VERSION,documents()),
+            'source_digests':{Path(p).name:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+                              for p in (__file__,tbs_participant.__file__,tbs_rdf.__file__)}}
+
+def participant_observer(profile):
+    from .tbs_participant import Observer
+    return Observer(profile)
+
+def assistance_target(evaluation,base,intervention):
+    from .tbs_participant import assistance_target as target
+    return target(evaluation,base,intervention)
 
 evidence_observation=common_observation
 
@@ -105,7 +119,9 @@ def tbs_pressure_model(history):
     """
     valid=[h for h in history if not h['timed_out']]
     if not valid:
-        return {'samples':0, 'status':'unknown', 'sensitivity_mean':0, 'sensitivity_interval':[-3,3], 'p_positive_sensitivity':.4}
+        from .tbs_participant import grid
+        return {'samples':0, 'status':'unknown', 'sensitivity_mean':0, 'sensitivity_interval':[-3,3], 'p_positive_sensitivity':.4,
+                'choice_posterior':[{'parameters':r,'weight':1/25} for r in grid()]}
     grid=[]
     for intercept,slope in product([-2,-1,0,1,2],[-3,-1.5,0,1.5,3]):
         lp=0
@@ -128,7 +144,8 @@ def tbs_pressure_model(history):
             'assumptions':['Equal prior on 25 intercept/slope pairs; normalized target pressure only.',
                            'Option-value effects and horizon effects are not separately identified.',
                            'This proposed extension is not the original fitted TBS analysis.'],
-            'evidence':[h['trial_id'] for h in valid]}
+            'evidence':[h['trial_id'] for h in valid],
+            'choice_posterior':[{'parameters':dict(intercept=g[0],slope=g[1]),'weight':w} for g,w in zip(grid,weights)]}
 
 def calibrate(history):
     return {'task': 'TBS', 'model_version': VERSION, 'policy': tbs_pressure_model(history)}
@@ -196,8 +213,9 @@ def hypothesis_inputs(session,evaluation,environment,h):
     evidence=[x['trial_id'] for x in valid]
     choices = [x['choice'] for x in valid]
     repeated = len(choices) >= 3 and len(set(choices[-3:])) == 1
-    sensitivity = tbs_pressure_model(h)
-    calibrated = (session.get('calibration_profile') or {}).get('policy', {})
+    online=session.get('participant_estimate',{}).get('online_task',{}).get('pressure_policy')
+    sensitivity = online or tbs_pressure_model(h)
+    calibrated = online or (session.get('calibration_profile') or {}).get('policy', {})
     weak_sensitivity = calibrated.get('samples', 0) >= 6 and calibrated.get('p_positive_sensitivity', 0.5) < 0.4
     definitions = [('constraint_neglect', environment['remaining'] <= 2, repeated and weak_sensitivity, environment['remaining'] <= 2, 'A repeated choice pattern may warrant checking the shrinking horizon.', ['The same option can still be appropriate after the context changes.', 'The final-win multiplier can preserve feasibility.', 'A policy estimate cannot establish that the participant ignored a constraint.'], ['A context-sensitive adjustment or an explicit constraint-aware explanation revises this account.'])]
     stats = {'recent_choices': choices, 'pressure_policy': sensitivity, 'calibrated_weak_pressure_sensitivity': weak_sensitivity, 'evidence_window': evidence}

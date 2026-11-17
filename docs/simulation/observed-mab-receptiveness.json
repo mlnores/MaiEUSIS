@@ -1,0 +1,6 @@
+{
+  "id": "observed-mab-development16-r3-v1",
+  "template": "observed-profile-mab-pilot.json",
+  "historical_baselines": "../../socratic_prototype/data/mab_receptiveness_20261113",
+  "levels": ["0.25", "0.5", "0.75"]
+}

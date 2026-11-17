@@ -1,5 +1,5 @@
 {
-  "version": "policy-0.5",
+  "version": "policy-0.7",
   "window_trials": 12,
   "min_evidence": 6,
   "threshold": 0.38,
@@ -15,5 +15,22 @@
   "fixed_prompt_interval": 4,
   "change_prior": 0.15,
   "decline_threshold": 0.3,
-  "argument_source": "graph"
+  "argument_source": "graph",
+  "personalisation": {
+    "min_task_choices": 6,
+    "min_informative_exposures": 6,
+    "redundancy_probability": 0.85,
+    "low_uptake_upper": 0.25,
+    "low_uptake_extra_cooldown": 3,
+    "uptake_discount_limit": 0.25
+  },
+  "mab_guidance": {
+    "performance_gate": true,
+    "comparison_strategy": "shared_top_two",
+    "window_trials": 12,
+    "min_observations": 6,
+    "min_remaining": 3,
+    "min_gap_points": 20.0,
+    "decline_points": 30.0
+  }
 }

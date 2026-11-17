@@ -7,9 +7,8 @@ from ..records import fields,require,number
 from .tbs import RULES,PROTOCOLS
 from .execution import normalise,describe_adapter
 
-VERSION='tbs-execution-0.4'
-RECENT_RECONSIDERATION={'window_elapsed_trials':6,'displayed_probability_pseudocount':4,
-    'rule':'Perceived chance=(4*displayed chance+recent wins)/(4+recent known responses of that option). Use only the current block and last six elapsed trials, transferring safe/risky feedback across changing offers. Apply the existing goal/horizon heuristic to perceived chances.'}
+VERSION='tbs-execution-0.5'
+CURRENT_RECONSIDERATION={'rule':'Single existing response to displayed task evidence and goals. No memory truncation or outcome-based distortion of displayed probabilities.'}
 METRICS={'score':{'direction':'maximize','unit':'multiplied-points'},'targets_attained':{'direction':'maximize','unit':'blocks'}}
 
 def describe():
@@ -42,17 +41,6 @@ def reconsider(history,p,ev,intervention):
         if sum(values.values())>0:return normalise(values)
     need=max(0,ev['target']-ev['points'])/ev['remaining']
     return normalise({o['id']:o['probability']*max(1,o['amount'])/(1+abs(o['amount']-need)) for o in ev['options']})
-
-def reconsider_recent(history,p,ev,intervention):
-    recent=[row for row in history[-RECENT_RECONSIDERATION['window_elapsed_trials']:]
-            if row.get('block')==ev['block'] and not row.get('timed_out',False)]
-    perceived=copy.deepcopy(ev)
-    strength=RECENT_RECONSIDERATION['displayed_probability_pseudocount']
-    for option in perceived['options']:
-        known=[row for row in recent if row.get('choice')==option['id'] and isinstance(row.get('outcome'),(int,float))]
-        wins=sum(row['outcome']>0 for row in known)
-        option['probability']=(strength*option['probability']+wins)/(strength+len(known))
-    return reconsider(recent,p,perceived,intervention)
 
 def make_environment(protocol,seed,random_source):return Environment(protocol,seed,random_source)
 

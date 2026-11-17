@@ -12,18 +12,21 @@ Generic means task-aware without a calibrated participant model.
   imports the original MAB actor fits and fits a provisional TBS state/feedback
   actor. These researcher-side parameters are not supplied to the assistant.
 - `participant_model.py` represents the assistant's estimates. E/F receive the
-  task calibration, explicit self-report history and uncertain interaction
-  summaries. C/D do not receive those personalised estimates in their language
+  task calibration, online task forecasts, explicit reports and separate uncertain
+  direct/Socratic uptake estimates. See the [observed-behaviour specification](../observed_personalisation.md).
+  C/D do not receive those personalised estimates in their language
   packages or use them for intervention selection. A stays silent.
 - `argumentation/` remains the sole source of reasons and objections. Specific
   recommendations additionally require an accepted comparison proof. MAB compares
-  all six posterior mean reward estimates; ties cause abstention. TBS compares
+  all six posterior mean reward estimates; ties retain their uncertainty and use
+  the shared option-ID order. TBS compares
   immediate expected points before the final trial and exact target-attainment
   probability on the final trial. These criteria are explicit, bounded choices,
   not an optimal MAB exploration strategy or a TBS multi-trial planning solver.
 - `intervention_policy.py` schedules and ranks graph-grounded candidates. There
-  is no personalisation bonus. Explicit feedback reporting burden can adjust the
-  interruption cost in E/F. Disagreement continues to contest the relevant
+  is no personalisation bonus. Conservative task/uptake bounds can reduce redundant
+  prompts and lengthen cooldowns in E/F. Explicit requests for fewer prompts
+  adjust frequency and interruption cost. Disagreement continues to contest the relevant
   hypothesis rather than automatically being interpreted as general distrust.
 - `agents.py` dispatches the synthetic participant's own task policies through
   registered execution adapters. `tasks/mab_execution.py` uses dual-rate reward
@@ -32,17 +35,21 @@ Generic means task-aware without a calibrated participant model.
   experience. Fixed characteristics persist; experience does not carry over.
 - `assistance_response.py` models effects on the actor's choice distribution.
   Direct assistance proposes a specific option. A Socratic question invokes a
-  public-evidence reconsideration heuristic for the structured issue, without
+  task-owned reconsideration rule for the structured issue, without
   receiving a recommended option. Reconsideration can preserve the original
   preference. Reactance, distraction and omission assumptions permit harm.
-- `reconsideration.py` selects the separate `none`, `current` or `recent`
-  Socratic processing assumption. The [reconsideration pilot](reconsideration.md)
-  holds response coefficients fixed while varying this mechanism, with frozen
-  inputs, resumable jobs and matched outcome/control reports.
+- New runs use [one participant-response rule](single-response.md), with no
+  `none`/`recent` selector. MAB conditions the same learned preferences on a
+  direct singleton or Socratic pair, using the same receptiveness mixture.
+  The [reconsideration pilot](reconsideration.md) records historical results
+  from the earlier three-mechanism design.
 - [Socratic comparison guidance](../socratic_guidance.md) supplies a graph-backed
   set of alternatives to the human and to the separate synthetic processing
-  mechanism. Current actor/simulation versions are 0.5; execution adapters are
-  0.4. Earlier pilot results describe the preceding processing rules.
+  mechanism. The [14 November MAB update](mab-shared-ranking.md) adds a shared
+  direct/Socratic reward ranking, a graph-backed performance screen and
+  profile-weighted consideration of ranks 1 and 2. Actor/simulation versions are
+  0.6; MAB execution is 0.6 and TBS is 0.5. Earlier pilot results describe the
+  preceding processing rules.
 - `simulation.py` runs the same individuals through the configured conditions, using
   common per-trial random streams for choices, option outcomes, task transitions,
   option pairs and targets. Condition/session IDs never enter those streams.
@@ -73,13 +80,41 @@ The [MAB receptiveness sensitivity experiment](mab-receptiveness.md) compares
 It uses one eight-worker pool, MAB-only calibration, and a verified reuse of the
 completed 0.5 MAB reference. Its new results remain separate from both earlier pilots.
 
+A [fresh fair comparison](fair-mab-receptiveness.md) completed on 15 November
+at all three levels under the shared-ranking, performance-gated, single-response
+design. It reran all five conditions, with historical A used only for independent
+validation. All 144 jobs, 144 baseline checks and 96 cross-level calibration
+checks passed. The separate report contains group/individual heatmaps, trends
+and paired style contrasts, with identical C/E and D/F trajectories disclosed.
+
+The subsequent [observed-personalisation MAB experiment](observed-mab-receptiveness.md)
+completed all 144 jobs on 16 November 2026 with the same matched design,
+`policy-0.7` and `participant-model-0.2`; none of the old assisted sessions
+was reused. This is the first full grid testing the new online delivery
+adaptation. Its [report](../../socratic_prototype/data/observed_mab_receptiveness_20261115/receptiveness_report.html)
+contains separate C/E/D/F heatmaps, cluster and individual receptiveness trends,
+and paired personalisation contrasts. All 144,000 comparison trials were
+numerically audited. It generates no explicit participant feedback reports.
+
+The corresponding [TBS receptiveness pilot](observed-tbs-receptiveness.md)
+was launched on 16 November 2026 with eight workers. It runs the same 16 actors,
+three repetitions, three receptiveness levels and five conditions, with fresh
+192-trial TBS calibrations and comparisons. Target-attainment rate is primary;
+multiplied score is secondary. It retains TBS's single evidence-processing rule
+and the provisional state/feedback actor, with missing historical offers and
+other assumptions recorded in the study plan. All 36 preflight tests and a
+separate 240-trial zero/nonzero-response check passed before launch.
+
 The agent's latent task and response parameters are researcher/evaluator inputs.
 They are **not** supplied to the assistant. The assistant instead fits its ordinary
 coarse calibration models to separately generated unassisted observations and
-updates from permitted observations. Direct recommendation/choice agreement is
-recorded as concordance, not established trust, causal compliance or benefit.
-Socratic reconsideration is unknown to the assistant unless reported. No response
-parameter is inferred from a neuroscience profile label or SFSS score.
+updates from permitted observations. Since 15 November, both styles have an
+approximate uptake posterior conditional on an estimated unaided baseline and
+task-owned processing hypothesis. This does not establish conscious acceptance,
+trust, comprehension or causal benefit. No response parameter is inferred from a
+neuroscience profile label or SFSS score. Simulations generate no explicit
+helpfulness/burden reports; feedback adaptation must not invent them. New runs
+must use fresh directories because implementation hashes and policy versions changed.
 
 ## Run an example
 

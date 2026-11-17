@@ -4,6 +4,19 @@
 arg:worthComparingFor a owl:DatatypeProperty .
 mab:ComparisonBenchmark a owl:Class .
 
+mab:rankedRewardComparison a arg:Scheme ; arg:version "mab-shared-guidance-0.1" ; arg:ruleKind "strict" ;
+ arg:premiseVariables "p" ; arg:subjectVariable "option" ;
+ arg:conclusionPredicate arg:worthComparingFor ; arg:conclusionObject "public_ranked_reward" ; arg:polarity "positive" ;
+ arg:reason "This option is first or second in the same public estimated-mean ranking used for direct advice. Equal estimates use a fixed option-ID order; reward superiority remains uncertain." ;
+ arg:query """PREFIX arg: <https://example.org/socratic/argumentation/>
+PREFIX task: <https://example.org/socratic/task/>
+PREFIX mab: <https://example.org/socratic/mab/>
+SELECT DISTINCT ?p ?option WHERE {
+ ?rank a mab:RewardRank ; task:forOption ?option .
+ ?p a arg:Assertion ; arg:predicate task:value ; arg:scope ?state ; arg:subject ?rank ; arg:object ?position ; arg:polarity "positive" .
+ FILTER(?position <= 2)
+}""" .
+
 mab:rewardComparison a arg:Scheme ; arg:version "argumentation-0.4" ; arg:ruleKind "defeasible" ;
  arg:premiseVariables "p1 p2 p3" ; arg:subjectVariable "option" ;
  arg:conclusionPredicate arg:worthComparingFor ; arg:conclusionObject "plausible_reward" ; arg:polarity "positive" ;

@@ -11,7 +11,8 @@ LIMITS={'max_rounds':6,'max_arguments':256,'max_assertions':512,'max_matches':10
 
 def documents(module):
     hook=getattr(module,'argumentation_documents',None)
-    return (ROOT/'schema.ttl',ROOT/'shapes.ttl',ROOT/'schemes/shared.ttl')+tuple(hook() if hook else ())
+    return (ROOT/'schema.ttl',ROOT/'shapes.ttl',ROOT/'schemes/shared.ttl',
+            ROOT/'schemes/personalisation.ttl')+tuple(hook() if hook else ())
 
 
 def configuration(module):

@@ -58,11 +58,19 @@ live in their respective `*_execution.py` files. Browser loops and public-event
 adapters live in `static/task-adapters/`. The shared runner, assistant delivery
 policy and browser bridge dispatch through registered hooks.
 
-The optional `ReconsiderationVariants` contract in `tasks/execution.py` adds a
-task-owned `reconsider_recent(...)` hook and `RECENT_RECONSIDERATION` assumption
-metadata. The original required adapter contract is unchanged. The shared
-researcher-side selector supports no revision, the existing heuristic and this
-optional recent-evidence variant; unsupported variants fail before sessions start.
+Each execution adapter now has one task-owned `reconsider(...)` rule. The
+former no-revision/recent variants and optional recency contract were retired
+on 14 November. MAB uses the same preference-conditioning operation for a direct
+singleton and a Socratic pair. TBS retains its default task-evidence rule. See
+the [single-response specification](simulation/single-response.md).
+
+The [observed-behaviour personalisation layer](observed_personalisation.md) adds
+optional public `participant_observer` / `assistance_target` hooks, separate from
+private actor execution. Task observers predict choices and update from permitted
+events; shared code learns style-specific uptake and applies conservative delivery
+rules. An environment without these hooks continues with unknown estimates and
+common defaults. Forecasts and scheduling warrants use the shared `arg:` namespace;
+task mechanics and model implementations remain in their own modules.
 
 ## Meaning of the graph
 

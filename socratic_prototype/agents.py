@@ -6,7 +6,7 @@ from .tasks.execution import simulation_adapter,validate_distribution
 from .assistance_response import apply,validate,SCENARIOS
 from .reconsideration import configuration as reconsideration_configuration, target as reconsideration_target
 
-VERSION='synthetic-agent-0.5'
+VERSION='synthetic-agent-0.6'
 
 
 def validate_participant(spec,tasks=None):
@@ -47,9 +47,7 @@ class Participant:
         # Direct recommendations never invoke a Socratic processor.
         is_question=style=='socratic'
         reconsidered=self.reconsider(ev,intervention,baseline) if is_question else baseline
-        result,effect=apply(baseline,intervention,parameters,reconsidered,
-                            strategic_revision=not is_question or self.reconsideration!='none')
-        if is_question:effect['reconsideration_mechanism']=self.reconsideration
+        result,effect=apply(baseline,intervention,parameters,reconsidered)
         effect['omission_probability']=omission+(1-omission)*effect['omission_probability']
         return baseline,validate_distribution(result,ev['options']),effect
     def observe(self,ev,feedback):self.history.append({**feedback,**self.module.history_context(ev)})

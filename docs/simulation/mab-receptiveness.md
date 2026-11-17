@@ -1,5 +1,8 @@
 # MAB receptiveness sensitivity experiment
 
+> Historical experiment: new runs use the [single-response design](single-response.md).
+> The former `none`/`recent` configurations require their recorded runtime.
+
 Requested on **13 November 2026**. This experiment varies the synthetic actor's
 fixed `responsiveness` coefficient over **0.25, 0.5 and 0.75**, for MAB only.
 The coefficient mixes baseline preferences with a recommendation/reconsideration

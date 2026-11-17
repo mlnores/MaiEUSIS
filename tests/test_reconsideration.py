@@ -1,4 +1,4 @@
-"""Mechanism effects, matched controls, information boundaries and pilot resume."""
+"""One profile response rule, retired-mode guards and resumable pilot checks."""
 import copy
 import json
 import tempfile
@@ -7,99 +7,65 @@ from pathlib import Path
 from unittest.mock import patch
 
 from socratic_prototype.agents import Participant
-from socratic_prototype.assistance_response import apply
+from socratic_prototype.assistance_response import apply, conditional_preferences
 from socratic_prototype.pilot import execute, read, write
 from socratic_prototype.records import ValidationError
 from socratic_prototype.tasks import mab_execution, tbs_execution, reference_execution
 
-SPEC = {'id': 'mechanism_fixture', 'source': 'Assumed mechanism fixture',
-        'task_models': {'MAB': {'alpha_plus': .4, 'alpha_minus': .3, 'beta': 2},
-                        'TBS': {'intercept': 0, 'slope': 1}},
-        'baseline_omission': {'MAB': .01, 'TBS': .02}}
-RESPONSE = {'responsiveness': .5, 'reactance': 0, 'distraction': 0, 'omission_probability': 0}
+SPEC={'id':'single_fixture','source':'Authored engineering fixture',
+      'task_models':{'MAB':{'alpha_plus':.4,'alpha_minus':.3,'beta':2},
+                     'TBS':{'intercept':0,'slope':1}},'baseline_omission':{'MAB':.01,'TBS':.02}}
+RESPONSE={'responsiveness':.5,'reactance':0,'distraction':0,'omission_probability':0}
 
 
-def intervention(style='socratic', focus='value_revision'):
-    return {'style': style, 'focus': focus,
-            'recommendation': {'option_id': 'risky'} if style == 'direct' else None}
+def intervention(style='socratic'):
+    return {'style':style,'focus':'value_revision',
+            'recommendation':{'option_id':'risky'} if style=='direct' else None}
 
 
-class MechanismTest(unittest.TestCase):
-    def test_equal_strength_different_targets_and_no_revision_costs(self):
-        base = {'safe': .6, 'risky': .4}
-        direct = apply(base, intervention('direct'), RESPONSE, {})[0]
-        socratic = apply(base, intervention(), RESPONSE, {'safe': .3, 'risky': .7})[0]
-        self.assertAlmostEqual(direct['risky'], .7)
-        self.assertAlmostEqual(socratic['risky'], .55)
-        costs = {**RESPONSE, 'reactance': 1., 'distraction': .2, 'omission_probability': .1}
-        result, effect = apply(base, intervention(), costs, {}, strategic_revision=False)
-        self.assertAlmostEqual(result['safe'], .8*.6+.1)
-        self.assertEqual(effect['parameters'], costs)
-        self.assertEqual(effect['omission_probability'], .1)
-        self.assertEqual(effect['processing_target'], base)
+class SingleResponseTest(unittest.TestCase):
+    def test_retired_modes_are_rejected_and_no_recent_hook_remains(self):
+        for task in ('MAB','TBS'):
+            for mode in ('none','recent'):
+                with self.assertRaisesRegex(ValidationError,'retired'):Participant(SPEC,task,'responsive',mode)
+        self.assertFalse(hasattr(mab_execution,'reconsider_recent'))
+        self.assertFalse(hasattr(tbs_execution,'reconsider_recent'))
 
-    def test_no_revision_retains_baseline_learning_and_direct_never_calls_processor(self):
-        ev = {'options': [{'id': arm} for arm in mab_execution.ARMS]}
-        actor = Participant(SPEC, 'MAB', 'responsive', 'none')
-        before = actor.baseline(ev)
-        actor.observe({}, {'trial_id': 'fixture_trial_1', 'choice': 'blue1', 'outcome': 100, 'timed_out': False})
-        baseline, result, effect = actor.distribution(ev, intervention())
-        self.assertNotEqual(before, baseline)
-        self.assertEqual(result, baseline)
-        self.assertEqual(effect['reconsideration_mechanism'], 'none')
-        self.assertEqual(effect['omission_probability'], .01)
-        recommendation = {'style': 'direct', 'focus': 'value_revision', 'recommendation': {'option_id': 'blue1'}}
-        with patch.object(actor, 'reconsider', side_effect=AssertionError('direct invoked Socratic processor')):
-            actor.distribution(ev, recommendation)
+    def test_direct_singleton_and_pair_share_conditioning_and_receptiveness(self):
+        base={'a':.5,'b':.3,'c':.2}
+        direct={'style':'direct','recommendation':{'option_id':'b'}}
+        pair={'style':'socratic'}
+        for rho in (0.,.25,.5,.75,1.):
+            parameters={**RESPONSE,'responsiveness':rho}
+            for offered,question in ((['b'],direct),(['a','b'],pair)):
+                target=conditional_preferences(base,offered)
+                result,effect=apply(base,question,parameters,target)
+                for a in base:self.assertAlmostEqual(result[a],(1-rho)*base[a]+rho*target[a])
+                self.assertEqual(effect['parameters'],parameters)
+        self.assertEqual(conditional_preferences({'a':1.,'b':0.},['b']),{'a':0.,'b':1.})
 
-    def test_mab_recent_memory_is_distinct_without_scaling_responsiveness(self):
-        p = SPEC['task_models']['MAB']
-        history = [{'choice': 'red1', 'outcome': 200, 'timed_out': False} for _ in range(12)]
-        history += [{'choice': 'blue1', 'outcome': 100, 'timed_out': False} for _ in range(6)]
-        history = [{**row, 'trial_id': f'fixture_trial_{i}'} for i, row in enumerate(history)]
-        ev = {'options': [{'id': a} for a in mab_execution.ARMS]}
-        current = mab_execution.reconsider(history, p, ev, intervention())
-        recent = mab_execution.reconsider_recent(history, p, ev, intervention())
-        self.assertGreater(current['red1'], recent['red1'])
-        self.assertGreater(recent['blue1'], current['blue1'])
-        poisoned = {**ev, 'hidden_probabilities': [1, 0, 0], 'future_outcomes': [999999]}
-        self.assertEqual(recent, mab_execution.reconsider_recent(history, p, poisoned, intervention()))
-        # Six elapsed misses crowd out evidence; they are not six losses.
-        misses = [{'choice': 'NO_RESPONSE', 'outcome': -200, 'timed_out': True} for _ in range(6)]
-        empty = mab_execution.reconsider([], p, ev, intervention())
-        self.assertEqual(mab_execution.reconsider_recent(history+misses, p, ev, intervention()), empty)
+    def test_silent_actor_still_learns_and_direct_never_calls_socratic_processor(self):
+        ev={'options':[{'id':a} for a in mab_execution.ARMS]}
+        actor=Participant(SPEC,'MAB','responsive');before=actor.baseline(ev)
+        actor.observe({},dict(trial_id='fixture_trial_1',choice='blue1',outcome=100,timed_out=False))
+        base,result,effect=actor.distribution(ev,None)
+        self.assertNotEqual(before,base);self.assertEqual(base,result)
+        self.assertEqual(effect['omission_probability'],.01)
+        recommendation={'style':'direct','recommendation':{'option_id':'blue1'}}
+        with patch.object(actor,'reconsider',side_effect=AssertionError('direct invoked Socratic processor')):
+            actor.distribution(ev,recommendation)
 
-    def test_tbs_recent_uses_perception_without_modifying_real_offer_or_crossing_blocks(self):
-        ev = {'points': 100, 'target': 930, 'remaining': 4, 'multiplier': 2.3, 'block': 2,
-              'options': [{'id': 'safe', 'amount': 180, 'probability': .6},
-                          {'id': 'risky', 'amount': 260, 'probability': .35}]}
-        history = [{'block': 2, 'choice': 'risky', 'outcome': 260, 'timed_out': False} for _ in range(6)]
-        original = copy.deepcopy(ev)
-        current = tbs_execution.reconsider(history, {}, ev, intervention())
-        recent = tbs_execution.reconsider_recent(history, {}, ev, intervention())
-        self.assertGreater(recent['risky'], current['risky'])
-        self.assertEqual(ev, original)
-        old_block = [{**r, 'block': 1} for r in history]
-        self.assertEqual(tbs_execution.reconsider_recent(old_block, {}, ev, intervention()), current)
-        with patch.object(tbs_execution, 'reconsider', return_value={'safe': .5, 'risky': .5}) as processor:
-            tbs_execution.reconsider_recent(history, {}, ev, intervention())
-            perceived = processor.call_args.args[2]
-            self.assertAlmostEqual(perceived['options'][1]['probability'], (4*.35+6)/10)
-        unknown = [{'block': 2, 'choice': None, 'outcome': 260, 'timed_out': False}]
-        self.assertEqual(tbs_execution.reconsider_recent(unknown, {}, ev, intervention()), current)
-
-    def test_null_and_direct_are_invariant_across_processors(self):
-        ev = {'points': 0, 'target': 930, 'remaining': 4, 'multiplier': 2.3, 'block': 1,
-              'options': [{'id': 'safe', 'amount': 180, 'probability': .6},
-                          {'id': 'risky', 'amount': 260, 'probability': .35}]}
-        direct = []; null = []
-        for mechanism in ('none', 'current', 'recent'):
-            a = Participant(SPEC, 'TBS', 'responsive', mechanism)
-            direct.append(a.distribution(ev, intervention('direct'))[1])
-            null.append(Participant(SPEC, 'TBS', 'null', mechanism).distribution(ev, intervention())[1])
-        self.assertTrue(all(v == direct[0] for v in direct))
-        self.assertTrue(all(v == null[0] for v in null))
-        self.assertEqual(null[0], Participant(SPEC, 'TBS').baseline(ev))
+    def test_tbs_keeps_one_displayed_evidence_response_without_memory_distortion(self):
+        ev={'points':100,'target':930,'remaining':4,'multiplier':2.3,'block':2,
+            'options':[{'id':'safe','amount':180,'probability':.6},{'id':'risky','amount':260,'probability':.35}]}
+        original=copy.deepcopy(ev)
+        h=[{'block':2,'choice':'risky','outcome':260,'timed_out':False} for _ in range(6)]
+        self.assertEqual(tbs_execution.reconsider([],{},ev,intervention()),
+                         tbs_execution.reconsider(h,{},ev,intervention()))
+        self.assertEqual(ev,original)
+        target=tbs_execution.reconsider(h,{},ev,intervention())
+        base,actual,_=Participant(SPEC,'TBS','responsive').distribution(ev,intervention())
+        for a in base:self.assertAlmostEqual(actual[a],.5*base[a]+.5*target[a])
 
 
 class PilotTest(unittest.TestCase):
@@ -110,8 +76,8 @@ class PilotTest(unittest.TestCase):
                   'cohort_split': 'engineering', 'study': {'id': 'pilot-test',
                   'tasks': {'REFERENCE': {'protocol': 'mini', 'calibration_tasks': ['REFERENCE']}},
                   'conditions': ['A', 'C', 'E', 'D', 'F']},
-                  'mechanisms': ['none', 'current', 'recent'], 'response_parameters': RESPONSE,
-                  'seed': 'pilot-test', 'repeats': 1,
+                  'response_parameters': RESPONSE,
+                  'seed': 'pilot-test', 'repeats': 2,
                   'primary_outcomes': {'REFERENCE': {'metric': 'decision_errors', 'divisor': 1}}}
         if cap is not None:
             config['max_trials'] = cap
@@ -119,13 +85,7 @@ class PilotTest(unittest.TestCase):
         return directory/'config.json'
 
     def test_resume_matched_controls_private_parameters_and_frozen_inputs(self):
-        # Exercise the optional adapter contract without adding a fake empirical
-        # environment or changing reference runtime behaviour outside this test.
-        def recent(history, parameters, evaluation, intervention):
-            return {o['id']: 1-o['probability'] for o in evaluation['options']}
         with tempfile.TemporaryDirectory() as temp, \
-             patch.object(reference_execution, 'reconsider_recent', recent, create=True), \
-             patch.object(reference_execution, 'RECENT_RECONSIDERATION', {'fixture': 'recent'}, create=True), \
              patch('socratic_prototype.engine.shacl_report', return_value={'conforms': True, 'engine': 'fixture', 'report': 'Covered by real integration'}), \
              patch.dict('os.environ', {'SOCRATIC_LLM': 'offline', 'SOCRATIC_LANGUAGE_MODE': 'bounded'}):
             directory = Path(temp);config = self.configuration(directory);out = directory/'output'
@@ -135,11 +95,12 @@ class PilotTest(unittest.TestCase):
             completed_file = next((out/'jobs').glob('*/result.json'))
             first_bytes = completed_file.read_bytes()
             report = execute(out, progress=None)
-            self.assertTrue(report['complete']);self.assertEqual(report['completed_jobs'], 3)
+            self.assertTrue(report['complete']);self.assertEqual(report['completed_jobs'], 2)
             self.assertTrue(report['control_checks_passed'])
             self.assertEqual(completed_file.read_bytes(), first_bytes)
-            self.assertEqual(report['completed_protocol_sessions'], 15)
-            self.assertTrue(report['mechanism_sensitivity'])
+            self.assertEqual(report['completed_protocol_sessions'], 10)
+            self.assertEqual(report['mechanism_sensitivity'], [])
+            self.assertEqual(len(report['controls']), 2)
             from socratic_prototype.store import Store
             for result in (out/'jobs').glob('*/result.json'):
                 job = read(result);path = out/job['report_file']
@@ -159,17 +120,40 @@ class PilotTest(unittest.TestCase):
             with self.assertRaisesRegex(ValidationError, 'actor inputs were altered'):
                 execute(out, prepare_only=True, progress=None)
 
-    def test_unsupported_recent_extension_fails_before_session_creation(self):
-        with tempfile.TemporaryDirectory() as temp:
-            directory = Path(temp);config = self.configuration(directory)
-            with self.assertRaisesRegex(ValidationError, 'not implemented'):
-                execute(directory/'output', config, progress=None)
-            self.assertEqual(list((directory/'output').glob('**/sessions.sqlite3')), [])
+    def test_retired_modes_fail_before_session_creation(self):
+        for modes in (['none'], ['recent'], ['none','current','recent']):
+            with tempfile.TemporaryDirectory() as temp:
+                directory=Path(temp);config=self.configuration(directory)
+                data=read(config);data['mechanisms']=modes;write(config,data)
+                with self.assertRaisesRegex(ValidationError,'retired'):
+                    execute(directory/'output',config,progress=None)
+                self.assertEqual(list((directory/'output').glob('**/sessions.sqlite3')),[])
+
+    def test_zero_receptiveness_is_the_control_without_a_separate_socratic_mode(self):
+        with tempfile.TemporaryDirectory() as temp, \
+             patch('socratic_prototype.engine.shacl_report',return_value={'conforms':True,'report':'Covered separately'}), \
+             patch.dict('os.environ',{'SOCRATIC_LLM':'offline','SOCRATIC_LANGUAGE_MODE':'bounded'}):
+            root=Path(temp);config=self.configuration(root)
+            data=read(config);data['repeats']=1
+            data['response_parameters']={k:0 for k in RESPONSE};write(config,data)
+            result=execute(root/'output',config,progress=None)
+            self.assertTrue(result['control_checks_passed'])
+            self.assertEqual(len(result['null_response_checks']),5)
+            self.assertTrue(all(r['identical_to_A'] for r in result['null_response_checks']))
+
+    def test_unassisted_control_detects_a_changed_distribution(self):
+        from socratic_prototype.pilot import summarise
+        report={'study':{'execution':{'REFERENCE':{'metrics':{'decision_errors':{'direction':'minimize'}}}}},
+                'runs':[{'task':'REFERENCE','condition':'A','session_id':'fixture','completed':False,
+                         'metrics':{'decision_errors':0},'trials':[{'index':1,'choice':'left','outcome':1,
+                             'baseline_probabilities':{'left':.5,'right':.5},
+                             'assisted_probabilities':{'left':1.,'right':0.},'effect':{'applied':False},'intervention':None}]}]}
+        rows=summarise(report,{'participant':'fixture','repeat':0,'mechanism':'current'},
+                       {'configuration':{'primary_outcomes':{'REFERENCE':{'metric':'decision_errors','divisor':1}}}})
+        self.assertFalse(rows[0]['baseline_control_passed'])
 
     def test_capped_jobs_are_not_outcome_estimates_and_failed_attempts_are_preserved(self):
         with tempfile.TemporaryDirectory() as temp, \
-             patch.object(reference_execution, 'reconsider_recent', reference_execution.reconsider, create=True), \
-             patch.object(reference_execution, 'RECENT_RECONSIDERATION', {'fixture': True}, create=True), \
              patch('socratic_prototype.engine.shacl_report', return_value={'conforms': True, 'engine': 'fixture', 'report': 'Covered separately'}), \
              patch.dict('os.environ', {'SOCRATIC_LLM': 'offline', 'SOCRATIC_LANGUAGE_MODE': 'bounded'}):
             directory = Path(temp);config = self.configuration(directory, cap=2);out = directory/'output'
@@ -178,11 +162,11 @@ class PilotTest(unittest.TestCase):
                     execute(out, config, progress=None)
             self.assertEqual(read(out/'status.json')['status'], 'failed')
             report = execute(out, progress=None)
-            self.assertEqual(report['completed_jobs'], 3)
+            self.assertEqual(report['completed_jobs'], 2)
             self.assertFalse(report['complete']);self.assertEqual(report['aggregates'], [])
             self.assertEqual(report['completed_protocol_sessions'], 0)
-            self.assertEqual(len(list((out/'jobs').glob('*/attempts/*'))), 4)
-            self.assertEqual(len(list((out/'jobs').glob('*/result.json'))), 3)
+            self.assertEqual(len(list((out/'jobs').glob('*/attempts/*'))), 3)
+            self.assertEqual(len(list((out/'jobs').glob('*/result.json'))), 2)
 
 
 if __name__ == '__main__':

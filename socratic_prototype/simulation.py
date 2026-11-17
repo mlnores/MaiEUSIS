@@ -15,9 +15,9 @@ from .study import CONDITIONS,default_study,validate_study
 from .records import require
 from .tasks import get_task
 from .tasks.execution import simulation_adapter
-from .reconsideration import MECHANISMS, configuration as reconsideration_configuration
+from .reconsideration import configuration as reconsideration_configuration
 
-VERSION='matched-simulation-0.5'
+VERSION='matched-simulation-0.6'
 
 
 def uniform(seed,*keys):
@@ -127,13 +127,12 @@ def main():
     parser.add_argument('--scenario',choices=SCENARIOS,default='null');parser.add_argument('--protocol',default='short')
     parser.add_argument('--seed',default='comparison');parser.add_argument('--repeats',type=int,default=1);parser.add_argument('--max-trials',type=int)
     parser.add_argument('--calibration-only',action='store_true',help='Generate unassisted calibrations for the known-pseudonym selector without comparison runs')
-    parser.add_argument('--reconsideration',choices=MECHANISMS,default='current',help='Researcher-side Socratic processing assumption; direct assistance is unaffected')
     args=parser.parse_args();os.environ.update(SOCRATIC_LLM='offline',SOCRATIC_LANGUAGE_MODE='bounded',SOCRATIC_INTERPRET_RESPONSES='0')
     from .store import Store
     participants=json.loads(Path(args.participants).read_text())
     study=json.loads(Path(args.study).read_text()) if args.study else None
     result=run(Store(Path(args.data_dir)/'sessions.sqlite3'),participants,args.scenario,args.protocol,args.seed,args.repeats,args.max_trials,
-        lambda participant,task,condition,repeat:print(participant,task,condition,repeat,'ready',flush=True),study=study,calibration_only=args.calibration_only,reconsideration=args.reconsideration)
+        lambda participant,task,condition,repeat:print(participant,task,condition,repeat,'ready',flush=True),study=study,calibration_only=args.calibration_only)
     path=Path(args.output);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(result,indent=2,allow_nan=False)+'\n')
     print('Wrote conditional simulation results to',path)
 

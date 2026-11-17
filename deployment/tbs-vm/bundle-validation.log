@@ -1,0 +1,7 @@
+/Users/martinlopeznores/Desktop/Irena Danilovska/.venv/lib/python3.12/site-packages/pgmpy/estimators/__init__.py:4: FutureWarning: `pgmpy.estimators.StructureScore` is deprecated and will be removed in v1.3.0. Use `pgmpy.structure_score` instead.
+  from .StructureScore import (
+....................................
+----------------------------------------------------------------------
+Ran 36 tests in 144.279s
+
+OK

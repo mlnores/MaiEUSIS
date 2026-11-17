@@ -1,7 +1,7 @@
 """Explicit simulation assumptions about assistance, not estimated human attitudes."""
 from .records import fields,require,number
 
-VERSION='assistance-response-0.2'
+VERSION='assistance-response-0.3'
 DEFAULT={'responsiveness':0.0,'reactance':0.0,'distraction':0.0,'omission_probability':0.0}
 SCENARIOS={
     'null':{'direct':dict(DEFAULT),'socratic':dict(DEFAULT)},
@@ -16,7 +16,17 @@ def validate(parameters):
     return dict(parameters)
 
 
-def apply(base,intervention,parameters,reconsidered,*,strategic_revision=True):
+def conditional_preferences(base,options):
+    """The same rule for a direct singleton and a profile-weighted option set."""
+    ids=set(options)
+    require(bool(ids) and ids<=set(base),'Guidance contains an unavailable action')
+    mass=sum(value for a,value in base.items() if a in ids)
+    # A singleton is a point target even when its baseline probability is zero.
+    # A zero-mass set has no relative preference information: use equal weights.
+    return {a:(base[a]/mass if mass>0 else 1/len(ids)) if a in ids else 0. for a in base}
+
+
+def apply(base,intervention,parameters,reconsidered):
     """Both styles share the same response mechanism but different processing targets.
 
     Direct: consider the recommended action. Socratic: reconsider the named issue
@@ -26,12 +36,10 @@ def apply(base,intervention,parameters,reconsidered,*,strategic_revision=True):
     parameters=validate(parameters)
     if not intervention:return dict(base),{'applied':False,'omission_probability':0.0}
     style=intervention['style'];require(style in {'direct','socratic'},'Unknown intervention style')
-    require(type(strategic_revision) is bool and (style=='socratic' or strategic_revision), 'Invalid strategic-revision control')
     if style=='direct':
         option=intervention['recommendation']['option_id']
-        require(option in base,'Recommendation is not an available action')
-        target={a:float(a==option) for a in base}
-    else:target=reconsidered if strategic_revision else dict(base)
+        target=conditional_preferences(base,[option])
+    else:target=reconsidered
     require(set(target)==set(base) and abs(sum(target.values())-1)<1e-8,'Invalid reconsideration distribution')
     processing_target=dict(target)
     # Reactance reverses the processing target; distraction mixes in uniform noise.
@@ -39,11 +47,9 @@ def apply(base,intervention,parameters,reconsidered,*,strategic_revision=True):
     opposite={a:(1-target[a])/(n-1) if n>1 else 1.0 for a in base}
     target={a:(1-r)*target[a]+r*opposite[a] for a in base}
     weight=parameters['responsiveness'];noise=parameters['distraction']
-    # A no-revision processor produces no directional response, even with configured
-    # reactance. The same configured coefficients are retained, not overwritten.
-    revised={a:(1-weight)*base[a]+weight*target[a] for a in base} if strategic_revision else dict(base)
+    revised={a:(1-weight)*base[a]+weight*target[a] for a in base}
     result={a:(1-noise)*revised[a]+noise/n for a in base}
     return result,{'applied':True,'style':style,'parameters':parameters,
-                   'strategic_revision':strategic_revision,'processing_target':processing_target,
+                   'response_rule':'single-task-response','processing_target':processing_target,
                    'omission_probability':parameters['omission_probability'],
                    'notice':'Scenario assumption, not a measured human response or guaranteed benefit.'}

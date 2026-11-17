@@ -25,12 +25,13 @@ def history(session):
     return result
 
 
-def hypotheses(session, evaluation, environment, h):
+def hypotheses(session, evaluation, environment, h, participant=None):
     task=get_task(session['task']); p=session['policy']
     window=[x for x in h[-p['window_trials']:] if task.same_scope(x,evaluation)]
     valid=[x for x in window if not x['timed_out']]
     evidence=[x['trial_id'] for x in valid]
-    definitions,stats=task.hypothesis_inputs(session,evaluation,environment,h)
+    task_session={**session,'participant_estimate':participant} if participant is not None else session
+    definitions,stats=task.hypothesis_inputs(task_session,evaluation,environment,h)
     results=[]
     for name,adverse,pattern,relevant,text,alternatives,revisions in definitions:
         inference=NETWORK.query(adverse,pattern,relevant)
@@ -51,10 +52,10 @@ def make_snapshot(session, event, event_id, timestamp, recorded_language=None):
     p=session['policy']; task=session['task']; h=history(session)
     ev=event if event['kind']=='evaluation' else next(e['input'] for e in reversed(session['events']) if e['input'].get('kind')=='evaluation')
     module=get_task(task)
-    env=module.environment(h,ev,p,event)
+    env=module.environment(h,ev,p,{**event,'remaining_decisions':session['total_trials']-len(h)})
     from .participant_model import estimate
     participant=estimate(session,h)
-    hypothesis_records,stats=hypotheses(session,ev,env,h)
+    hypothesis_records,stats=hypotheses(session,ev,env,h,participant)
     participant['behaviour']=stats
     participant['hypotheses']=hypothesis_records
     prior_claims=[c['id'] for e in session['events'] for c in e.get('snapshot',{}).get('claims',[])]
@@ -102,7 +103,7 @@ def make_snapshot(session, event, event_id, timestamp, recorded_language=None):
                     ['source-dependent','requires-verification'],[response_trial],
                     contradicts=[target['id']] if update['kind']=='contest_hypothesis' and target else [])
                 c['provenance']='participant-self-report:'+response['id']+'; researcher-review:'+review['id']
-    snapshot={'environment':env,'participant':participant,'claims':claims,'previous_claim_ids':sorted({r for c in claims for r in c.get('revises',[]) if r in prior_claims}),
+    snapshot={'environment':env,'evaluation':copy.deepcopy(ev),'participant':participant,'claims':claims,'previous_claim_ids':sorted({r for c in claims for r in c.get('revises',[]) if r in prior_claims}),
               'arguments':[],'model_version':VERSION,'policy_version':p['version'],'event_kind':event['kind']}
     if event['kind']=='feedback':
         snapshot['policy_status']='Not an eligible intervention point; model update only.'

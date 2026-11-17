@@ -1,5 +1,8 @@
 # Reconsideration sensitivity pilot
 
+> Historical experiment: new runs use the [single-response design](single-response.md).
+> The former `none`/`recent` configurations require their recorded runtime.
+
 This pilot varies **how** a synthetic participant processes a Socratic question,
 separately from its configured receptiveness, reactance, distraction and omission.
 These mechanisms are authored assumptions. The actor processes a structured issue,

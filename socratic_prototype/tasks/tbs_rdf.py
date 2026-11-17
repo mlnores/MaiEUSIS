@@ -71,11 +71,18 @@ def project(w,session,event,state,evaluation,previous):
     # The pressure policy is explicitly estimated, not an observed disposition.
     model=state+'/pressure-model';estimate=snap['participant']['pressure_policy']
     w.types(model,'tbs:PressurePolicyEstimate','task:Estimate','task:Calculation')
-    pressure_rule=w.rule(base+'pressure-policy','Exploratory grid pressure policy',
-        'socratic_prototype.tasks.tbs.tbs_pressure_model',tbs.MODULE_VERSION,'Equal grid priors; option-value and horizon effects are not separately identified.')
+    online=snap['participant'].get('online_task',{})
+    if 'pressure_policy' in online:
+        pressure_rule=w.rule(base+'online-pressure-policy','Online exploratory pressure posterior',
+            'socratic_prototype.tasks.tbs_participant.Observer',online['version'],
+            'Transferred calibration posterior plus completed unaided choices only; offer-value and distinct horizon effects remain omitted.')
+    else:
+        pressure_rule=w.rule(base+'pressure-policy','Exploratory grid pressure policy',
+            'socratic_prototype.tasks.tbs.tbs_pressure_model',tbs.MODULE_VERSION,'Equal grid priors; option-value and horizon effects are not separately identified.')
     w.obj(model,'task:inputState',state);w.obj(model,'task:usesRule',pressure_rule)
     w.value(model,'task:value',estimate['sensitivity_mean']);w.value(model,'task:unit','normalised-pressure-sensitivity')
     w.value(model,'task:samples',estimate['samples']);w.value(model,'s:status','inferred')
     w.value(model,'task:lowerBound',estimate['sensitivity_interval'][0]);w.value(model,'task:upperBound',estimate['sensitivity_interval'][1])
     for trial in estimate.get('evidence',[]):w.obj(model,'task:basedOnObservation',DATA+trial+'/choice')
+    for trial in estimate.get('calibration_evidence',[]):w.obj(model,'arg:calibrationTrial',CORE+trial)
     project_observations(w,session,event,evaluation,option,'points')

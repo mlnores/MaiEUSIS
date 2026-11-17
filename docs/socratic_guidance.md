@@ -1,6 +1,19 @@
 # Evidence-backed Socratic guidance
 
-Implemented on 11 November 2026. In D/F, the teammate guides deliberation by
+Updated on **14 November 2026**. MAB now uses a
+[performance gate and shared top-two ranking](simulation/mab-shared-ranking.md):
+C/E recommend rank 1, while D/F compare ranks 1 and 2. Successful persistence
+alone does not trigger intervention. The synthetic actor weights the pair using
+its own learned preferences, then blends that target with baseline preferences
+according to receptiveness. TBS retains the 11 November mechanism.
+
+On **15 November**, [observed-behaviour personalisation](observed_personalisation.md)
+added online task forecasts and separate direct/Socratic uptake estimates to E/F.
+These can change delivery relevance and cooldowns without changing the public
+ranking, comparison set or performance gate. Private actor receptiveness remains
+hidden; the assistant learns a conditional estimate from exposed choices.
+
+Initially implemented on 11 November 2026. In D/F, the teammate guides deliberation by
 showing alternatives worth examining, their evidence and uncertainty, alongside
 a Socratic question. C/E continue to prescribe one graph-supported action under
 their stated comparison criterion. Guidance works with reviewed wording; Ollama
@@ -8,7 +21,7 @@ can compose the question through the existing generated-language mode.
 
 ## What the participant sees
 
-MAB can show two or three named options with their existing keys, observed sample
+MAB shows exactly two named options from the shared reward ranking, with existing keys, observed sample
 counts, estimated mean rewards and approximate intervals. An unobserved option
 is explicitly described as prior-based uncertainty, rather than a demonstrated
 good reward. The accompanying question asks what evidence or comparison would
@@ -35,7 +48,13 @@ of reading or comprehension.
 `arg:worthComparingFor` propositions. These are comparison opportunities, not
 recommendations or participant probability distributions.
 
-For MAB, the current public reward estimates supply a benchmark equal to the
+The new MAB default derives both direct advice and Socratic comparisons from
+the same scoped rank calculations. `mab_performance.ttl` supplies the performance
+warrant that every delivered C/D/E/F candidate must include. The policy still
+applies its threshold, cooldown and frequency preference after this gate passes.
+
+For the **original MAB uncertainty shortlist**, retained as an explicit ablation
+setting, the public reward estimates supply a benchmark equal to the
 greatest estimated mean across all six arms. Its RDF calculation links all six
 input estimates and its versioned numerical rule. A defeasible comparison reason
 requires an option's approximate upper bound to reach that benchmark, plus:
@@ -50,8 +69,10 @@ when available, then ranks alternatives by potential headroom above the benchmar
 divided by one plus the sample count. It shows at most three options. This is an
 authored proxy for worthwhile comparison, not a formal value-of-information
 calculation or an optimal exploration policy. No second option is fabricated
-when fewer than two have accepted reasons. Existing short-horizon objections
-still lead to a cost-clarification question rather than pressure to explore.
+when fewer than two have accepted reasons. With the performance gate explicitly
+disabled for an ablation, existing short-horizon objections can still lead to a
+cost-clarification question. The new default remains silent with fewer than
+three decisions remaining.
 
 For TBS, separate strict arguments support examining each displayed gain/chance
 tradeoff and, when applicable, each final-trial attainment calculation. Both
@@ -68,37 +89,29 @@ model premises through these public comparisons.
 
 ## Synthetic participant processing
 
-The human-facing comparison set is distinct from the actor's response. No choice
-probabilities are prescribed to the human. For new structured interventions:
+The human-facing comparison set is distinct from the actor's response. New
+runs use [one participant-response rule](simulation/single-response.md), without
+`none` or `recent` variants. MAB conditions the actor's full-history learned
+preferences on the offered pair, using the same operation as a direct singleton.
+Receptiveness blends either target with baseline preferences. Ordinary profile
+learning continues, with no additional memory reset or uncertainty bonus.
 
-- `none` retains baseline preferences, including ordinary outcome learning.
-- MAB `current` reassesses the delivered alternatives using the public rolling
-  reward estimates. Exploration weights combine reward plausibility above the
-  greatest lower bound with interval width divided by one plus the sample count.
-  Other questions use reward-based softmax within the set. Options outside the
-  set receive zero reconsideration-target weight; responsiveness still blends
-  this target with the full baseline preference.
-- MAB `recent` computes those weights from the last six elapsed trials while
-  retaining the alternatives actually presented. Misses consume memory positions
-  but supply no reward observations.
-- TBS `current` addresses the issue: an expected-gain question compares expected
-  gains; final-trial questions examine conditional attainment; other goal/horizon
-  questions retain the existing gap-sensitive heuristic. TBS `recent` uses its
-  recorded four-pseudo-observation perception rule before the same processing.
-- An empty comparison set leaves baseline preferences intact under all three
-  mechanisms. Legacy researcher fixtures without the new comparison field retain
-  the older processing rule; new MAB/TBS interventions always have the field.
-  Tasks without the optional comparison hooks retain their existing processors.
+TBS retains its default response to displayed gain/chance and goal information.
+Conditioning on its two-option pair would leave baseline probabilities unchanged;
+that MAB rule has therefore not been silently substituted for TBS's existing
+response. There are no TBS memory variants either. Future tasks provide one
+explicit response hook.
 
-These remain authored behavioral assumptions, not natural-language comprehension
-or measured human effects. Responsiveness is unchanged and does not learn from
-outcomes. No automatic score or personalization bonus has been added.
+Zero receptiveness, with zero added distraction/omission, is the no-response
+control. These remain authored behavioural assumptions, not measured human
+acceptance or natural-language comprehension. No automatic reward or
+personalisation bonus is added.
 
 ## Versions, existing results and running
 
-New sessions use policy 0.5, argumentation 0.4, grounding 0.3 and structured
-interventions 0.2. Simulation/actor versions are 0.5 and MAB/TBS execution adapters
-are 0.4. Graph configuration records comparison-guidance version and source
+New sessions use policy 0.6, argumentation 0.4, grounding 0.3 and structured
+interventions 0.3. Simulation/actor versions are 0.6; the MAB execution adapter is
+0.6 and TBS is 0.5. Assistance response is 0.3. Graph configuration records comparison-guidance version and source
 fingerprints. Optional task-owned hooks (`select_comparisons`,
 `comparison_context`, `comparison_evaluation`) support future environments;
 the registry requires the complete hook set when any is supplied.
@@ -115,13 +128,13 @@ The earlier development-16 pilot remains an unchanged historical baseline. Its
 scores were produced by the earlier heuristics and do not measure this guidance.
 Historical records remain readable/exportable; replay and resumed experiments
 require their recorded software. New experiments need a new output directory
-and should retain all three mechanisms and matched repetitions. The
+and should use the single response rule with matched repetitions. The historical
 [new guided full-protocol pilot](simulation/guidance-pilot.md) was launched on
 11 November and completed on 13 November 2026 with three repetitions, 144 jobs
 and all three mechanisms. Its [final report](simulation/guidance-pilot.md#final-heatmap-report)
 uses all completed repetitions; the earlier pilot and capped check remain separate.
 
-## Verification
+## Verification of the 11 November version
 
 The Python regression run completed 128 tests with one socket-binding check
 skipped by the environment. All six focused guidance tests passed, including

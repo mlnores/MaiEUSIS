@@ -50,7 +50,7 @@ class GraphPolicyTest(unittest.TestCase):
             outcome=outcome,timed_out=False,response_ms=500,
             **{'points_after' if s['task']=='TBS' else 'score_after':ev.get('points',ev.get('score',0))+outcome}))
 
-    def mab(self,index=7,arms=None,reward=0):
+    def mab(self,index=7,arms=None,reward=-100):
         s=self.create()
         for i in range(1,index):self.emit(s,evaluation('MAB',s['id'],i,score=(i-1)*reward),(arms or ['blue1'])[(i-1)%len(arms or ['blue1'])],reward)
         record=self.store.event(s['id'],evaluation('MAB',s['id'],index,score=(index-1)*reward))
@@ -63,7 +63,7 @@ class GraphPolicyTest(unittest.TestCase):
         return projected,snap
 
     def test_one_history_five_conditions_and_graph_proof_language_boundary(self):
-        s,e=self.mab(9,reward=100)
+        s,e=self.mab(9,reward=-100)
         expected={'A':'silence','C':'advise','D':'request-evidence','E':'advise','F':'challenge'}
         for condition,action in expected.items():
             session,snap=self.choice(s,e,condition);d=snap['decision']
@@ -112,16 +112,14 @@ class GraphPolicyTest(unittest.TestCase):
         altered=copy.deepcopy(e);altered['snapshot']['graph_argumentation']=report
         _,snap=self.choice(s,altered)
         self.assertNotIn('unsampled_alternatives',[c['name'] for c in snap['decision']['candidates']])
-        self.assertEqual(snap['decision']['action'],'support')
+        self.assertEqual(snap['decision']['action'],'compare')
 
-    def test_short_horizon_clarifies_conflict_and_does_not_challenge_persistence(self):
+    def test_short_horizon_keeps_graph_conflict_but_does_not_interrupt(self):
         s,e=self.mab(39)
         for condition in ['D','F']:
             _,snap=self.choice(s,e,condition);d=snap['decision']
-            self.assertEqual(d['action'],'ask');self.assertIsNone(d['hypothesis'])
-            c=next(c for c in d['candidates'] if c['id']==d['selected_candidate'])
-            self.assertEqual(c['argument_evaluation'],'unresolved-clarification')
-            self.assertTrue(c['opposing_arguments']);self.assertIn('so few decisions',c['messages'][0])
+            self.assertEqual(d['action'],'silence');self.assertIsNone(d['hypothesis'])
+            self.assertIn('Performance gate',d['rationale'])
         for condition in ['C','E']:
             _,snap=self.choice(s,e,condition);self.assertEqual(snap['decision']['action'],'silence')
         g=e['snapshot']['graph_argumentation']

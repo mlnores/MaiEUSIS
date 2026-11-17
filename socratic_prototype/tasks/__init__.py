@@ -14,9 +14,13 @@ def register_task(module):
     require(identity(module.ID) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',module.ID),'Invalid task identifier')
     require(module.ID not in _TASKS,'Task is already registered')
     require(all(callable(getattr(module,name,None)) for name in _METHODS),'Task does not implement the task contract')
-    for name in ['argumentation_documents','project_argumentation_facts','simulation_adapter','recommendation_message','intervention_focus','browser_adapter']:
+    for name in ['argumentation_documents','project_argumentation_facts','simulation_adapter','recommendation_message',
+                 'intervention_focus','browser_adapter','assistance_gate','required_comparison_count',
+                 'participant_observer','assistance_target']:
         require(not hasattr(module,name) or callable(getattr(module,name)),'Invalid optional task hook: '+name)
     comparison_hooks=('select_comparisons','comparison_context','comparison_evaluation')
+    require(not hasattr(module,'participant_observer') or callable(getattr(module,'assistance_target',None)),
+            'Participant observer requires a public assistance-target hypothesis')
     if any(hasattr(module,name) for name in comparison_hooks):
         require(all(callable(getattr(module,name,None)) for name in comparison_hooks),'Incomplete comparison guidance hooks')
     require(bool(module.PROTOCOLS) and all(isinstance(k,str) and type(v) is int and v>0 for k,v in module.PROTOCOLS.items()),'Invalid task protocols')

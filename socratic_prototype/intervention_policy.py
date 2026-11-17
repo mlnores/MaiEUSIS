@@ -20,10 +20,18 @@ def proof_closure(report, identifiers):
     return [a for a in report['arguments'] if a['id'] in retained]
 
 
+def assistance_gate(task,snapshot):
+    hook=getattr(get_task(task),'assistance_gate',None)
+    return hook(snapshot) if hook else {'enabled':False,'eligible':True,'argument_ids':[],
+                                      'reason':'No additional environment-specific performance gate.'}
+
+
 def candidates(session,event,snapshot):
     """Only complete, evaluated graph proofs may warrant live candidates."""
     report=snapshot['graph_argumentation']
     if report['status']!='complete':return []
+    gate=assistance_gate(session['task'],snapshot)
+    if not gate['eligible']:return []
     condition=session['condition'];socratic=condition in {'D','F'}
     require(condition in {'A','C','D','E','F'},'Unknown or retired assistance condition')
     from .participant_model import selection_cost
@@ -32,6 +40,8 @@ def candidates(session,event,snapshot):
     from .comparisons import from_graph as comparison_set,context as comparison_context
     recommendation=from_graph(session['task'],event,report) if not socratic and condition!='A' else None
     comparisons=comparison_set(session['task'],event,snapshot) if socratic else []
+    required=getattr(get_task(session['task']),'required_comparison_count',lambda env:0)(snapshot['environment'])
+    if socratic and required and len(comparisons)!=required:return []
     facts={a['id']:a for a in report['assertions']}
     nodes={a['id']:a for a in report['arguments']}
     hypotheses={CORE+h['claim_id']:h for h in snapshot['participant']['hypotheses'] if h.get('claim_id')}
@@ -72,8 +82,9 @@ def candidates(session,event,snapshot):
             if not recommendation:continue
             action='advise';message_text=recommendation_message(session['task'],recommendation)
         else:message_text=message
-        supports=[argument['id']]+([recommendation['argument_id']] if not socratic and recommendation else [])
-        comparison=[] if clarification else comparisons
+        supports=sorted(set([argument['id']]+gate['argument_ids']+
+                            ([recommendation['argument_id']] if not socratic and recommendation else [])))
+        comparison=[] if clarification and not required else comparisons
         supports+=sorted({a for c in comparison for a in c['argument_ids']})
         opposition=sorted({a['attacker'] for a in report['attacks'] if a['target'] in supports or set(a['affected'])&set(supports)})
         result.append({'id':argument['id']+'/intervention','name':name,'action':action,'messages':[message_text],'claim_ids':evidence,
@@ -83,6 +94,12 @@ def candidates(session,event,snapshot):
             'comparisons':comparison,'comparison_context':comparison_context(session['task'],comparison,event),
             'hypothesis':hypothesis['name'] if hypothesis else None,'schedule':presentation['schedule'],
             'graph_scope':report['scope']})
+    from .personalisation import assess
+    for candidate in result:
+        adaptation=assess(session['task'],condition,event,snapshot,candidate)
+        candidate['personalisation']=adaptation
+        candidate['effective_usefulness']=round(candidate['usefulness']*adaptation['relevance_factor']*adaptation['uptake_factor'],6)
+        candidate['score']=round(candidate['effective_usefulness']-cost,6)
     # Support is a communication fallback, not an inference from missing evidence.
     if any(c['schedule']!='fallback' for c in result):result=[c for c in result if c['schedule']!='fallback']
     return sorted(result,key=lambda c:(-c['score'],c['name'],c['supporting_arguments']))
@@ -90,23 +107,31 @@ def candidates(session,event,snapshot):
 
 def decide(session,event,snapshot,event_id):
     opportunities=candidates(session,event,snapshot);p=session['policy']
+    gate=assistance_gate(session['task'],snapshot)
     delivered=[e['input'] for e in session['events'] if e['input'].get('kind')=='delivery' and e['input']['delivered']]
     since=event['index']-delivered[-1]['index'] if delivered else None
     cooldown=p['cooldown'][session['preference']]
-    selected=opportunities[0] if opportunities else None
+    selected=next((c for c in opportunities if not c['personalisation']['redundant']),opportunities[0] if opportunities else None)
+    if selected:cooldown+=selected['personalisation']['extra_cooldown']
     rationale='No permitted graph-grounded candidate exceeds the relevance and interruption threshold.'
     active=False
     if session['condition'] in {'C','E'} and not opportunities:
-        rationale='No accepted intervention warrant with a unique option-comparison proof supports a specific recommendation under the configured criterion.'
+        rationale='No accepted intervention warrant with an option-ranking proof supports a specific recommendation under the configured criterion.'
     if session['phase']=='calibration' or session['condition']=='A':
         rationale='Unassisted condition: neutral preparation window; no assistance delivered.'
     elif snapshot['graph_argumentation']['status']!='complete':
         rationale='Graph reasoning is '+snapshot['graph_argumentation']['status']+'; no assistance can be grounded. Install research dependencies if unavailable and start a new session.'
+    elif not gate['eligible']:
+        rationale='Performance gate: '+gate['reason']
+    elif selected and selected['personalisation']['redundant']:
+        rationale='Personalised delivery: '+selected['personalisation']['reason']+' The shared ranking and argument evaluation are unchanged.'
     elif since is not None and since<cooldown:
         rationale=f'Cooldown: {since} trials since the last delivered prompt; {cooldown} required for {session["preference"]} frequency.'
     elif selected and selected['score']>=p['threshold']:
         active=True
-        rationale=f'{selected["name"]}: graph warrant {selected["argument_evaluation"]}; provisional usefulness {selected["usefulness"]:.3f} minus interruption cost {selected['interruption_cost']:.3f}; score {selected["score"]:.3f} meets threshold {p["threshold"]:.3f}.'
+        rationale=f'{selected["name"]}: graph warrant {selected["argument_evaluation"]}; delivery usefulness {selected["effective_usefulness"]:.3f} minus interruption cost {selected["interruption_cost"]:.3f}; score {selected["score"]:.3f} meets threshold {p["threshold"]:.3f}.'
+    elif selected and selected['personalisation']['enabled']:
+        rationale='Personalised delivery: '+selected['personalisation']['reason']+f' Adjusted score {selected["score"]:.3f} is below threshold {p["threshold"]:.3f}.'
     neutral=[next(c['id'] for c in snapshot['claims'] if c['id'].endswith('_'+name)) for name in ['context','unknown']]
     from .recommendations import structured
     return {'task':session['task'],'intervention':structured(session['task'],session['condition'],selected) if active else None,'id':event_id+'_decision','action':selected['action'] if active else 'silence','rationale':rationale,
@@ -115,7 +140,8 @@ def decide(session,event,snapshot,event_id):
         'threshold':p['threshold'],'interruption_cost':selected['interruption_cost'] if selected else p['interruption_cost'],'cooldown':cooldown,
         'frequency_preference':session['preference'],'eligible_point':get_task(session['task']).ELIGIBLE_POINT,
         'hypothesis':selected['hypothesis'] if active else None,'language':None,
-        'reasoning_source':'graph','selected_candidate':selected['id'] if active else None,
+        'reasoning_source':'graph','assistance_gate':gate,'selected_candidate':selected['id'] if active else None,
+        'condition':session['condition'],'personalisation':selected['personalisation'] if selected else None,
         'argument_ids':selected['supporting_arguments'] if active else [],
         'opposing_argument_ids':selected['opposing_arguments'] if active else []}
 
@@ -125,11 +151,32 @@ def validate_decision(snapshot):
     d=snapshot['decision'];report=snapshot['graph_argumentation']
     require(not snapshot['arguments'],'Live graph decisions cannot carry independent candidate reasons')
     arguments={a['id']:a for a in report['arguments']}
+    gate=assistance_gate(d['task'],snapshot)
+    require(d.get('assistance_gate')==gate,'Assistance gate differs from its graph evidence')
+    require(gate['eligible'] or (d['action']=='silence' and not d['candidates']),
+            'Assistance bypassed the performance gate')
     for candidate in d['candidates']:
         require(report['status']=='complete' and candidate['graph_scope']==report['scope'],'Candidate uses an incomplete or stale graph')
+        if 'personalisation' in candidate:
+            from .personalisation import assess
+            module=get_task(d['task'])
+            evaluation=snapshot.get('evaluation')
+            if evaluation is None and callable(getattr(module,'comparison_evaluation',None)):
+                evaluation=module.comparison_evaluation(snapshot['environment'])
+            if evaluation is not None:
+                expected_adaptation=assess(d['task'],d['condition'],evaluation,snapshot,candidate)
+                require(candidate['personalisation']==expected_adaptation,'Delivery adaptation differs from its public model and graph evidence')
+            adaptation=candidate['personalisation']
+            effective=round(candidate['usefulness']*adaptation['relevance_factor']*adaptation['uptake_factor'],6)
+            require(candidate['effective_usefulness']==effective and candidate['score']==round(effective-candidate['interruption_cost'],6),
+                    'Delivery score differs from its model-based estimate')
         supports=candidate['supporting_arguments'];opponents=candidate['opposing_arguments']
+        require(set(gate['argument_ids'])<=set(supports),'Intervention lacks its performance-gate proof')
         require(bool(supports) and set(supports+opponents)<=arguments.keys(),'Candidate lacks graph provenance')
         comparison=candidate.get('comparisons',[])
+        required=getattr(get_task(d['task']),'required_comparison_count',lambda env:0)(snapshot['environment'])
+        require(not required or candidate.get('recommendation') is not None or len(comparison)==required,
+                'Socratic intervention lacks the required ranked pair')
         comparison_ids={identifier for c in comparison for identifier in c['argument_ids']}
         require(not comparison or (len(comparison)>=2 and candidate['recommendation'] is None),
                 'Socratic comparisons require multiple alternatives and no recommendation')
@@ -140,8 +187,17 @@ def validate_decision(snapshot):
             evaluation=module.comparison_evaluation(snapshot['environment'])
             require(comparison==from_graph(d['task'],evaluation,snapshot),'Comparison differs from graph evidence')
             require(candidate['comparison_context']==context(d['task'],comparison,evaluation),'Comparison text differs from evidence')
+        if candidate.get('recommendation') and callable(getattr(get_task(d['task']),'comparison_evaluation',None)):
+            from .recommendations import from_graph as recommendation_from_graph
+            module=get_task(d['task'])
+            require(candidate['recommendation']==recommendation_from_graph(
+                d['task'],module.comparison_evaluation(snapshot['environment']),report),
+                'Recommendation differs from its graph ranking')
         for identifier in supports:
             argument=arguments[identifier];metadata=argument.get('intervention')
+            if identifier in gate['argument_ids']:
+                require(argument['label']=='accepted','Performance gate proof is not accepted')
+                continue
             if not metadata:
                 if identifier in comparison_ids:
                     from .argumentation import ARG
@@ -174,6 +230,10 @@ def validate_decision(snapshot):
     else:
         selected=next((c for c in d['candidates'] if c['id']==d['selected_candidate']),None)
         require(selected is not None,'Decision lacks a selected graph candidate')
+        if 'personalisation' in selected:
+            require(d['personalisation']==selected['personalisation'] and not selected['personalisation']['redundant'],
+                    'Active decision bypasses personalised delivery assessment')
+            require(selected['score']>=d['threshold'],'Active decision is below the delivery threshold')
         require(d['argument_ids']==selected['supporting_arguments'] and d['opposing_argument_ids']==selected['opposing_arguments'],
                 'Decision proof differs from selected candidate')
         if d.get('intervention') is not None:

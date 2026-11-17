@@ -5,12 +5,18 @@ from . import mab
 
 def project(w,session,event,state,evaluation,previous):
     definition=w.definition(session,mab);base=definition+'/'
+    person=event['snapshot']['participant'];online=person.get('online_task',{})
     value_rule=w.rule(base+'dirichlet','Rolling Dirichlet reward estimate',
         'socratic_prototype.tasks.mab.mab_environment',mab.MODULE_VERSION,'Only sampled, non-timeout outcomes; last 24 per arm.')
     change_rule=w.rule(base+'change','Stationary versus unknown-split comparison',
         'socratic_prototype.tasks.mab.change_belief',mab.MODULE_VERSION,'At least six observations for evidence beyond the prior.')
-    learning_rule=w.rule(base+'learning','Dual-rate reward learning',
-        'socratic_prototype.tasks.mab.rl',mab.MODULE_VERSION,'Non-timeout outcomes; rewards normalised by 200.')
+    if 'learned_values' in online:
+        learning_rule=w.rule(base+'online-learning','Posterior mean dual-rate learned values',
+            'socratic_prototype.tasks.mab_participant.Observer',online['version'],
+            'Parameter weights fit calibration and unaided choices; all completed rewards update each grid hypothesis; posterior mean values are not RL at mean parameters.')
+    else:
+        learning_rule=w.rule(base+'learning','Dual-rate reward learning',
+            'socratic_prototype.tasks.mab.rl',mab.MODULE_VERSION,'Non-timeout outcomes; rewards normalised by 200.')
     for rule in [value_rule,change_rule,learning_rule]:w.obj(definition,'task:hasRule',rule)
     if w.once(base+'parameters'):
         w.value(value_rule,'mab:priorCount',1);w.value(value_rule,'mab:windowSamples',24)
@@ -44,9 +50,12 @@ def project(w,session,event,state,evaluation,previous):
         w.obj(CORE+event['id']+'_environment','task:basedOnCalculation',estimate)
         w.obj(CORE+event['id']+'_environment','task:basedOnCalculation',change)
     # Q is an estimate under recorded parameters, never the participant's conscious belief.
-    person=snap['participant'];model=state+'/learning-model'
+    model=state+'/learning-model'
     w.types(model,'mab:LearningModel')
     w.value(model,'task:version',mab.MODULE_VERSION)
+    w.value(model,'core:status','inferred')
+    if 'learned_values' in online:
+        w.value(model,'task:expression','Displayed parameters and values are posterior means across the observer grid.')
     w.value(model,'mab:calibrated',bool(session.get('calibration_profile')))
     for key,predicate in [('alpha_plus','mab:alphaPlus'),('alpha_minus','mab:alphaMinus'),('beta','mab:softmaxSensitivity')]:
         w.value(model,predicate,person['parameters'][key])
